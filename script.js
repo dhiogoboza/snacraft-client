@@ -7,9 +7,7 @@ var FOCUS_OFFSET_PERCENTAGE = 0.2;
 
 var matrix = [];
 var current_matrix = [];
-
 var matrix_mobs = [];
-var current_matrix_mobs = [];
 
 var connected = false;
 var socket;
@@ -19,12 +17,11 @@ var center_i = 0, center_j = 0;
 var head_i = 0, head_j = 0;
 
 var offset_i_left = 0, offset_j_left = 0, offset_i_right = 0, offset_j_right;
-var x = 0, y = 0;
 
 var horizontal_items, vertical_items;
 var focus_offset_i, focus_offset_j;
 
-var MAP_COLORS = ["#FFFFFF","#000000","#00DD00","#0000DD"];
+var MAP_COLORS = ["#EEEEEE","#212121","#00DD00","#000080"];
 
 // canvas context
 var ctx, ctx_snakes;
@@ -32,18 +29,23 @@ var ctx, ctx_snakes;
 // canvas size
 var width;
 var height;
-var item_size = 10;
+var item_size = 15, item_size_1 = item_size - 1;
 
 function initMatrix(matrix_data) {
     var line;
+    var y = 0, x;
     for (var i = 0; i < vertical_items; i++) {
         line = [];
+        x = 0;
         for (var j = 0; j < horizontal_items; j++) {
-            line.push(-1);
+            line.push({"i": -1, "x": x, "y": y});
+            
+            x += item_size;
         }
         
-        current_matrix_mobs.push(line);
-        current_matrix.push(line.slice());
+        y += item_size;
+        
+        current_matrix.push(line);
     }
     
     var matrix_split = matrix_data.split(",");
@@ -160,35 +162,28 @@ function drawMobsAtMap() {
         j_start = columns - horizontal_items;
     }
     
-    y = 0;
-    for (var i = i_start, _i = 0; i < i_end; i++, _i++) {
-        x = 0;
+    for (var i = i_start, _i = 0; i < i_end; i++, _i++) {    
         for (var j = j_start, _j = 0; j < j_end; j++, _j++) {
-            if (matrix_mobs[i][j] != current_matrix_mobs[_i][_j]) {
-                if (matrix_mobs[i][j] == 0) {
-                    ctx_snakes.clearRect(x, y, item_size, item_size);
-                } else {
-                    ctx_snakes.fillStyle = MAP_COLORS[matrix_mobs[i][j]];
-                    ctx_snakes.fillRect(x, y, item_size, item_size);
+            current = current_matrix[_i][_j];
+            
+            if (matrix_mobs[i][j] == 0) {
+                if (matrix[i][j] != current["i"]) {
+                    ctx.fillStyle = MAP_COLORS[matrix[i][j]];
+                    ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
+                       
+                    current["i"] = matrix[i][j];
+                }
+            } else {
+                if (matrix_mobs[i][j] != current["i"]) {
+                    ctx.fillStyle = MAP_COLORS[matrix_mobs[i][j]];
+                    ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
+                    
+                    current["i"] = matrix_mobs[i][j];
                 }
                 
-                current_matrix_mobs[_i][_j] = matrix_mobs[i][j];
                 matrix_mobs[i][j] = 0;
-            } else {
-                matrix_mobs[i][j] = 0;
-            }
-            
-            if (matrix[i][j] != current_matrix[_i][_j]) {
-                ctx.fillStyle = MAP_COLORS[matrix[i][j]];
-                ctx.fillRect(x, y, item_size, item_size);
-                   
-                current_matrix[_i][_j] = matrix[i][j];
-            }
-
-            x += item_size;
+            }   
         }
-        
-        y += item_size;
     }
 }
 
@@ -240,10 +235,9 @@ function eraseCookie(name) {
 
 document.addEventListener("DOMContentLoaded", function(event) {
     var c = document.getElementById("canvas");
-    var c2 = document.getElementById("canvas-snakes");
     
-    width = c.width = c2.width = document.documentElement.clientWidth;
-    height = c.height = c2.height =  document.documentElement.clientHeight;
+    width = c.width = document.documentElement.clientWidth;
+    height = c.height = document.documentElement.clientHeight;
     
     horizontal_items = parseInt(width / item_size);
     vertical_items = parseInt(height / item_size);
@@ -258,7 +252,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     focus_offset_j = parseInt(horizontal_items * FOCUS_OFFSET_PERCENTAGE);
     
     ctx = c.getContext("2d");
-    ctx_snakes = c2.getContext("2d");
+    ctx.fillStyle = MAP_COLORS[0];
+    ctx.fillRect(0, 0, width, height);
     
     document.getElementById("server").value = getCookie("server");
     
