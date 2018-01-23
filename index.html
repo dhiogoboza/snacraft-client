@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Snake Canvas</title>
+    <style type="text/css">
+        html, body {
+            overflow: hidden;
+            box-sizing: border-box;
+            margin: 0px;
+            height: 100%;
+        }
+      
+        .container {
+            display: table;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+        }
+
+        .child {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .content {
+            margin-left: auto;
+            margin-right: auto; 
+        }
+        
+        #game-container {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #game-container > div {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+        }
+        
+        #connect-form {
+            width: 100px;
+        }
+        
+        #connect-form > * {
+            float: right;
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <script src="script.js"></script>
+  </head>
+
+  <body>
+    
+    <div class="container">
+        <div class="child">
+            <div class="content" id="connect-form">
+                <input type="text" placeholder="server (10.0.0.1:8000)" value="" id="server"/>
+                <br/>
+                <input type="button" value="Connect" id="connect"/>
+            </div>
+        </div>
+        <div class="child" >
+            <div class="content" id="game-container">
+                <div>
+                  <canvas id="canvas" width="100%" height="100%" />
+                </div>
+                <div>
+                  <canvas id="canvas-snakes" width="100%" height="100%" />
+                </div>
+            </div>
+        <div>
+    </div>
+    
+  </body>
+</html>
