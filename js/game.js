@@ -39,33 +39,33 @@ function initMatrix(matrix_data) {
         x = 0;
         for (var j = 0; j < horizontal_items; j++) {
             line.push({"i": -1, "x": x, "y": y});
-            
+
             x += item_size;
         }
-        
+
         y += item_size;
-        
+
         current_matrix.push(line);
     }
-    
+
     var matrix_split = matrix_data.split(",");
     var line_snakes;
-    
+
     lines = parseInt(matrix_split[1]);
     columns = parseInt(matrix_split[2]);
-    
+
     var c = 3;
     for (var i = 0; i < lines; i++) {
         line = [];
         line_snakes = [];
-        
+
         for (var j = 0; j < columns; j++) {
             line.push(parseInt(matrix_split[c]));
             line_snakes.push(0);
-            
+
             c++;
         }
-        
+
         matrix_mobs[i] = line_snakes;
         matrix[i] = line;
     }
@@ -74,16 +74,19 @@ function initMatrix(matrix_data) {
 function connect(server) {
 
     socket = new WebSocket("ws://" + server);
-    
+    socket.binaryType = "arraybuffer";
+
     // Connection opened
     socket.addEventListener('open', function (event) {
         console.log("socket opened");
         connected = true;
-        
+
         document.getElementById('game-container').style.display = "block";
         document.getElementById('connect-form').style.display = "none";
+        document.getElementById('navbar').style.display = "none";
+        document.getElementById('footer').style.display = "none";
     });
-    
+
     // Connection failed
     socket.addEventListener('error', function (event) {
         console.log("error");
@@ -98,15 +101,22 @@ function connect(server) {
 }
 
 function onMessage(event, onSuccess) {
-    switch (event.data.charCodeAt(0)) {
+    var data = null;
+    if (event.data instanceof ArrayBuffer) {
+        data = new TextDecoder().decode(new Uint8Array(event.data));
+    } else if (typeof event.data === "string") {
+        data = event.data;
+    }
+    // FIXME: handle blob event.data type
+    switch (data.charCodeAt(0)) {
         case 0:
             // Init loop
-            initMatrix(event.data);
+            initMatrix(data);
             window.addEventListener('keydown', keyPressed, false);
             break;
         case 2:
-            // Game data updated            
-            drawMobs(event.data);
+            // Game data updated
+            drawMobs(data);
             drawMobsAtMap();
             break;
     }
@@ -115,7 +125,7 @@ function onMessage(event, onSuccess) {
 function drawMobs(mobs_data) {
     head_i = mobs_data.charCodeAt(1);
     head_j = mobs_data.charCodeAt(2);
-    
+
     if (center_i == 0) {
         // TODO: get snake head at map initialization
         center_i = head_i;
@@ -126,14 +136,14 @@ function drawMobs(mobs_data) {
         } else if (head_i - center_i > focus_offset_i) {
             center_i++;
         }
-        
+
         if (head_j - center_j < -focus_offset_j) {
             center_j--;
         } else if (head_j - center_j > focus_offset_j) {
             center_j++;
         }
     }
-    
+
     for (var i = 3; i < mobs_data.length; i++) {
         matrix_mobs[mobs_data.charCodeAt(i)][mobs_data.charCodeAt(++i)] = mobs_data.charCodeAt(++i);
     }
@@ -142,7 +152,7 @@ function drawMobs(mobs_data) {
 function drawMobsAtMap() {
     var i_start = center_i - offset_i_left;
     var i_end = center_i + offset_i_right;
-    
+
     if (i_start < 0) {
         i_start = 0;
         i_end = vertical_items;
@@ -150,10 +160,10 @@ function drawMobsAtMap() {
         i_end = lines;
         i_start = lines - vertical_items;
     }
-    
+
     var j_start = center_j - offset_j_left;
     var j_end = center_j + offset_j_right;
-    
+
     if (j_start < 0) {
         j_start = 0;
         j_end = horizontal_items;
@@ -161,28 +171,28 @@ function drawMobsAtMap() {
         j_end = columns;
         j_start = columns - horizontal_items;
     }
-    
-    for (var i = i_start, _i = 0; i < i_end; i++, _i++) {    
+
+    for (var i = i_start, _i = 0; i < i_end; i++, _i++) {
         for (var j = j_start, _j = 0; j < j_end; j++, _j++) {
             current = current_matrix[_i][_j];
-            
+
             if (matrix_mobs[i][j] == 0) {
                 if (matrix[i][j] != current["i"]) {
                     ctx.fillStyle = MAP_COLORS[matrix[i][j]];
                     ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
-                       
+
                     current["i"] = matrix[i][j];
                 }
             } else {
                 if (matrix_mobs[i][j] != current["i"]) {
                     ctx.fillStyle = MAP_COLORS[matrix_mobs[i][j]];
                     ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
-                    
+
                     current["i"] = matrix_mobs[i][j];
                 }
-                
+
                 matrix_mobs[i][j] = 0;
-            }   
+            }
         }
     }
 }
@@ -206,67 +216,64 @@ function keyPressed(e) {
 
 function setCookie(name, value, days) {
     var expires = "";
-    
+
     if (days) {
         var date = new Date();
         date.setTime(date.getTime() + (days*24*60*60*1000));
         expires = "; expires=" + date.toUTCString();
     }
-    
+
     document.cookie = name + "=" + (value || "")  + expires + "; path=/";
 }
 
 function getCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
-    
+
     for(var i = 0; i < ca.length;i++) {
         var c = ca[i];
         while (c.charAt(0)==' ') c = c.substring(1,c.length);
         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
-    
+
     return null;
 }
 
-function eraseCookie(name) {   
-    document.cookie = name+'=; Max-Age=-99999999;';  
+function eraseCookie(name) {
+    document.cookie = name+'=; Max-Age=-99999999;';
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
     var c = document.getElementById("canvas");
-    
-    width = c.width = document.documentElement.clientWidth;
-    height = c.height = document.documentElement.clientHeight;
-    
+
+    width = c.width = $(document).width();
+    height = c.height = $(document).height();
+
     horizontal_items = parseInt(width / item_size);
     vertical_items = parseInt(height / item_size);
-    
+
     offset_i_left = parseInt(vertical_items / 2);
     offset_j_left = parseInt(horizontal_items / 2);
-   
+
     offset_i_right = vertical_items - offset_i_left;
     offset_j_right = horizontal_items - offset_j_left;
-    
+
     focus_offset_i = parseInt(vertical_items * FOCUS_OFFSET_PERCENTAGE);
     focus_offset_j = parseInt(horizontal_items * FOCUS_OFFSET_PERCENTAGE);
-    
+
     ctx = c.getContext("2d");
     ctx.fillStyle = MAP_COLORS[0];
     ctx.fillRect(0, 0, width, height);
-    
+
     document.getElementById("server").value = getCookie("server");
-    
+
     document.getElementById("connect").onclick = function() {
         if (!connected) {
             var server = document.getElementById("server").value;
-            
+
             setCookie("server", server, 5);
-            
+
             connect(server);
         }
     };
 });
-
-
-
