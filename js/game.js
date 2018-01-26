@@ -84,6 +84,8 @@ function connect(server) {
     socket.addEventListener('open', function (event) {
         connected = true;
 
+        document.getElementById("connect").disabled = false;
+
         document.getElementById('game-container').style.display = "block";
         document.getElementById('game-stats').style.display = "block";
         document.getElementById('connect-form').style.display = "none";
@@ -91,9 +93,27 @@ function connect(server) {
         document.getElementById('footer').style.display = "none";
     });
 
+    // Connection closed
+    socket.addEventListener('close', function (event) {
+        socket = null;
+
+        connected = false;
+
+        document.getElementById("connect").disabled = false;
+
+        document.getElementById('game-stats').style.display = "none";
+        document.getElementById('connect-form').style.display = "block";
+        document.getElementById('navbar').style.display = "block";
+        document.getElementById('footer').style.display = "block";
+    });
+
     // Connection failed
     socket.addEventListener('error', function (event) {
+        socket = null;
+
         connected = false;
+
+        document.getElementById("connect").disabled = false;
     });
 
     // Listen for messages
@@ -124,6 +144,11 @@ function onMessage(event, onSuccess) {
         case 3:
             // Game stats updated
             drawStats(data);
+            break;
+        case 4:
+            // Game over
+            socket.close();
+            drawGameover();
             break;
     }
 }
@@ -204,10 +229,17 @@ function drawMobsAtMap() {
 }
 
 function drawStats(data) {
-  document.getElementById("snake-size").innerHTML = data.substring(1);
+    document.getElementById("snake-size").innerHTML = data.substring(1);
+}
+
+function drawGameover() {
+    document.getElementById("connect-form-gameover").classList.remove("hidden");
 }
 
 function keyPressed(e) {
+    if (!connected) {
+      return;
+    }
     switch (e.keyCode) {
         case KEY_UP:
         case KEY_UP_1:
@@ -281,7 +313,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     document.getElementById("server").value = getCookie("server");
 
-    document.getElementById("connect").onclick = function() {
+    document.getElementById("connect").onclick = function(e) {
+        // disable button
+        e.target.disabled = true;
         if (!connected) {
             var server = document.getElementById("server").value;
 
