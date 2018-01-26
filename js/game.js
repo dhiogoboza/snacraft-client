@@ -2,6 +2,10 @@ var KEY_UP = 87;
 var KEY_DOWN = 83;
 var KEY_LEFT = 65;
 var KEY_RIGHT = 68;
+var KEY_UP_1 = 38;
+var KEY_DOWN_1 = 40;
+var KEY_LEFT_1 = 37;
+var KEY_RIGHT_1 = 39;
 
 var FOCUS_OFFSET_PERCENTAGE = 0.2;
 
@@ -78,10 +82,10 @@ function connect(server) {
 
     // Connection opened
     socket.addEventListener('open', function (event) {
-        console.log("socket opened");
         connected = true;
 
         document.getElementById('game-container').style.display = "block";
+        document.getElementById('game-stats').style.display = "block";
         document.getElementById('connect-form').style.display = "none";
         document.getElementById('navbar').style.display = "none";
         document.getElementById('footer').style.display = "none";
@@ -89,13 +93,11 @@ function connect(server) {
 
     // Connection failed
     socket.addEventListener('error', function (event) {
-        console.log("error");
         connected = false;
     });
 
     // Listen for messages
     socket.addEventListener('message', function (event) {
-        //console.log('Message from server ', event.data);
         onMessage(event);
     });
 }
@@ -118,6 +120,10 @@ function onMessage(event, onSuccess) {
             // Game data updated
             drawMobs(data);
             drawMobsAtMap();
+            break;
+        case 3:
+            // Game stats updated
+            drawStats(data);
             break;
     }
 }
@@ -197,18 +203,26 @@ function drawMobsAtMap() {
     }
 }
 
+function drawStats(data) {
+  document.getElementById("snake-size").innerHTML = data.substring(1);
+}
+
 function keyPressed(e) {
     switch (e.keyCode) {
         case KEY_UP:
+        case KEY_UP_1:
             socket.send('1,0');
             break;
         case KEY_DOWN:
+        case KEY_DOWN_1:
             socket.send('1,1');
             break;
         case KEY_LEFT:
+        case KEY_LEFT_1:
             socket.send('1,2');
             break;
         case KEY_RIGHT:
+        case KEY_RIGHT_1:
             socket.send('1,3');
             break;
     }
