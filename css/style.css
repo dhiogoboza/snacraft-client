@@ -45,6 +45,23 @@ body > .container {
   right: 0;
 }
 
+#game-stats {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: #EEE;
+  background-color: rgba(0,0,0,0.75);
+  padding: 10px 20px;
+}
+
+#game-stats h3 {
+  font-family: 'Press Start 2P', cursive;
+  text-align: center;
+  font-size: 20px;
+	color: #EEE;
+}
+
 .heading {
   position: absolute;
   left: 0;
@@ -56,7 +73,14 @@ body > .container {
   padding: 50px;
 }
 
-.heading input[type="text"], .heading input[type="password"], .heading input[type="text"], .heading input[type="password"], .heading input[type="text"] {
+.heading h1 {
+  font-family: 'Press Start 2P', cursive;
+	font-size: 50px;
+	color: #EEE;
+}
+
+input[type="text"], input[type="password"], input[type="text"],
+    input[type="password"], input[type="text"] {
 	width: 100%;
 	padding: 7px;
 	border: 1px solid #0199e6;
