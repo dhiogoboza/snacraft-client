@@ -15,12 +15,13 @@ var matrix_mobs = [];
 
 var connected = false;
 var socket;
+var nickname;
 var lines = 0, columns = 0;
 
 var center_i = 0, center_j = 0;
 var head_i = 0, head_j = 0;
 
-var offset_i_left = 0, offset_j_left = 0, offset_i_right = 0, offset_j_right;
+var offset_i_left = 0, offset_j_left = 0, offset_i_right = 0, offset_j_right = 0;
 
 var horizontal_items, vertical_items;
 var focus_offset_i, focus_offset_j;
@@ -28,7 +29,7 @@ var focus_offset_i, focus_offset_j;
 var MAP_COLORS = ["#EEEEEE","#212121","#00DD00","#000080"];
 
 // canvas context
-var ctx, ctx_snakes;
+var ctx;
 
 // canvas size
 var width;
@@ -91,6 +92,18 @@ function connect(server) {
         document.getElementById('connect-form').style.display = "none";
         document.getElementById('navbar').style.display = "none";
         document.getElementById('footer').style.display = "none";
+
+        // send nickname
+        if (!nickname) {
+          nickname = 'snake-' + parseInt(Math.random() * 1e5).toString();
+        }
+        // send to server
+        socket.send(nickname);
+        // change ui
+        document.getElementById("snake-nickname").innerHTML = nickname;
+        document.getElementById("nickname").value = nickname;
+        // persist as cookie
+        setCookie("nickname", nickname, 5);
     });
 
     // Connection closed
@@ -311,6 +324,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     ctx.fillStyle = MAP_COLORS[0];
     ctx.fillRect(0, 0, width, height);
 
+    document.getElementById("nickname").value = getCookie("nickname");
     document.getElementById("server").value = getCookie("server");
 
     document.getElementById("connect").onclick = function(e) {
@@ -318,6 +332,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         e.target.disabled = true;
         if (!connected) {
             var server = document.getElementById("server").value;
+            nickname = document.getElementById("nickname").value;
 
             setCookie("server", server, 5);
 
