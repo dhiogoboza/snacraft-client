@@ -81,8 +81,7 @@ body > .container {
 	color: #EEE;
 }
 
-input[type="text"], input[type="password"], input[type="text"],
-    input[type="password"], input[type="text"] {
+input[type="text"], input[type="password"], select {
 	width: 100%;
 	padding: 7px;
 	border: 1px solid #0199e6;
@@ -94,6 +93,11 @@ input[type="text"], input[type="password"], input[type="text"],
 	margin-bottom: 10px;
 	font-size: 14px;
 	font-weight: 500;
+}
+
+option {
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 1px solid #0199e6;
 }
 
 .heading button {

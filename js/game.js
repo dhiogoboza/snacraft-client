@@ -85,8 +85,10 @@ function connect(server) {
     socket.addEventListener('open', function (event) {
         connected = true;
 
-        document.getElementById("connect").disabled = false;
-
+        var button = document.getElementById("connect");
+        button.disabled = false;
+        button.style.cursor = "pointer";
+        
         document.getElementById('game-container').style.display = "block";
         document.getElementById('game-stats').style.display = "block";
         document.getElementById('connect-form').style.display = "none";
@@ -325,11 +327,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
     ctx.fillRect(0, 0, width, height);
 
     document.getElementById("nickname").value = getCookie("nickname");
-    document.getElementById("server").value = getCookie("server");
 
     document.getElementById("connect").onclick = function(e) {
         // disable button
         e.target.disabled = true;
+        e.target.style.cursor = "wait";
         if (!connected) {
             var server = document.getElementById("server").value;
             nickname = document.getElementById("nickname").value;
