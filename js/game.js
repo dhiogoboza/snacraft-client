@@ -88,7 +88,7 @@ function connect(server) {
         var button = document.getElementById("connect");
         button.disabled = false;
         button.style.cursor = "pointer";
-        
+
         document.getElementById('game-container').style.display = "block";
         document.getElementById('game-stats').style.display = "block";
         document.getElementById('connect-form').style.display = "none";
@@ -164,6 +164,14 @@ function onMessage(event, onSuccess) {
             // Game over
             socket.close();
             drawGameover();
+            break;
+        case 5:
+            // Ranking
+            drawRanking(data);
+            break;
+        case 6:
+            // Leader board
+            drawLeaderBoard(data);
             break;
     }
 }
@@ -249,6 +257,43 @@ function drawStats(data) {
 
 function drawGameover() {
     document.getElementById("connect-form-gameover").classList.remove("hidden");
+}
+
+function drawRanking(data) {
+    document.getElementById("snake-ranking").innerHTML = data.substring(1);
+}
+
+function drawLeaderBoard(data) {
+    var leaderBoardTable = document.getElementById("leader-board-table");
+    leaderBoardTable.innerHTML = "";
+
+    var tBodyElem = document.createElement("tbody");
+
+    var leaders = data.substring(1).split(",");
+    var i;
+
+    for (i = 0; i < leaders.length; i++) {
+        var leader = leaders[i];
+
+        if (leader) {
+            var strongElem = document.createElement("strong");
+            strongElem.innerHTML = "#" + (i + 1).toString();
+
+            var tablePlaceData = document.createElement("td");
+            tablePlaceData.appendChild(strongElem);
+
+            var tableNameData = document.createElement("td");
+            tableNameData.innerHTML = leader;
+
+            var tableRow = document.createElement("tr");
+            tableRow.appendChild(tablePlaceData);
+            tableRow.appendChild(tableNameData);
+
+            tBodyElem.appendChild(tableRow);
+        }
+    }
+
+    leaderBoardTable.appendChild(tBodyElem);
 }
 
 function keyPressed(e) {

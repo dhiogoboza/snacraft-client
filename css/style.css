@@ -62,6 +62,14 @@ body > .container {
 	color: #EEE;
 }
 
+#game-stats table {
+  border-top: 1px solid #ddd;
+}
+
+#game-stats table td {
+  border-top: none;
+}
+
 .heading {
   position: absolute;
   left: 0;
