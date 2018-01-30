@@ -395,4 +395,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
             connect(server);
         }
     };
+
+    window.addEventListener('keydown', function(e) {
+        if (!connected) {
+            if (e.keyCode == 13) {
+                document.getElementById("connect").click();
+            }
+        }
+    }, false);
 });
