@@ -1,20 +1,20 @@
 html {
-  position: relative;
-  overflow: hidden;
-  box-sizing: border-box;
-  margin: 0px;
-  height: 100%;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    margin: 0px;
+    height: 100%;
 }
 
 body {
-  overflow: hidden;
-  box-sizing: border-box;
-  margin: 0px;
-  height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    margin: 0px;
+    height: 100%;
 }
 
 body > .container {
-  padding: 60px 15px 0;
+    padding: 60px 15px 0;
 }
 
 .navbar-inverse {
@@ -32,61 +32,65 @@ body > .container {
 }
 
 #game-container {
-  display: none;
-  width: 100%;
-  height: 100%;
+    display: none;
+    width: 100%;
+    height: 100%;
 }
 
 #game-container > div {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 #game-stats {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 0;
-  color: #EEE;
-  background-color: rgba(0,0,0,0.75);
-  padding: 10px 20px;
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: #EEE;
+    background-color: rgba(0,0,0,0.50);
+    padding: 0px 10px;
 }
 
 #game-stats h3 {
-  font-family: 'Press Start 2P', cursive;
-  text-align: center;
-  font-size: 20px;
-	color: #EEE;
+    font-family: 'Press Start 2P', cursive;
+    text-align: center;
+    font-size: 14px;
+    color: #EEE;
 }
 
 #game-stats table {
-  border-top: 1px solid #ddd;
+    border-top: 1px solid #ddd;
 }
 
 #game-stats table td {
-  border-top: none;
+    border-top: none;
+}
+
+#game-stats table td {
+    line-height: 1;
 }
 
 .heading {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 25%;
-  background-color: rgba(0,0,0,0.75);
-  width: 50%;
-  margin: 0 auto;
-  padding: 50px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 25%;
+    background-color: rgba(0,0,0,0.75);
+    width: 50%;
+    margin: 0 auto;
+    padding: 50px;
 }
 
 .heading h1 {
-  font-family: 'Press Start 2P', cursive;
-	font-size: 38px;
-  text-align: center;
-  margin-bottom: 20px;
-	color: #EEE;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 38px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #EEE;
 }
 
 input[type="text"], input[type="password"], select {
@@ -109,14 +113,14 @@ option {
 }
 
 .heading button {
-  font-family: 'Roboto', sans-serif;
-  font-size: 40px;
-  font-weight: 100;
-  color: #EEE;
-  padding: 20px;
-  background-color: rgba(102, 102, 102, 0.75);
-  border: none;
-  border-radius: 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 40px;
+    font-weight: 100;
+    color: #EEE;
+    padding: 20px;
+    background-color: rgba(102, 102, 102, 0.75);
+    border: none;
+    border-radius: 0;
 }
 
 .container .text-muted {
@@ -124,19 +128,19 @@ option {
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  background-color: #262626;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    background-color: #262626;
 }
 
 .footer > .container {
-  padding-right: 15px;
-  padding-left: 15px;
+    padding-right: 15px;
+    padding-left: 15px;
 }
 
 .footer p.text-muted {
-  color: #CCC;
+    color: #CCC;
 }

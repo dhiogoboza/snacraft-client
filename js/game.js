@@ -36,6 +36,11 @@ var width;
 var height;
 var item_size = 15, item_size_1 = item_size - 1;
 
+// ui items
+var leaderBoardTable;
+var tBodyElem;
+var snakeRanking;
+
 function initMatrix(matrix_data) {
     var line;
     var y = 0, x;
@@ -94,18 +99,20 @@ function connect(server) {
         document.getElementById('connect-form').style.display = "none";
         document.getElementById('navbar').style.display = "none";
         document.getElementById('footer').style.display = "none";
-
-        // send nickname
+        
+        // init ui items
+        leaderBoardTable = document.getElementById("leader-board-table");
+        tBodyElem = document.createElement("tbody");
+        leaderBoardTable.appendChild(tBodyElem);
+        snakeRanking = document.getElementById("snake-ranking")
+        
+        // setup nickname
+        var nickname = document.getElementById("nickname").value;
         if (!nickname) {
-          nickname = 'snake-' + parseInt(Math.random() * 1e5).toString();
+            nickname = 'snake-' + parseInt(Math.random() * 1e5).toString();
         }
-        // send to server
         socket.send(nickname);
-        // change ui
         document.getElementById("snake-nickname").innerHTML = nickname;
-        document.getElementById("nickname").value = nickname;
-        // persist as cookie
-        setCookie("nickname", nickname, 5);
     });
 
     // Connection closed
@@ -260,45 +267,26 @@ function drawGameover() {
 }
 
 function drawRanking(data) {
-    document.getElementById("snake-ranking").innerHTML = data.substring(1);
+    snakeRanking.innerHTML = data.substring(1);
 }
 
 function drawLeaderBoard(data) {
-    var leaderBoardTable = document.getElementById("leader-board-table");
-    leaderBoardTable.innerHTML = "";
-
-    var tBodyElem = document.createElement("tbody");
-
+    tBodyElem.innerHTML = "";
     var leaders = data.substring(1).split(",");
-    var i;
-
-    for (i = 0; i < leaders.length; i++) {
+    for (var i = 0; i < leaders.length; i++) {
         var leader = leaders[i];
 
         if (leader) {
-            var strongElem = document.createElement("strong");
-            strongElem.innerHTML = "#" + (i + 1).toString();
-
-            var tablePlaceData = document.createElement("td");
-            tablePlaceData.appendChild(strongElem);
-
-            var tableNameData = document.createElement("td");
-            tableNameData.innerHTML = leader;
-
             var tableRow = document.createElement("tr");
-            tableRow.appendChild(tablePlaceData);
-            tableRow.appendChild(tableNameData);
-
+            tableRow.innerHTML = "<td><strong> " + "#" + (i + 1) + " </strong></td><td>" + leader + "</td>";
             tBodyElem.appendChild(tableRow);
         }
-    }
-
-    leaderBoardTable.appendChild(tBodyElem);
+    }    
 }
 
 function keyPressed(e) {
     if (!connected) {
-      return;
+        return;
     }
     switch (e.keyCode) {
         case KEY_UP:
@@ -349,6 +337,18 @@ function eraseCookie(name) {
     document.cookie = name+'=; Max-Age=-99999999;';
 }
 
+function findGetParameter(parameterName) {
+    var tmp = [];
+    var items = location.search.substr(1).split("&");
+    for (var index = 0; index < items.length; index++) {
+        tmp = items[index].split("=");
+        if (tmp[0] === parameterName) {
+            return decodeURIComponent(tmp[1]);
+        }
+    }
+    return "";
+}
+
 document.addEventListener("DOMContentLoaded", function(event) {
     var c = document.getElementById("canvas");
 
@@ -373,14 +373,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     document.getElementById("nickname").value = getCookie("nickname");
 
+    if (findGetParameter("debug") === "true") {
+        var debugOption = document.createElement("option"); 
+        debugOption.value = "localhost:8080";
+        debugOption.text = debugOption.value;
+
+        document.getElementById("server").appendChild(debugOption); 
+    }
+
     document.getElementById("connect").onclick = function(e) {
         // disable button
         e.target.disabled = true;
         e.target.style.cursor = "wait";
         if (!connected) {
             var server = document.getElementById("server").value;
-            nickname = document.getElementById("nickname").value;
-
+            var nickname = document.getElementById("nickname").value;
+            
+            setCookie("nickname", nickname, 5);
             setCookie("server", server, 5);
 
             connect(server);
