@@ -259,7 +259,7 @@ function drawMobsAtMap() {
 }
 
 function drawStats(data) {
-    document.getElementById("snake-size").innerHTML = data.substring(1);
+    document.getElementById("snake-size").innerHTML = data.charCodeAt(1);
 }
 
 function drawGameover() {
@@ -267,7 +267,7 @@ function drawGameover() {
 }
 
 function drawRanking(data) {
-    snakeRanking.innerHTML = data.substring(1);
+    snakeRanking.innerHTML = data.charCodeAt(1) + "/" + data.charCodeAt(2);
 }
 
 function drawLeaderBoard(data) {
