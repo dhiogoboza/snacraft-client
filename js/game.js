@@ -99,13 +99,14 @@ function connect(server) {
         document.getElementById('connect-form').style.display = "none";
         document.getElementById('navbar').style.display = "none";
         document.getElementById('footer').style.display = "none";
-        
+
         // init ui items
         leaderBoardTable = document.getElementById("leader-board-table");
         tBodyElem = document.createElement("tbody");
+        leaderBoardTable.innerHTML = "";
         leaderBoardTable.appendChild(tBodyElem);
         snakeRanking = document.getElementById("snake-ranking")
-        
+
         // setup nickname
         var nickname = document.getElementById("nickname").value;
         if (!nickname) {
@@ -281,7 +282,7 @@ function drawLeaderBoard(data) {
             tableRow.innerHTML = "<td><strong> " + "#" + (i + 1) + " </strong></td><td>" + leader + "</td>";
             tBodyElem.appendChild(tableRow);
         }
-    }    
+    }
 }
 
 function keyPressed(e) {
@@ -374,11 +375,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById("nickname").value = getCookie("nickname");
 
     if (findGetParameter("debug") === "true") {
-        var debugOption = document.createElement("option"); 
+        var debugOption = document.createElement("option");
         debugOption.value = "localhost:8080";
         debugOption.text = debugOption.value;
 
-        document.getElementById("server").appendChild(debugOption); 
+        document.getElementById("server").appendChild(debugOption);
     }
 
     document.getElementById("connect").onclick = function(e) {
@@ -388,7 +389,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         if (!connected) {
             var server = document.getElementById("server").value;
             var nickname = document.getElementById("nickname").value;
-            
+
             setCookie("nickname", nickname, 5);
             setCookie("server", server, 5);
 
