@@ -26,7 +26,12 @@ var offset_i_left = 0, offset_j_left = 0, offset_i_right = 0, offset_j_right = 0
 var horizontal_items, vertical_items;
 var focus_offset_i, focus_offset_j;
 
-var MAP_COLORS = ["#EEEEEE","#212121","#00DD00","#000080"];
+var MAP_COLORS = ["#EEEEEE", // 0 - floor
+                  "#212121", // 1 - wall
+                  "#00DD00", // 2 - snake
+                  "#000080", // 3 - increase
+                  "#008000" // 4 - snake head
+                 ];
 
 // canvas context
 var ctx;
@@ -159,6 +164,13 @@ function onMessage(event, onSuccess) {
             initMatrix(data);
             window.addEventListener('keydown', keyPressed, false);
             break;
+        case 1:
+            // Head
+            head_i = data.charCodeAt(1);
+            head_j = data.charCodeAt(2);
+            
+            center_i = head_i;
+            center_j = head_j;
         case 2:
             // Game data updated
             drawMobs(data);
@@ -188,22 +200,16 @@ function drawMobs(mobs_data) {
     head_i = mobs_data.charCodeAt(1);
     head_j = mobs_data.charCodeAt(2);
 
-    if (center_i == 0) {
-        // TODO: get snake head at map initialization
-        center_i = head_i;
-        center_j = head_j;
-    } else {
-        if (head_i - center_i < -focus_offset_i) {
-            center_i--;
-        } else if (head_i - center_i > focus_offset_i) {
-            center_i++;
-        }
+    if (head_i - center_i < -focus_offset_i) {
+        center_i--;
+    } else if (head_i - center_i > focus_offset_i) {
+        center_i++;
+    }
 
-        if (head_j - center_j < -focus_offset_j) {
-            center_j--;
-        } else if (head_j - center_j > focus_offset_j) {
-            center_j++;
-        }
+    if (head_j - center_j < -focus_offset_j) {
+        center_j--;
+    } else if (head_j - center_j > focus_offset_j) {
+        center_j++;
     }
 
     for (var i = 3; i < mobs_data.length; i++) {
@@ -371,15 +377,29 @@ document.addEventListener("DOMContentLoaded", function(event) {
     ctx = c.getContext("2d");
     ctx.fillStyle = MAP_COLORS[0];
     ctx.fillRect(0, 0, width, height);
-
+    
     document.getElementById("nickname").value = getCookie("nickname");
-
+    var server = document.getElementById("server");
+    
     if (findGetParameter("debug") === "true") {
         var debugOption = document.createElement("option");
         debugOption.value = "localhost:8080";
         debugOption.text = debugOption.value;
 
-        document.getElementById("server").appendChild(debugOption);
+        server.appendChild(debugOption);
+    }
+    
+    var cookie_server = getCookie("server");
+    
+    if (cookie_server) {
+        var opts = server.options;
+        for (var opt, j = 0; opt = opts[j]; j++) {
+            console.log(opt.value);
+            if (opt.value == cookie_server) {
+                server.selectedIndex = j;
+                break;
+            }
+        }
     }
 
     document.getElementById("connect").onclick = function(e) {
