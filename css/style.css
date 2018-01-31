@@ -50,20 +50,20 @@ body > .container {
     position: absolute;
     right: 0;
     top: 0;
-    color: #EEE;
-    background-color: rgba(0,0,0,0.50);
-    padding: 0px 10px;
+    color: rgba(0, 0, 0, 0.75);
+    background-color: transparent;
+    padding: 0 10px;
 }
 
 #game-stats h3 {
     font-family: 'Press Start 2P', cursive;
     text-align: center;
     font-size: 14px;
-    color: #EEE;
+    color: #000;
 }
 
 #game-stats table {
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #DDD;
 }
 
 #game-stats table td {
