@@ -162,7 +162,6 @@ function onMessage(event, onSuccess) {
         case 0:
             // Init loop
             initMatrix(data);
-            window.addEventListener('keydown', keyPressed, false);
             break;
         case 1:
             // Head
@@ -293,25 +292,28 @@ function drawLeaderBoard(data) {
 
 function keyPressed(e) {
     if (!connected) {
-        return;
-    }
-    switch (e.keyCode) {
-        case KEY_UP:
-        case KEY_UP_1:
-            socket.send('1,0');
-            break;
-        case KEY_DOWN:
-        case KEY_DOWN_1:
-            socket.send('1,1');
-            break;
-        case KEY_LEFT:
-        case KEY_LEFT_1:
-            socket.send('1,2');
-            break;
-        case KEY_RIGHT:
-        case KEY_RIGHT_1:
-            socket.send('1,3');
-            break;
+        if (e.keyCode == 13) {
+            document.getElementById("connect").click();
+        }
+    } else {
+        switch (e.keyCode) {
+            case KEY_UP:
+            case KEY_UP_1:
+                socket.send('1,0');
+                break;
+            case KEY_DOWN:
+            case KEY_DOWN_1:
+                socket.send('1,1');
+                break;
+            case KEY_LEFT:
+            case KEY_LEFT_1:
+                socket.send('1,2');
+                break;
+            case KEY_RIGHT:
+            case KEY_RIGHT_1:
+                socket.send('1,3');
+                break;
+        }
     }
 }
 
@@ -416,12 +418,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
             connect(server);
         }
     };
-
-    window.addEventListener('keydown', function(e) {
-        if (!connected) {
-            if (e.keyCode == 13) {
-                document.getElementById("connect").click();
-            }
-        }
-    }, false);
+    
+    window.addEventListener('keydown', keyPressed, false);
 });
