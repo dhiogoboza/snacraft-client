@@ -26,7 +26,8 @@ var offset_i_left = 0, offset_j_left = 0, offset_i_right = 0, offset_j_right = 0
 var horizontal_items, vertical_items;
 var focus_offset_i, focus_offset_j;
 
-var MAP_COLORS = ["#EEEEEE", // 0 - floor
+var grid_color = "#D5D5D5";
+var MAP_COLORS = ["#DDDDDD", // 0 - floor
                   "#212121", // 1 - wall
                   "#00DD00", // 2 - snake
                   "#000080", // 3 - increase
@@ -45,6 +46,22 @@ var item_size = 15, item_size_1 = item_size - 1;
 var leaderBoardTable;
 var tBodyElem;
 var snakeRanking;
+
+function drawGrid() {
+    var y = 0, x;
+    
+    ctx.fillStyle = MAP_COLORS[0];
+    for (var i = 0; i < vertical_items; i++) {
+        x = 0;
+        for (var j = 0; j < horizontal_items; j++) {
+            ctx.fillRect(x, y, item_size_1, item_size_1);
+            
+            x += item_size;
+        }
+        
+        y += item_size;
+    }
+}
 
 function initMatrix(matrix_data) {
     var line;
@@ -377,9 +394,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     focus_offset_j = parseInt(horizontal_items * FOCUS_OFFSET_PERCENTAGE);
 
     ctx = c.getContext("2d");
-    ctx.fillStyle = MAP_COLORS[0];
+    ctx.fillStyle = grid_color;
     ctx.fillRect(0, 0, width, height);
-
+    drawGrid();
+    
     document.getElementById("nickname").value = getCookie("nickname");
     var server = document.getElementById("server");
 
