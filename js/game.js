@@ -30,7 +30,7 @@ var MAP_COLORS = ["#EEEEEE", // 0 - floor
                   "#212121", // 1 - wall
                   "#00DD00", // 2 - snake
                   "#000080", // 3 - increase
-                  "#008000" // 4 - snake head
+                  "#000080"  // 4 - corpse
                  ];
 
 // canvas context
@@ -168,7 +168,7 @@ function onMessage(event, onSuccess) {
             // Head
             head_i = data.charCodeAt(1);
             head_j = data.charCodeAt(2);
-            
+
             center_i = head_i;
             center_j = head_j;
         case 2:
@@ -377,10 +377,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     ctx = c.getContext("2d");
     ctx.fillStyle = MAP_COLORS[0];
     ctx.fillRect(0, 0, width, height);
-    
+
     document.getElementById("nickname").value = getCookie("nickname");
     var server = document.getElementById("server");
-    
+
     if (findGetParameter("debug") === "true") {
         var debugOption = document.createElement("option");
         debugOption.value = "localhost:8080";
@@ -388,9 +388,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         server.appendChild(debugOption);
     }
-    
+
     var cookie_server = getCookie("server");
-    
+
     if (cookie_server) {
         var opts = server.options;
         for (var opt, j = 0; opt = opts[j]; j++) {
