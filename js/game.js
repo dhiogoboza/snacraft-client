@@ -9,9 +9,14 @@ var KEY_RIGHT_1 = 39;
 
 var FOCUS_OFFSET_PERCENTAGE = 0.2;
 
+var TILE_MOVE_SPEED = 5;
+
 var matrix = [];
 var current_matrix = [];
 var matrix_mobs = [];
+
+// images
+var image_MoveSpeed;
 
 var connected = false;
 var socket;
@@ -40,7 +45,7 @@ var ctx;
 // canvas size
 var width;
 var height;
-var item_size = 15, item_size_1 = item_size - 1;
+var item_size = 21, item_size_1 = item_size - 1;
 
 // ui items
 var leaderBoardTable;
@@ -269,8 +274,16 @@ function drawMobsAtMap() {
                 }
             } else {
                 if (matrix_mobs[i][j] != current["i"]) {
-                    ctx.fillStyle = MAP_COLORS[matrix_mobs[i][j]];
-                    ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
+                
+                    switch (matrix_mobs[i][j]) {
+                        case TILE_MOVE_SPEED:
+                            // TODO: do not resize image at draw
+                            ctx.drawImage(image_MoveSpeed, current["x"], current["y"], item_size_1, item_size_1);
+                            break;
+                        default:
+                            ctx.fillStyle = MAP_COLORS[matrix_mobs[i][j]];
+                            ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
+                    }
 
                     current["i"] = matrix_mobs[i][j];
                 }
@@ -397,6 +410,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     ctx.fillStyle = grid_color;
     ctx.fillRect(0, 0, width, height);
     drawGrid();
+    
+    image_MoveSpeed = new Image(item_size_1, item_size_1);
+    image_MoveSpeed.src = 'img/move_speed.png';
     
     document.getElementById("nickname").value = getCookie("nickname");
     var server = document.getElementById("server");
