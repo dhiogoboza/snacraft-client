@@ -39,13 +39,51 @@ var MAP_COLORS = ["#DDDDDD", // 0 - floor
                   "#000080"  // 4 - corpse
                  ];
 
+var TILES_FOLDER = "img/tiles/"
+
+var TILES = [
+    // empty
+    {item: "#DDDDDD", off: true},
+    
+    // stones
+    {item: "#686868", off: false}, {item: "#6e6e6e", off: false},
+    {item: "#747474", off: false}, {item: "#7e7e7e", off: false}, {item: "#8e8e8e", off: false},
+    
+    /* stones
+    {item: "stone/block01.png"}, {item: "stone/block02.png"}, {item: "stone/block03.png"},
+    {item: "stone/block04.png"}, {item: "stone/block05.png"},
+    {item: "stone/block01.png"}, {item: "stone/block02.png"}, {item: "stone/block03.png"},
+    {item: "stone/block04.png"}, {item: "stone/block05.png"},
+    {item: "stone/block01.png"}, {item: "stone/block02.png"}, {item: "stone/block03.png"},
+    {item: "stone/block04.png"}, {item: "stone/block05.png"},
+    {item: "stone/block01.png"}, {item: "stone/block02.png"}, {item: "stone/block03.png"},
+    {item: "stone/block04.png"}, {item: "stone/block05.png"},
+    {item: "stone/block01.png"}, {item: "stone/block02.png"}, {item: "stone/block03.png"},
+    {item: "stone/block04.png"}, {item: "stone/block05.png"},*/
+    
+    /* clay
+    {item: "clay/block01.png"}, {item: "clay/block02.png"}, {item: "clay/block03.png"},
+    {item: "clay/block04.png"}, {item: "clay/block05.png"},*/
+    
+    // clay
+    {item: "#2b1608", off: false}, {item: "#3b2711", off: false}, {item: "#593d2a", off: false},
+    {item: "#715036", off: false}, {item: "#76553a", off: false},
+        
+    // grass
+    {item: "#346a2c", off: false}, {item: "#4b8435", off: false}, {item: "#508935", off: false},
+    {item: "#548c35", off: false}, {item: "#7da658", off: false},
+    
+    {item: "#000080", off: true}, {item: "#000080", off: true}, {item: "move_speed.png", off: true},
+    {item: "#00DD00", off: true}]
+
 // canvas context
 var ctx;
 
 // canvas size
 var width;
 var height;
-var item_size = 21, item_size_1 = item_size - 1;
+var item_size = 20, item_size_1 = item_size - 1;
+var i, j;
 
 // ui items
 var leaderBoardTable;
@@ -132,7 +170,7 @@ function connect(server) {
         tBodyElem = document.createElement("tbody");
         leaderBoardTable.innerHTML = "";
         leaderBoardTable.appendChild(tBodyElem);
-        snakeRanking = document.getElementById("snake-ranking")
+        snakeRanking = document.getElementById("snake-ranking");
 
         // setup nickname
         var nickname = document.getElementById("nickname").value;
@@ -260,29 +298,55 @@ function drawMobsAtMap() {
         j_end = columns;
         j_start = columns - horizontal_items;
     }
-
-    for (var i = i_start, _i = 0; i < i_end; i++, _i++) {
-        for (var j = j_start, _j = 0; j < j_end; j++, _j++) {
+    
+    var tile, previous;
+    for (i = i_start, _i = 0; i < i_end; i++, _i++) {
+        for (j = j_start, _j = 0; j < j_end; j++, _j++) {
             current = current_matrix[_i][_j];
-
+            
             if (matrix_mobs[i][j] == 0) {
                 if (matrix[i][j] != current["i"]) {
-                    ctx.fillStyle = MAP_COLORS[matrix[i][j]];
-                    ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
-
+                    tile = TILES[matrix[i][j]];
+                    if (tile["image"] == true) {
+                        ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
+                    } else {
+                        previous = TILES[current["i"]];
+                        if (previous && (previous["image"] || !previous["off"])) {
+                            // clear rect
+                            ctx.fillStyle = grid_color;
+                            ctx.fillRect(current["x"], current["y"], item_size, item_size);
+                        }
+                        
+                        ctx.fillStyle = tile["item"];
+                        if (tile["off"]) {
+                            ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
+                        } else {
+                            ctx.fillRect(current["x"], current["y"], item_size, item_size);
+                        }
+                    }
+                    
                     current["i"] = matrix[i][j];
                 }
             } else {
                 if (matrix_mobs[i][j] != current["i"]) {
-                
-                    switch (matrix_mobs[i][j]) {
-                        case TILE_MOVE_SPEED:
-                            // TODO: do not resize image at draw
-                            ctx.drawImage(image_MoveSpeed, current["x"], current["y"], item_size_1, item_size_1);
-                            break;
-                        default:
-                            ctx.fillStyle = MAP_COLORS[matrix_mobs[i][j]];
+                    tile = TILES[matrix_mobs[i][j]];
+                    
+                    if (tile["image"] == true) {
+                        ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
+                    } else {
+                        previous = TILES[current["i"]];
+                        if (previous && (previous["image"] || !previous["off"])) {
+                            // clear rect
+                            ctx.fillStyle = grid_color;
+                            ctx.fillRect(current["x"], current["y"], item_size, item_size);
+                        }
+                        
+                        ctx.fillStyle = tile["item"];
+                        if (tile["off"]) {
                             ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
+                        } else {
+                            ctx.fillRect(current["x"], current["y"], item_size, item_size);
+                        }
                     }
 
                     current["i"] = matrix_mobs[i][j];
@@ -411,8 +475,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
     ctx.fillRect(0, 0, width, height);
     drawGrid();
     
-    image_MoveSpeed = new Image(item_size_1, item_size_1);
-    image_MoveSpeed.src = 'img/move_speed.png';
+    for (i = 0; i < TILES.length; i++) {
+        if (TILES[i]["item"].charAt(0) != '#') {
+            image = new Image(item_size, item_size);
+            image.src = TILES_FOLDER + TILES[i]["item"];
+            
+            TILES[i]["image"] = true;
+            TILES[i]["item"] = image; // recycle field with src image
+        } else {
+            console.log("creating color: " + TILES[i]["item"]);
+            TILES[i]["image"] = false;
+        }
+    }
+    
+    console.log(TILES)
+    
+    //image_MoveSpeed = new Image(item_size_1, item_size_1);
+    //image_MoveSpeed.src = 'img/move_speed.png';
     
     document.getElementById("nickname").value = getCookie("nickname");
     var server = document.getElementById("server");
