@@ -32,49 +32,26 @@ var horizontal_items, vertical_items;
 var focus_offset_i, focus_offset_j;
 
 var grid_color = "#D5D5D5";
-var MAP_COLORS = ["#DDDDDD", // 0 - floor
-                  "#212121", // 1 - wall
-                  "#00DD00", // 2 - snake
-                  "#000080", // 3 - increase
-                  "#000080"  // 4 - corpse
-                 ];
-
 var TILES_FOLDER = "img/tiles/"
 
 var TILES = [
     // empty
-    {item: "#DDDDDD", off: true},
+    {item: "#DDDDDD", off: false},
     
     // stones
-    {item: "#686868", off: false}, {item: "#6e6e6e", off: false},
-    {item: "#747474", off: false}, {item: "#7e7e7e", off: false}, {item: "#8e8e8e", off: false},
-    
-    /* stones
-    {item: "stone/block01.png"}, {item: "stone/block02.png"}, {item: "stone/block03.png"},
-    {item: "stone/block04.png"}, {item: "stone/block05.png"},
-    {item: "stone/block01.png"}, {item: "stone/block02.png"}, {item: "stone/block03.png"},
-    {item: "stone/block04.png"}, {item: "stone/block05.png"},
-    {item: "stone/block01.png"}, {item: "stone/block02.png"}, {item: "stone/block03.png"},
-    {item: "stone/block04.png"}, {item: "stone/block05.png"},
-    {item: "stone/block01.png"}, {item: "stone/block02.png"}, {item: "stone/block03.png"},
-    {item: "stone/block04.png"}, {item: "stone/block05.png"},
-    {item: "stone/block01.png"}, {item: "stone/block02.png"}, {item: "stone/block03.png"},
-    {item: "stone/block04.png"}, {item: "stone/block05.png"},*/
-    
-    /* clay
-    {item: "clay/block01.png"}, {item: "clay/block02.png"}, {item: "clay/block03.png"},
-    {item: "clay/block04.png"}, {item: "clay/block05.png"},*/
+    {item: "#686868", off: true}, {item: "#6e6e6e", off: true},
+    {item: "#747474", off: true}, {item: "#7e7e7e", off: true}, {item: "#8e8e8e", off: true},
     
     // clay
-    {item: "#2b1608", off: false}, {item: "#3b2711", off: false}, {item: "#593d2a", off: false},
-    {item: "#715036", off: false}, {item: "#76553a", off: false},
+    {item: "#2b1608", off: true}, {item: "#3b2711", off: true}, {item: "#593d2a", off: true},
+    {item: "#715036", off: true}, {item: "#76553a", off: true},
         
     // grass
-    {item: "#346a2c", off: false}, {item: "#4b8435", off: false}, {item: "#508935", off: false},
-    {item: "#548c35", off: false}, {item: "#7da658", off: false},
+    {item: "#346a2c", off: true}, {item: "#4b8435", off: true}, {item: "#508935", off: true},
+    {item: "#548c35", off: true}, {item: "#7da658", off: true},
     
-    {item: "#000080", off: true}, {item: "#000080", off: true}, {item: "move_speed.png", off: true},
-    {item: "#00DD00", off: true}]
+    {item: "#000080", off: false}, {item: "#000080", off: false}, {item: "move_speed.png", off: false},
+    {item: "#00DD00", off: false}]
 
 // canvas context
 var ctx;
@@ -90,30 +67,70 @@ var leaderBoardTable;
 var tBodyElem;
 var snakeRanking;
 
-function drawGrid() {
+function randomInt(min, max) {
+    return Math.floor(Math.random()*(max-min+1)+min);
+}
+
+function drawGrid(only_header) {
     var y = 0, x;
+    var last_y = 0;
     
-    ctx.fillStyle = MAP_COLORS[0];
-    for (var i = 0; i < vertical_items; i++) {
+    var $navbar = $("#navbar");
+    var $footer = $("#footer");
+    
+    var footer_first = true;
+    var header_height = 5 * item_size;
+    var footer_start = (vertical_items - 6) * item_size;
+    
+    for (i = 0; i < vertical_items + 1; i++) {
         x = 0;
-        for (var j = 0; j < horizontal_items; j++) {
-            ctx.fillRect(x, y, item_size_1, item_size_1);
+        for (j = 0; j < horizontal_items + 1; j++) {
+            if (y >= footer_start) {
+                if (footer_first) {
+                    ctx.fillStyle = TILES[randomInt(11, 15)]["item"];
+                    ctx.fillRect(x, y, item_size, item_size);
+                } else {
+                    ctx.fillStyle = TILES[randomInt(6, 10)]["item"];
+                    ctx.fillRect(x, y, item_size, item_size);
+                }
+            } else if (y <= header_height) {
+                ctx.fillStyle = TILES[randomInt(1, 5)]["item"];
+                ctx.fillRect(x, y, item_size, item_size);
+            } else if (only_header) {
+                break;
+            } else {
+                ctx.fillStyle = TILES[0]["item"];
+                ctx.fillRect(x, y, item_size_1, item_size_1);
+            }
             
             x += item_size;
         }
         
+        if (y >= footer_start) {
+            footer_first = false;
+        }
+        
+        if (y <= header_height) {
+            last_y = y + item_size;
+        }
+        
         y += item_size;
+        
     }
+
+    $footer.height((height - footer_start) + "px");
+    $navbar.height(last_y + "px");
 }
 
-function initMatrix(matrix_data) {
+function resetCurrentMatrix() {
     var line;
     var y = 0, x;
-    for (var i = 0; i < vertical_items; i++) {
+    current_matrix = [];
+    for (i = 0; i < vertical_items; i++) {
         line = [];
         x = 0;
-        for (var j = 0; j < horizontal_items; j++) {
-            line.push({"i": -1, "x": x, "y": y});
+        for (j = 0; j < horizontal_items; j++) {
+            line.push({"i": -1, "x": x, "y": y, "off": true});
 
             x += item_size;
         }
@@ -122,19 +139,26 @@ function initMatrix(matrix_data) {
 
         current_matrix.push(line);
     }
+}
 
+function initMatrix(matrix_data) {
     var matrix_split = matrix_data.split(",");
     var line_snakes;
 
     lines = parseInt(matrix_split[1]);
     columns = parseInt(matrix_split[2]);
-
+    
+    matrix_mobs = [];
+    matrix = [];
+    
     var c = 3;
-    for (var i = 0; i < lines; i++) {
+    var line;
+    var y = 0, x;
+    for (i = 0; i < lines; i++) {
         line = [];
         line_snakes = [];
 
-        for (var j = 0; j < columns; j++) {
+        for (j = 0; j < columns; j++) {
             line.push(parseInt(matrix_split[c]));
             line_snakes.push(0);
 
@@ -144,6 +168,23 @@ function initMatrix(matrix_data) {
         matrix_mobs[i] = line_snakes;
         matrix[i] = line;
     }
+    
+    // clear last line and column
+    /*var last = current_matrix[vertical_items - 1][0];
+    console.log(last)
+    var x = last["x"] + item_size;
+    var y = 0;
+    
+    for (i = 0; i < vertical_items + 1; i++) {
+        ctx.fillStyle = grid_color;
+        ctx.fillRect(x, y, item_size, item_size);
+        
+        ctx.fillStyle = TILES[0]["item"];
+        ctx.fillRect(x, y, item_size_1, item_size_1);
+        
+        y += item_size;
+    }*/
+    
 }
 
 function connect(server) {
@@ -311,7 +352,7 @@ function drawMobsAtMap() {
                         ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
                     } else {
                         previous = TILES[current["i"]];
-                        if (previous && (previous["image"] || !previous["off"])) {
+                        if (!previous || (previous["image"] || previous["off"])) {
                             // clear rect
                             ctx.fillStyle = grid_color;
                             ctx.fillRect(current["x"], current["y"], item_size, item_size);
@@ -319,9 +360,9 @@ function drawMobsAtMap() {
                         
                         ctx.fillStyle = tile["item"];
                         if (tile["off"]) {
-                            ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
-                        } else {
                             ctx.fillRect(current["x"], current["y"], item_size, item_size);
+                        } else {
+                            ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
                         }
                     }
                     
@@ -335,7 +376,7 @@ function drawMobsAtMap() {
                         ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
                     } else {
                         previous = TILES[current["i"]];
-                        if (previous && (previous["image"] || !previous["off"])) {
+                        if (!previous || (previous["image"] || previous["off"])) {
                             // clear rect
                             ctx.fillStyle = grid_color;
                             ctx.fillRect(current["x"], current["y"], item_size, item_size);
@@ -343,9 +384,9 @@ function drawMobsAtMap() {
                         
                         ctx.fillStyle = tile["item"];
                         if (tile["off"]) {
-                            ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
-                        } else {
                             ctx.fillRect(current["x"], current["y"], item_size, item_size);
+                        } else {
+                            ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
                         }
                     }
 
@@ -364,6 +405,7 @@ function drawStats(data) {
 
 function drawGameover() {
     document.getElementById("connect-form-gameover").classList.remove("hidden");
+    drawGrid(true);
 }
 
 function drawRanking(data) {
@@ -452,14 +494,29 @@ function findGetParameter(parameterName) {
     return "";
 }
 
+function initTiles() {
+    var image;
+    for (i = 0; i < TILES.length; i++) {
+        if (TILES[i]["item"].charAt(0) != '#') {
+            image = new Image(item_size, item_size);
+            image.src = TILES_FOLDER + TILES[i]["item"];
+            
+            TILES[i]["image"] = true;
+            TILES[i]["item"] = image; // recycle field with src image
+        } else {
+            TILES[i]["image"] = false;
+        }
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function(event) {
     var c = document.getElementById("canvas");
 
     width = c.width = $(document).width();
     height = c.height = $(document).height();
 
-    horizontal_items = parseInt(width / item_size);
-    vertical_items = parseInt(height / item_size);
+    horizontal_items = parseInt(width / item_size) + 1;
+    vertical_items = parseInt(height / item_size) + 1;
 
     offset_i_left = parseInt(vertical_items / 2);
     offset_j_left = parseInt(horizontal_items / 2);
@@ -473,25 +530,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     ctx = c.getContext("2d");
     ctx.fillStyle = grid_color;
     ctx.fillRect(0, 0, width, height);
-    drawGrid();
     
-    for (i = 0; i < TILES.length; i++) {
-        if (TILES[i]["item"].charAt(0) != '#') {
-            image = new Image(item_size, item_size);
-            image.src = TILES_FOLDER + TILES[i]["item"];
-            
-            TILES[i]["image"] = true;
-            TILES[i]["item"] = image; // recycle field with src image
-        } else {
-            console.log("creating color: " + TILES[i]["item"]);
-            TILES[i]["image"] = false;
-        }
-    }
-    
-    console.log(TILES)
-    
-    //image_MoveSpeed = new Image(item_size_1, item_size_1);
-    //image_MoveSpeed.src = 'img/move_speed.png';
+    drawGrid(false);
+    initTiles();
     
     document.getElementById("nickname").value = getCookie("nickname");
     var server = document.getElementById("server");
@@ -522,6 +563,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         e.target.disabled = true;
         e.target.style.cursor = "wait";
         if (!connected) {
+            resetCurrentMatrix();
+            
             var server = document.getElementById("server").value;
             var nickname = document.getElementById("nickname").value;
 
