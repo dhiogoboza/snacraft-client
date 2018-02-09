@@ -50,7 +50,17 @@ var TILES = [
     {item: "#346a2c", off: true}, {item: "#4b8435", off: true}, {item: "#508935", off: true},
     {item: "#548c35", off: true}, {item: "#7da658", off: true},
     
-    {item: "#000080", off: false}, {item: "#000080", off: false}, {item: "move_speed.png", off: false},
+    // eat
+    {item: "CHICKEN", off: false},
+    {item: "PIG", off: false},
+    {item: "COW", off: false},
+    
+    // corpse
+    {item: "#000080", off: false},
+    
+    // move spedd
+    {item: "MOVE_SPEED", off: false},
+    
     {item: "#00DD00", off: false}]
 
 // canvas context
@@ -59,7 +69,7 @@ var ctx;
 // canvas size
 var width;
 var height;
-var item_size = 20, item_size_1 = item_size - 1;
+var item_size = 21, item_size_1 = item_size - 1;
 var i, j;
 
 // ui items
@@ -495,14 +505,88 @@ function findGetParameter(parameterName) {
 }
 
 function initTiles() {
-    var image;
+    var image, canvas, dctx;
     for (i = 0; i < TILES.length; i++) {
         if (TILES[i]["item"].charAt(0) != '#') {
-            image = new Image(item_size, item_size);
-            image.src = TILES_FOLDER + TILES[i]["item"];
-            
             TILES[i]["image"] = true;
-            TILES[i]["item"] = image; // recycle field with src image
+            
+            // cache canvas
+            canvas = document.createElement("canvas");
+            canvas.height = item_size;
+            canvas.width = item_size;
+            
+            dctx = canvas.getContext("2d");
+            
+            switch (TILES[i]["item"]) {
+                case 'CHICKEN':
+                    var s = Math.floor(item_size_1 / 10);
+                    var tw = 8 * s;
+                    var s2 = 2 * s;
+                    
+                    dctx.fillStyle = TILES[0]["item"];
+                    dctx.fillRect(0, 0, item_size_1, item_size_1);
+                    
+                    dctx.fillStyle = "#e8e8e8";
+                    y = s;
+                    dctx.fillRect(s, y, tw, s);
+                    
+                    dctx.fillStyle = "#FFFFFF";
+                    y += s;
+                    dctx.fillRect(s, y, tw, s2);
+                    dctx.fillStyle = "#000000";
+                    dctx.fillRect(s, y, s2, s2);
+                    dctx.fillRect(item_size - s2 - s, y, s2, s2);
+                    
+                    dctx.fillStyle = "#c19343";
+                    y += s2;
+                    dctx.fillRect(s, y, tw, s2);
+                    
+                    dctx.fillStyle = "#967234";
+                    y += s2;
+                    dctx.fillRect(s, y, tw, s2);
+                    
+                    dctx.fillStyle = "#FFFFFF";
+                    y += s2;
+                    dctx.fillRect(s, y, tw, s);
+                    
+                    dctx.fillStyle = "#FF0000";
+                    dctx.fillRect(s2 + s2, y, s2 + s, s2);
+                    
+                    break;
+                case "PIG":
+                    var s110 = Math.floor(item_size_1 / 10);
+                    var s810 = 8 * s110;
+                    var s710 = 7 * s110;
+                    
+                    dctx.fillStyle = TILES[0]["item"];
+                    dctx.fillRect(0, 0, item_size_1, item_size_1);
+                    
+                    dctx.fillStyle = "#f0acab";
+                    dctx.fillRect(s110, parseInt(s110 + (s110 / 2)), s810, s710);
+                    
+                    break;
+                case "MOVE_SPEED":
+                    var s18 = Math.floor(item_size_1 / 8);
+                    var s28 = 2 * s18;
+                    var s38 = 3 * s18;
+                    var s58 = 5 * s18;
+                    var s68 = 6 * s18;
+                    var s78 = 7 * s18;
+                    
+                    dctx.fillStyle = TILES[0]["item"];
+                    dctx.fillRect(0, 0, item_size_1, item_size_1);
+                    
+                    dctx.fillStyle = "#616161";
+                    dctx.fillRect(s28, s18, s28, s78);
+                    dctx.fillRect(s58, s18, s28, s78);
+                    
+                    dctx.fillRect(s18, s68, s38, s28);
+                    dctx.fillRect(s58, s68, s38, s28);
+                    
+                    break;
+            }
+            
+            TILES[i]["item"] = canvas; // recycle field with canvas
         } else {
             TILES[i]["image"] = false;
         }
@@ -550,7 +634,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     if (cookie_server) {
         var opts = server.options;
         for (var opt, j = 0; opt = opts[j]; j++) {
-            console.log(opt.value);
             if (opt.value == cookie_server) {
                 server.selectedIndex = j;
                 break;
