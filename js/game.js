@@ -26,6 +26,8 @@ var lines = 0, columns = 0;
 var center_i = 0, center_j = 0;
 var head_i = 0, head_j = 0;
 
+var position, score;
+
 var offset_i_left = 0, offset_j_left = 0, offset_i_right = 0, offset_j_right = 0;
 
 var horizontal_items, vertical_items;
@@ -215,6 +217,9 @@ function connect(server) {
         document.getElementById('connect-form').style.display = "none";
         document.getElementById('navbar').style.display = "none";
         document.getElementById('footer').style.display = "none";
+        document.getElementById('beta').style.display = "none";
+        document.getElementById('ads').style.display = "none";
+        document.getElementById('social-buttons').style.display = "none";
 
         // init ui items
         leaderBoardTable = document.getElementById("leader-board-table");
@@ -244,6 +249,9 @@ function connect(server) {
         document.getElementById('connect-form').style.display = "block";
         document.getElementById('navbar').style.display = "block";
         document.getElementById('footer').style.display = "block";
+        document.getElementById('beta').style.display = "block";
+        document.getElementById('ads').style.display = "block";
+        document.getElementById('social-buttons').style.display = "block";
     });
 
     // Connection failed
@@ -410,16 +418,23 @@ function drawMobsAtMap() {
 }
 
 function drawStats(data) {
-    document.getElementById("snake-size").innerHTML = data.charCodeAt(1);
+    score = data.charCodeAt(1);
+    document.getElementById("snake-size").innerHTML = score;
 }
 
 function drawGameover() {
-    document.getElementById("connect-form-gameover").classList.remove("hidden");
+    var score_dom = document.getElementById("score");
+    score_dom.style.visibility = "visible";
+    score_dom.innerHTML = "Score: " + score + " (" + position + ")";
+    
+    document.getElementById("connect-form-gameover").style.visibility = "visible";
+    
     drawGrid(true);
 }
 
 function drawRanking(data) {
-    snakeRanking.innerHTML = data.charCodeAt(1) + "/" + data.charCodeAt(2);
+    position = data.charCodeAt(1) + "/" + data.charCodeAt(2)
+    snakeRanking.innerHTML = position;
 }
 
 function drawLeaderBoard(data) {
