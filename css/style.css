@@ -55,13 +55,16 @@ body > .container {
 }
 
 #game-stats {
+    color: #333333;
     display: none;
     position: absolute;
     right: 0;
     top: 0;
-    color: rgba(0, 0, 0, 0.75);
-    background-color: transparent;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
     padding: 0 10px;
+    margin-right: 10px;
+    margin-top: 10px;
 }
 
 #game-stats h3 {
@@ -69,10 +72,6 @@ body > .container {
     text-align: center;
     font-size: 14px;
     color: #000;
-}
-
-#game-stats table {
-    border-top: 1px solid #DDD;
 }
 
 #game-stats table td {
@@ -87,11 +86,12 @@ body > .container {
     position: absolute;
     left: 0;
     right: 0;
-    top: 30%;
+    top: 23%;
     background-color: rgba(0,0,0,0.75);
     width: 50%;
     margin: 0 auto;
-    padding: 50px;
+    padding-left: 50px;
+    padding-right: 50px;
 }
 
 .heading h1 {
@@ -100,6 +100,30 @@ body > .container {
     text-align: center;
     margin-bottom: 20px;
     color: #EEE;
+}
+
+#connect-form-gameover {
+    font-family: 'minecraft_evenings';
+    font-size: 28px;
+}
+
+.heading .message {
+    visibility: hidden;
+    text-align: center;
+    padding: 10px;
+    color: white;
+}
+
+#score {
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+}
+
+.social_buttons {
+    position: absolute;
+    z-index: 9999;
+    bottom: 20px;
+    right: 20px;
 }
 
 input[type="text"], input[type="password"], select {
@@ -111,9 +135,13 @@ input[type="text"], input[type="password"], select {
 	background: transparent;
 	border-left: 5px solid #0199e6;
 	border-radius: 0;
-	margin-bottom: 10px;
+	margin-bottom: 22px;
 	font-size: 14px;
 	font-weight: 500;
+}
+
+select {
+    margin-bottom: 0px;
 }
 
 option {
@@ -136,9 +164,23 @@ option {
   margin: 20px 0;
 }
 
+#connect-form .form {
+    display: table;
+}
+
+#connect-form .form > * {
+    display: table-cell;
+    vertical-align: top;
+}
+
+#connect-form .form .start {
+    padding-left: 20px;
+}
+
 .footer {
     position: absolute;
     bottom: 0;
+    left: 0;
     width: 100%;
     /* Set the fixed height of the footer here */
     height: 100px;
@@ -154,4 +196,20 @@ option {
 
 .footer p.text-muted {
     color: #CCC;
+}
+
+#ads {
+    position: absolute;
+    z-index: 99999;
+    top: calc(30% + 170px);
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+
+#beta {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 99999;
 }

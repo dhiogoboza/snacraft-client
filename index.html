@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="images/favicon.ico">
 
-    <title>Classic Snake</title>
+    <title>Snacraft Beta</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -34,12 +34,25 @@
   </head>
 
   <body>
-
+  
+    <!-- FB share button script
+    ================================================== -->
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = 'https://connect.facebook.net/pt_BR/sdk.js#xfbml=1&version=v2.12&appId=455862457934524&autoLogAppEvents=1';
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+    
+    <img src="img/beta.png" alt="Beta" id="beta"/>
+    
     <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" id="navbar">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Classic Snake</a>
+          <a class="navbar-brand" href="#">Snacraft</a>
         </div>
       </div>
     </nav>
@@ -72,26 +85,49 @@
     <!-- Begin page content -->
     <div class="container">
       <div class="heading" id="connect-form">
-        <h1 class="hidden" id="connect-form-gameover">Game Over</h1>
-        <input type="text" title="Nickname" name="nickname" placeholder="Nickname" id="nickname">
-        <select title="Server" id="server" required="">
-            <option value="secret-reaches-61045.herokuapp.com">secret-reaches-61045.herokuapp.com</option>
-            <option selected="selected" value="fast-island-17183.herokuapp.com">fast-island-17183.herokuapp.com</option>
-        </select>
-        <button class="btn btn-default btn-lg btn-block" type="submit" id="connect">START GAME</button>
+        <div id="connect-form-gameover" class="message message-hidden">Game Over</div>
+        <div class="form">
+            <div class="fields">
+                <input type="text" title="Nickname" name="nickname" placeholder="Nickname" id="nickname">
+                <select title="Server" id="server" required="">
+                    <option selected="selected" value="secret-reaches-61045.herokuapp.com">secret-reaches-61045.herokuapp.com</option>
+                    <option value="fast-island-17183.herokuapp.com">fast-island-17183.herokuapp.com</option>
+                </select>
+            </div>
+            <div class="start">
+                <button class="btn btn-default btn-lg btn-block" type="submit" id="connect">GO</button>
+            </div>
       </div>
+      <div class="message" id="score">
+        Score
+      </div>
+    </div>
+    
+    <div id="ads">
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- Snacraft main -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:300px;height:250px"
+             data-ad-client="ca-pub-0040129793981007"
+             data-ad-slot="7304875610"></ins>
+        <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
     </div>
 
     <footer class="footer" id="footer">
       <div class="container">
         <p class="text-muted">
-          © 2018 Classic Snake. All rights reserved.
+          © 2018 Snacraft. All rights reserved.
           | Design by <a href="http://w3layouts.com/" target="=_blank"> W3layouts </a>
         </p>
       </div>
     </footer>
-
-
+    
+    <div class="social_buttons" id="social-buttons">
+        <div class="fb-share-button" data-href="http://snacraft.tk" data-layout="button_count" data-size="small" data-mobile-iframe="true"><a target="_blank" href="http://snacraft.tk" class="fb-xfbml-parse-ignore">Compartilhar</a></div>
+    </div>
+    
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
