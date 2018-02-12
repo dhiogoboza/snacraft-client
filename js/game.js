@@ -662,8 +662,7 @@ function initTiles() {
                     
                     dctx.fillStyle = "#a5a5a5";
                     dctx.fillRect(s310, s810, s410, s110);
-                    
-                    ctx.drawImage(canvas, 210, 210, item_size_1, item_size_1);
+
                     break;
                 case "MOVE_SPEED":
                     var s18 = Math.floor(item_size_1 / 8);
