@@ -25,17 +25,18 @@ var lines = 0, columns = 0;
 
 var center_i = 0, center_j = 0;
 var head_i = 0, head_j = 0;
+var t_head_i = 0, t_head_j = 0;
+var head_canvas;
 
 var position, score;
 
 var offset_i_left = 0, offset_j_left = 0, offset_i_right = 0, offset_j_right = 0;
+var i_start, i_end, j_start, j_end;
 
 var horizontal_items, vertical_items;
 var focus_offset_i, focus_offset_j;
 
 var grid_color = "#D5D5D5";
-var TILES_FOLDER = "img/tiles/"
-
 var TILES = [
     // empty
     {item: "#DDDDDD", off: false},
@@ -276,6 +277,7 @@ function onMessage(event, onSuccess) {
             // Game data updated
             drawMobs(data);
             drawMobsAtMap();
+            drawHead();
             break;
         case 3:
             // Game stats updated
@@ -297,9 +299,28 @@ function onMessage(event, onSuccess) {
     }
 }
 
+function drawHead() {
+    var head_position = current_matrix[head_i - i_start][head_j - j_start];
+    head_position["i"] = -1;
+    ctx.drawImage(head_canvas["current"], head_position["x"], head_position["y"], item_size, item_size);
+}
+
 function drawMobs(mobs_data) {
-    head_i = mobs_data.charCodeAt(1);
-    head_j = mobs_data.charCodeAt(2);
+    t_head_i = mobs_data.charCodeAt(1);
+    t_head_j = mobs_data.charCodeAt(2);
+    
+    if (head_i < t_head_i) {
+        head_canvas["current"] = head_canvas["down"];
+    } else if (head_i > t_head_i) {
+        head_canvas["current"] = head_canvas["up"];
+    } else if (head_j < t_head_j) {
+        head_canvas["current"] = head_canvas["right"];
+    } else if (head_j > t_head_j) {
+        head_canvas["current"] = head_canvas["left"];
+    }
+    
+    head_i = t_head_i;
+    head_j = t_head_j;
 
     if (head_i - center_i < -focus_offset_i) {
         center_i--;
@@ -319,8 +340,8 @@ function drawMobs(mobs_data) {
 }
 
 function drawMobsAtMap() {
-    var i_start = center_i - offset_i_left;
-    var i_end = center_i + offset_i_right;
+    i_start = center_i - offset_i_left;
+    i_end = center_i + offset_i_right;
 
     if (i_start < 0) {
         i_start = 0;
@@ -330,8 +351,8 @@ function drawMobsAtMap() {
         i_start = lines - vertical_items;
     }
 
-    var j_start = center_j - offset_j_left;
-    var j_end = center_j + offset_j_right;
+    j_start = center_j - offset_j_left;
+    j_end = center_j + offset_j_right;
 
     if (j_start < 0) {
         j_start = 0;
@@ -673,6 +694,68 @@ function initTiles() {
             TILES[i]["image"] = false;
         }
     }
+    
+    var s15 = item_size_1 / 5;
+    var s25 = 2 * s15;
+    var s35 = 3 * s15;
+    var s45 = 4 * s15;
+    
+    var eyes_color = "#000000";
+    
+    // init head canvas
+    head_canvas = {}
+    
+    // head up
+    canvas = document.createElement("canvas");
+    canvas.height = item_size;
+    canvas.width = item_size;
+    
+    dctx = canvas.getContext("2d");
+    
+    dctx.fillStyle = eyes_color;
+    dctx.fillRect(s15, 0, s15, s25);
+    dctx.fillRect(s35, 0, s15, s25);
+
+    head_canvas["up"] = canvas;
+    
+    // head down
+    canvas = document.createElement("canvas");
+    canvas.height = item_size;
+    canvas.width = item_size;
+    
+    dctx = canvas.getContext("2d");
+    
+    dctx.fillStyle = eyes_color;
+    dctx.fillRect(s15, s35, s15, s25);
+    dctx.fillRect(s35, s35, s15, s25);
+    
+    head_canvas["down"] = canvas;
+    
+    // head left
+    canvas = document.createElement("canvas");
+    canvas.height = item_size;
+    canvas.width = item_size;
+    
+    dctx = canvas.getContext("2d");
+    
+    dctx.fillStyle = eyes_color;
+    dctx.fillRect(0, s15, s25, s15);
+    dctx.fillRect(0, s35, s25, s15);
+
+    head_canvas["left"] = canvas;
+    
+    // head right
+    canvas = document.createElement("canvas");
+    canvas.height = item_size;
+    canvas.width = item_size;
+    
+    dctx = canvas.getContext("2d");
+    
+    dctx.fillStyle = eyes_color;
+    dctx.fillRect(s35, s15, s25, s15);
+    dctx.fillRect(s35, s35, s25, s15);
+
+    head_canvas["right"] = canvas;
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
