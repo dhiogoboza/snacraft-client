@@ -55,12 +55,12 @@ body > .container {
 }
 
 #game-stats {
-    color: #333333;
+    color: #FFFFFF;
     display: none;
     position: absolute;
     right: 0;
     top: 0;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.4);
     border-radius: 3px;
     padding: 0 10px;
     margin-right: 10px;
@@ -71,7 +71,6 @@ body > .container {
     font-family: 'Press Start 2P', cursive;
     text-align: center;
     font-size: 14px;
-    color: #000;
 }
 
 #game-stats table td {
