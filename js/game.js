@@ -180,23 +180,6 @@ function initMatrix(matrix_data) {
         matrix_mobs[i] = line_snakes;
         matrix[i] = line;
     }
-    
-    // clear last line and column
-    /*var last = current_matrix[vertical_items - 1][0];
-    console.log(last)
-    var x = last["x"] + item_size;
-    var y = 0;
-    
-    for (i = 0; i < vertical_items + 1; i++) {
-        ctx.fillStyle = grid_color;
-        ctx.fillRect(x, y, item_size, item_size);
-        
-        ctx.fillStyle = TILES[0]["item"];
-        ctx.fillRect(x, y, item_size_1, item_size_1);
-        
-        y += item_size;
-    }*/
-    
 }
 
 function connect(server) {
@@ -366,7 +349,7 @@ function drawMobsAtMap() {
             if (matrix_mobs[i][j] == 0) {
                 if (matrix[i][j] != current["i"]) {
                     tile = TILES[matrix[i][j]];
-                    if (tile["image"] == true) {
+                    if (tile["image"]) {
                         ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
                     } else {
                         previous = TILES[current["i"]];
@@ -390,7 +373,7 @@ function drawMobsAtMap() {
                 if (matrix_mobs[i][j] != current["i"]) {
                     tile = TILES[matrix_mobs[i][j]];
                     
-                    if (tile["image"] == true) {
+                    if (tile["image"]) {
                         ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
                     } else {
                         previous = TILES[current["i"]];
@@ -538,6 +521,9 @@ function initTiles() {
                     var tw = 8 * s;
                     var s2 = 2 * s;
                     
+                    dctx.fillStyle = grid_color;
+                    dctx.fillRect(0, 0, item_size, item_size);
+                    
                     dctx.fillStyle = TILES[0]["item"];
                     dctx.fillRect(0, 0, item_size_1, item_size_1);
                     
@@ -570,15 +556,93 @@ function initTiles() {
                     break;
                 case "PIG":
                     var s110 = Math.floor(item_size_1 / 10);
-                    var s810 = 8 * s110;
+                    var s210 = 2 * s110;
+                    var s310 = 3 * s110;
+                    var s410 = 4 * s110;
+                    var s610 = 6 * s110;
                     var s710 = 7 * s110;
+                    var s810 = 8 * s110;
+                    
+                    var top = parseInt(s110 + (s110 / 2));
+                    
+                    dctx.fillStyle = grid_color;
+                    dctx.fillRect(0, 0, item_size, item_size);
                     
                     dctx.fillStyle = TILES[0]["item"];
                     dctx.fillRect(0, 0, item_size_1, item_size_1);
                     
+                    // bg
                     dctx.fillStyle = "#f0acab";
-                    dctx.fillRect(s110, parseInt(s110 + (s110 / 2)), s810, s710);
+                    dctx.fillRect(s110, top, s810, s710);
                     
+                    // ear
+                    dctx.fillStyle = "#d58181";
+                    dctx.fillRect(s210, top, s110, s210);
+                    
+                    // eyes
+                    dctx.fillStyle = "#000000";
+                    dctx.fillRect(s110, s410, s210, s210);
+                    dctx.fillRect(s710, s410, s210, s210);
+                    
+                    dctx.fillStyle = "#FFFFFF";
+                    dctx.fillRect(s310, s410, s110, s210);
+                    dctx.fillRect(s610, s410, s110, s210);
+                    
+                    // nose
+                    dctx.fillStyle = "#965151";
+                    dctx.fillRect(s410, s710, s110, s110);
+                    dctx.fillRect(s610, s710, s110, s110);
+                    break;
+                case "COW":
+                    var s110 = Math.floor(item_size_1 / 10);
+                    var s210 = 2 * s110;
+                    var s310 = 3 * s110;
+                    var s410 = 4 * s110;
+                    var s510 = 5 * s110;
+                    var s610 = 6 * s110;
+                    var s710 = 7 * s110;
+                    var s810 = 8 * s110;
+                    
+                    var top = parseInt(s110 + (s110 / 2));
+                    
+                    dctx.fillStyle = grid_color;
+                    dctx.fillRect(0, 0, item_size, item_size);
+                    
+                    dctx.fillStyle = TILES[0]["item"];
+                    dctx.fillRect(0, 0, item_size_1, item_size_1);
+                    
+                    // bg
+                    dctx.fillStyle = "#573800";
+                    dctx.fillRect(s110, top, s810, s710);
+                    
+                    // white
+                    dctx.fillStyle = "#e7e7e7";
+                    dctx.fillRect(s410, top, s210, s210);
+                    dctx.fillRect(s410, top, s310, s110);
+                    dctx.fillRect(s410, top, s110, s310);
+                    
+                    // eyes
+                    dctx.fillStyle = "#FFFFFF";
+                    dctx.fillRect(s110, s410, s210, s210);
+                    dctx.fillRect(s710, s410, s210, s210);
+                    
+                    dctx.fillStyle = "#000000";
+                    dctx.fillRect(s110, s510, s110, s110);
+                    dctx.fillRect(s810, s510, s110, s110);
+                    
+                    // nose
+                    dctx.fillStyle = "#FFFFFF";
+                    dctx.fillRect(s410, s610, s210, s110);
+                    dctx.fillRect(s210, s710, s510 + (s110/2), s210);
+                    
+                    dctx.fillStyle = "#000000";
+                    dctx.fillRect(s310, s710, s110, s110);
+                    dctx.fillRect(s610, s710, s110, s110);
+                    
+                    dctx.fillStyle = "#a5a5a5";
+                    dctx.fillRect(s310, s810, s410, s110);
+                    
+                    ctx.drawImage(canvas, 210, 210, item_size_1, item_size_1);
                     break;
                 case "MOVE_SPEED":
                     var s18 = Math.floor(item_size_1 / 8);
@@ -587,6 +651,9 @@ function initTiles() {
                     var s58 = 5 * s18;
                     var s68 = 6 * s18;
                     var s78 = 7 * s18;
+                    
+                    dctx.fillStyle = grid_color;
+                    dctx.fillRect(0, 0, item_size, item_size);
                     
                     dctx.fillStyle = TILES[0]["item"];
                     dctx.fillRect(0, 0, item_size_1, item_size_1);
