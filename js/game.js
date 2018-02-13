@@ -30,6 +30,8 @@ var head_canvas;
 
 var position, score;
 
+var eyes_color = "#000000";
+
 var offset_i_left = 0, offset_j_left = 0, offset_i_right = 0, offset_j_right = 0;
 var i_start, i_end, j_start, j_end;
 
@@ -59,12 +61,16 @@ var TILES = [
     {item: "COW", off: false},
     
     // corpse
-    {item: "#000080", off: false},
+    {item: "XP1", off: false},
+    {item: "XP2", off: false},
+    {item: "XP3", off: false},
+    {item: "XP4", off: false},
     
-    // move spedd
+    // move speed
     {item: "MOVE_SPEED", off: false},
     
-    {item: "#00DD00", off: false}]
+    // snake color
+    {item: "SNAKE1", off: false}]
 
 // canvas context
 var ctx;
@@ -72,7 +78,7 @@ var ctx;
 // canvas size
 var width;
 var height;
-var item_size = 21, item_size_1 = item_size - 1;
+var item_size = 25, item_size_1 = item_size - 1;
 var i, j;
 
 // ui items
@@ -525,6 +531,7 @@ function findGetParameter(parameterName) {
 
 function initTiles() {
     var image, canvas, dctx;
+    var xp1_index, xp2_index;
     for (i = 0; i < TILES.length; i++) {
         if (TILES[i]["item"].charAt(0) != '#') {
             TILES[i]["image"] = true;
@@ -535,18 +542,38 @@ function initTiles() {
             canvas.width = item_size;
             
             dctx = canvas.getContext("2d");
+            dctx.fillStyle = grid_color;
+            dctx.fillRect(0, 0, item_size, item_size);
+            
+            dctx.fillStyle = TILES[0]["item"];
+            dctx.fillRect(0, 0, item_size_1, item_size_1);
+            
+            var s18 = Math.floor(item_size_1 / 8);
+            var s28 = 2 * s18;
+            var s38 = 3 * s18;
+            var s48 = 4 * s18;
+            var s58 = 5 * s18;
+            var s68 = 6 * s18;
+            var s78 = 7 * s18;
+            var s88 = 8 * s18;
+            var m8 = (s18/2);
+            
+            var s110 = Math.floor(item_size_1 / 10);
+            var s210 = 2 * s110;
+            var s310 = 3 * s110;
+            var s410 = 4 * s110;
+            var s510 = 5 * s110;
+            var s610 = 6 * s110;
+            var s710 = 7 * s110;
+            var s810 = 8 * s110;
+            
+            var top = parseInt(s110 + (s110 / 2));
             
             switch (TILES[i]["item"]) {
                 case 'CHICKEN':
                     var s = Math.floor(item_size_1 / 10);
                     var tw = 8 * s;
                     var s2 = 2 * s;
-                    
-                    dctx.fillStyle = grid_color;
-                    dctx.fillRect(0, 0, item_size, item_size);
-                    
-                    dctx.fillStyle = TILES[0]["item"];
-                    dctx.fillRect(0, 0, item_size_1, item_size_1);
                     
                     dctx.fillStyle = "#e8e8e8";
                     y = s;
@@ -555,9 +582,11 @@ function initTiles() {
                     dctx.fillStyle = "#FFFFFF";
                     y += s;
                     dctx.fillRect(s, y, tw, s2);
+                    
+                    // eyes
                     dctx.fillStyle = "#000000";
                     dctx.fillRect(s, y, s2, s2);
-                    dctx.fillRect(item_size - s2 - s, y, s2, s2);
+                    dctx.fillRect(3 * s2 + s, y, s2, s2);
                     
                     dctx.fillStyle = "#c19343";
                     y += s2;
@@ -576,22 +605,6 @@ function initTiles() {
                     
                     break;
                 case "PIG":
-                    var s110 = Math.floor(item_size_1 / 10);
-                    var s210 = 2 * s110;
-                    var s310 = 3 * s110;
-                    var s410 = 4 * s110;
-                    var s610 = 6 * s110;
-                    var s710 = 7 * s110;
-                    var s810 = 8 * s110;
-                    
-                    var top = parseInt(s110 + (s110 / 2));
-                    
-                    dctx.fillStyle = grid_color;
-                    dctx.fillRect(0, 0, item_size, item_size);
-                    
-                    dctx.fillStyle = TILES[0]["item"];
-                    dctx.fillRect(0, 0, item_size_1, item_size_1);
-                    
                     // bg
                     dctx.fillStyle = "#f0acab";
                     dctx.fillRect(s110, top, s810, s710);
@@ -615,23 +628,6 @@ function initTiles() {
                     dctx.fillRect(s610, s710, s110, s110);
                     break;
                 case "COW":
-                    var s110 = Math.floor(item_size_1 / 10);
-                    var s210 = 2 * s110;
-                    var s310 = 3 * s110;
-                    var s410 = 4 * s110;
-                    var s510 = 5 * s110;
-                    var s610 = 6 * s110;
-                    var s710 = 7 * s110;
-                    var s810 = 8 * s110;
-                    
-                    var top = parseInt(s110 + (s110 / 2));
-                    
-                    dctx.fillStyle = grid_color;
-                    dctx.fillRect(0, 0, item_size, item_size);
-                    
-                    dctx.fillStyle = TILES[0]["item"];
-                    dctx.fillRect(0, 0, item_size_1, item_size_1);
-                    
                     // bg
                     dctx.fillStyle = "#573800";
                     dctx.fillRect(s110, top, s810, s710);
@@ -665,25 +661,55 @@ function initTiles() {
 
                     break;
                 case "MOVE_SPEED":
-                    var s18 = Math.floor(item_size_1 / 8);
-                    var s28 = 2 * s18;
-                    var s38 = 3 * s18;
-                    var s58 = 5 * s18;
-                    var s68 = 6 * s18;
-                    var s78 = 7 * s18;
-                    
-                    dctx.fillStyle = grid_color;
-                    dctx.fillRect(0, 0, item_size, item_size);
-                    
-                    dctx.fillStyle = TILES[0]["item"];
-                    dctx.fillRect(0, 0, item_size_1, item_size_1);
-                    
                     dctx.fillStyle = "#616161";
                     dctx.fillRect(s28, s18, s28, s78);
                     dctx.fillRect(s58, s18, s28, s78);
                     
                     dctx.fillRect(s18, s68, s38, s28);
                     dctx.fillRect(s58, s68, s38, s28);
+                    
+                    break;
+                case "XP1":
+                    xp1_index = i;
+                    drawCircle(dctx, s18, "#9e9e00", "#bfbf00", "#fefe00", true);
+                    break;
+                case "XP2":
+                    xp2_index = i;
+                    drawCircle(dctx, s18, "#126e00", "#1fbf00", "#2afe00", true);
+                    break;
+                case "XP3":
+                    x = item_size_1 * 0.1;
+                    y = item_size_1 * 0.1;
+                    
+                    w = item_size_1 * 0.8;
+                    h = item_size_1 * 0.8;
+                    
+                    dctx.drawImage(TILES[xp1_index].item, x, y, w, h);
+                    break;
+                case "XP4":
+                    x = item_size_1 * 0.1;
+                    y = item_size_1 * 0.1;
+                    
+                    w = item_size_1 * 0.8;
+                    h = item_size_1 * 0.8;
+                    
+                    dctx.drawImage(TILES[xp2_index].item, x, y, w, h);
+                    break;
+                case "SNAKE1":
+                    x = -(s18);
+                    y = -(s18);
+                    
+                    w = item_size_1 + s28;
+                    h = item_size_1 + s28;
+                    
+                    var canvas_snake = document.createElement("canvas");
+                    canvas_snake.height = item_size;
+                    canvas_snake.width = item_size;
+                    
+                    var dctx_snake = canvas_snake.getContext("2d");
+                    drawCircle(dctx_snake, s18, "#006064", "#00BCD4", "#B2EBF2", false);
+                    
+                    dctx.drawImage(canvas_snake, x, y, w, h);
                     
                     break;
             }
@@ -699,10 +725,9 @@ function initTiles() {
     var s35 = 3 * s15;
     var s45 = 4 * s15;
     
-    var eyes_color = "#000000";
-    
     // init head canvas
     head_canvas = {}
+    
     
     // head up
     canvas = document.createElement("canvas");
@@ -712,8 +737,8 @@ function initTiles() {
     dctx = canvas.getContext("2d");
     
     dctx.fillStyle = eyes_color;
-    dctx.fillRect(s15, 0, s15, s25);
-    dctx.fillRect(s35, 0, s15, s25);
+    dctx.fillRect(s15, s15, s15, s15);
+    dctx.fillRect(s35, s15, s15, s15);
 
     head_canvas["up"] = canvas;
     
@@ -725,8 +750,8 @@ function initTiles() {
     dctx = canvas.getContext("2d");
     
     dctx.fillStyle = eyes_color;
-    dctx.fillRect(s15, s35, s15, s25);
-    dctx.fillRect(s35, s35, s15, s25);
+    dctx.fillRect(s15, s35, s15, s15);
+    dctx.fillRect(s35, s35, s15, s15);
     
     head_canvas["down"] = canvas;
     
@@ -738,8 +763,8 @@ function initTiles() {
     dctx = canvas.getContext("2d");
     
     dctx.fillStyle = eyes_color;
-    dctx.fillRect(0, s15, s25, s15);
-    dctx.fillRect(0, s35, s25, s15);
+    dctx.fillRect(s15, s15, s15, s15);
+    dctx.fillRect(s15, s35, s15, s15);
 
     head_canvas["left"] = canvas;
     
@@ -751,10 +776,58 @@ function initTiles() {
     dctx = canvas.getContext("2d");
     
     dctx.fillStyle = eyes_color;
-    dctx.fillRect(s35, s15, s25, s15);
-    dctx.fillRect(s35, s35, s25, s15);
+    dctx.fillRect(s35, s15, s15, s15);
+    dctx.fillRect(s35, s35, s15, s15);
 
     head_canvas["right"] = canvas;
+}
+
+function drawCircle(dctx, s18, c1, c2, c3, radius) {
+    var s28 = 2 * s18;
+    var s38 = 3 * s18;
+    var s48 = 4 * s18;
+    var s58 = 5 * s18;
+    var s68 = 6 * s18;
+    var s78 = 7 * s18;
+    var s88 = 8 * s18;
+    var m8 = (s18/2);
+    
+    // center 2
+    dctx.fillStyle = c1;
+    dctx.fillRect(s18, s18, s68, s68);
+    
+    // center 1
+    dctx.fillStyle = c2;
+    dctx.fillRect(s28, s28, s48, s48);
+    
+    // center
+    dctx.fillStyle = c3;
+    dctx.fillRect(s38, s38, s28, s28);
+    
+    if (radius) {
+        // cutting
+        dctx.fillStyle = TILES[0]["item"];
+        
+        // top left
+        dctx.fillRect(0, 0, s28 + m8, s18 + m8);
+        dctx.fillRect(0, 0, s28, s28);
+        dctx.fillRect(0, 0, s18 + m8, s28 + m8);
+        
+        // top right
+        dctx.fillRect(s68 + m8, 0, s18 + m8, s28 + m8);
+        dctx.fillRect(s68, 0, s28, s28);
+        dctx.fillRect(s58 + m8, 0, s28 + m8, s18 + m8);
+         
+        // bottom left
+        dctx.fillRect(0, s58 + m8, s18 + m8, s28 + m8);
+        dctx.fillRect(0, s68, s28, s28);
+        dctx.fillRect(0, s68 + m8, s28 + m8, s18 + m8);
+        
+        // bottom right
+        dctx.fillRect(s68 + m8, s58 + m8, s18 + m8, s28 + m8);
+        dctx.fillRect(s68, s68, s28, s28);
+        dctx.fillRect(s58 + m8, s68 + m8, s28 + m8, s18 + m8);
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
