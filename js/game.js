@@ -227,7 +227,7 @@ function connect(server) {
         if (!nickname) {
             nickname = 'snake-' + parseInt(Math.random() * 1e5).toString();
         }
-        socket.send(nickname);
+        socket.send(nickname + "," + current_avatar_index);
         document.getElementById("snake-nickname").innerHTML = nickname;
     });
 
