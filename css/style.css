@@ -85,7 +85,7 @@ body > .container {
     position: absolute;
     left: 0;
     right: 0;
-    top: 23%;
+    top: 22%;
     background-color: rgba(0,0,0,0.75);
     width: 50%;
     margin: 0 auto;
@@ -116,6 +116,7 @@ body > .container {
 #score {
     font-family: 'Roboto', sans-serif;
     font-size: 20px;
+    padding-top: 0px;
 }
 
 .social_buttons {
@@ -165,6 +166,7 @@ option {
 
 #connect-form .form {
     display: table;
+    width: 100%;
 }
 
 #connect-form .form > * {
@@ -173,7 +175,24 @@ option {
 }
 
 #connect-form .form .start {
-    padding-left: 20px;
+    width: 95px;
+}
+
+#connect-form .fields > * {
+    display: inline-block;
+    width: 48%;
+    margin-right: 3px;
+    height: 40px;
+}
+
+#connect-form .fields #avatar-chooser {
+    width: 100%;
+    padding-right: 14px;
+    text-align: center;
+}
+
+#connect-form .fields #avatar-chooser #avatar {
+    display: inline-block;
 }
 
 .footer {
@@ -187,7 +206,7 @@ option {
 
 .footer > .container {
     font-weight: bold;
-    padding-top: 30px;
+    padding-top: 10px;
     padding-right: 15px;
     padding-left: 15px;
 }
