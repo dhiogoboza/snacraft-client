@@ -741,6 +741,7 @@ function initTiles() {
     dctx.fillRect(s35, s15, s15, s15);
 
     head_canvas["up"] = canvas;
+    head_canvas["current"] = head_canvas["up"];
     
     // head down
     canvas = document.createElement("canvas");
