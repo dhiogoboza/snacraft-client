@@ -26,7 +26,7 @@ body > .container {
 }
 
 .navbar-inverse {
-	background-color: rgba(0, 0, 0, 0.5);
+	background-color: rgba(0, 0, 0, 0.0);
 	border: none;
 	margin-bottom: 0;
 	padding: 0;
@@ -36,8 +36,8 @@ body > .container {
 .navbar-inverse .navbar-brand {
 	color: #FFF;
 	font-family: 'minecraft_evenings';
-	font-size: 38px;
-	padding-top: 50px;
+	font-size: 58px;
+	padding-top: 70px;
 	padding-bottom: 40px;
 }
 
@@ -183,7 +183,6 @@ option {
     width: 100%;
     /* Set the fixed height of the footer here */
     height: 100px;
-    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .footer > .container {
@@ -200,7 +199,7 @@ option {
 #ads {
     position: absolute;
     z-index: 99999;
-    top: calc(30% + 170px);
+    top: calc(23% + 210px);
     left: 0;
     width: 100%;
     text-align: center;
