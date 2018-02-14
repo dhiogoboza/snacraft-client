@@ -92,7 +92,6 @@ function randomInt(min, max) {
 
 function drawGrid(only_header) {
     var y = 0, x;
-    var last_y = 0;
     
     var $navbar = $("#navbar");
     var $footer = $("#footer");
@@ -101,19 +100,23 @@ function drawGrid(only_header) {
     var header_height = 5 * item_size;
     var footer_start = (vertical_items - 6) * item_size;
     
+    var head_colors = ["#323232", "#373737", "#3a3a3a", "#3f3f3f", "#474747"];
+    var grass_colors = ["#1a3516", "#183114", "#223d18", "#274018", "#3e532c"];
+    var clay_colors = ["#150b04", "#1d1308", "#2c1e15", "#38281b", "#3b2a1d"];
+    
     for (i = 0; i < vertical_items + 1; i++) {
         x = 0;
         for (j = 0; j < horizontal_items + 1; j++) {
             if (y >= footer_start) {
                 if (footer_first) {
-                    ctx.fillStyle = TILES[randomInt(11, 15)]["item"];
+                    ctx.fillStyle = grass_colors[randomInt(0, 4)];
                     ctx.fillRect(x, y, item_size, item_size);
                 } else {
-                    ctx.fillStyle = TILES[randomInt(6, 10)]["item"];
+                    ctx.fillStyle = clay_colors[randomInt(0, 4)];
                     ctx.fillRect(x, y, item_size, item_size);
                 }
             } else if (y <= header_height) {
-                ctx.fillStyle = TILES[randomInt(1, 5)]["item"];
+                ctx.fillStyle = head_colors[randomInt(0, 4)];
                 ctx.fillRect(x, y, item_size, item_size);
             } else if (only_header) {
                 break;
@@ -129,16 +132,10 @@ function drawGrid(only_header) {
             footer_first = false;
         }
         
-        if (y <= header_height) {
-            last_y = y + item_size;
-        }
         
         y += item_size;
         
     }
-
-    $footer.height((height - footer_start) + "px");
-    $navbar.height(last_y + "px");
 }
 
 function resetCurrentMatrix() {
