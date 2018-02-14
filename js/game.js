@@ -67,10 +67,11 @@ var TILES = [
     {item: "XP4", off: false},
     
     // move speed
-    {item: "MOVE_SPEED", off: false},
+    {item: "MOVE_SPEED", off: false}
     
     // snake color
-    {item: "SNAKE1", off: false}]
+    //{item: "SNAKE1", off: false}
+]
 
 // canvas context
 var ctx;
@@ -85,6 +86,9 @@ var i, j;
 var leaderBoardTable;
 var tBodyElem;
 var snakeRanking;
+
+var avatar_ctx;
+var avatar_canvas;
 
 function randomInt(min, max) {
     return Math.floor(Math.random()*(max-min+1)+min);
@@ -254,12 +258,10 @@ function connect(server) {
     });
 
     // Listen for messages
-    socket.addEventListener('message', function (event) {
-        onMessage(event);
-    });
+    socket.addEventListener('message', onMessage);
 }
 
-function onMessage(event, onSuccess) {
+function onMessage(event) {
     var data = null;
     if (event.data instanceof ArrayBuffer) {
         data = new TextDecoder().decode(new Uint8Array(event.data));
@@ -720,6 +722,10 @@ function initTiles() {
         }
     }
     
+    updateHead();
+}
+
+function updateHead() {
     var s15 = item_size_1 / 5;
     var s25 = 2 * s15;
     var s35 = 3 * s15;
@@ -728,13 +734,12 @@ function initTiles() {
     // init head canvas
     head_canvas = {}
     
-    
     // head up
-    canvas = document.createElement("canvas");
+    var canvas = document.createElement("canvas");
     canvas.height = item_size;
     canvas.width = item_size;
     
-    dctx = canvas.getContext("2d");
+    var dctx = canvas.getContext("2d");
     
     dctx.fillStyle = eyes_color;
     dctx.fillRect(s15, s15, s15, s15);
@@ -830,50 +835,6 @@ function drawCircle(dctx, s18, c1, c2, c3, radius) {
     }
 }
 
-function initAvatarChooser() {
-    var c = document.getElementById("avatar");
-    var items = 10;
-    
-    var s = 0.2 * item_size;
-    
-    c.height = 1.0 * item_size + 2 * s;
-    c.width = items * item_size + 2 * s;;
-    
-    var ctx = c.getContext("2d");
-    ctx.fillStyle = TILES[0].item;
-    ctx.fillRect(0, 0, c.width, c.height);
-    
-    ctx.strokeStyle = grid_color;
-    
-    ctx.beginPath();
-    ctx.moveTo(0, s);
-    ctx.lineTo(c.width, s);
-    ctx.stroke();
-    
-    ctx.beginPath();
-    ctx.moveTo(0, s + item_size);
-    ctx.lineTo(c.width, s + item_size);
-    ctx.stroke();
-    
-    x = s;
-    for (i = 0; i < items; i++) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, c.height);
-        ctx.stroke();
-        
-        if (i > 1 && i < 8) {
-            ctx.drawImage(TILES[TILES.length - 1].item, x, s, item_size_1, item_size_1);
-            
-            if (i == 7) {
-                ctx.drawImage(head_canvas["right"], x, s, item_size_1, item_size_1);
-            }
-        }
-        
-        x += item_size;
-    }
-}
-
 document.addEventListener("DOMContentLoaded", function(event) {
     var c = document.getElementById("canvas");
 
@@ -938,6 +899,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             connect(server);
         }
     };
+    
+    avatar_canvas = document.getElementById("avatar");
+    avatar_ctx = avatar_canvas.getContext("2d");
     
     initAvatarChooser();
     

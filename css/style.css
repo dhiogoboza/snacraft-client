@@ -135,13 +135,9 @@ input[type="text"], input[type="password"], select {
 	background: transparent;
 	border-left: 5px solid #0199e6;
 	border-radius: 0;
-	margin-bottom: 22px;
+	margin-bottom: 10px;
 	font-size: 14px;
 	font-weight: 500;
-}
-
-select {
-    margin-bottom: 0px;
 }
 
 option {
@@ -189,10 +185,24 @@ option {
     width: 100%;
     padding-right: 14px;
     text-align: center;
+    font-size: 25px;
+    user-select: none; 
+}
+
+#connect-form .fields #avatar-chooser i {
+    vertical-align: top;
+    margin-top: 5px;
+    color: #0199e6;
+    cursor: pointer;
+}
+
+#connect-form .fields #avatar-chooser i:active {
+    color: #FFFFFF;
 }
 
 #connect-form .fields #avatar-chooser #avatar {
     display: inline-block;
+    border: 1px solid #0199e6;
 }
 
 .footer {

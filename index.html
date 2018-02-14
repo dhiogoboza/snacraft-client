@@ -19,9 +19,12 @@
         <!-- Custom styles for this template -->
         <link href="css/style.css" rel="stylesheet">
         <!-- Fonts -->
-        <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700"	   type="text/css" media="all">
+        <!--<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700"	   type="text/css" media="all">-->
         <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,100,300,500" type="text/css" media="all">
         <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Press+Start+2P"		   type="text/css" media="all">
+        
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         
         <!-- //Fonts -->
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -91,7 +94,9 @@
                     </select>
                     
                     <div id="avatar-chooser">
-                        <canvas id="avatar" />
+                        <i class="fa fa-arrow-left"></i>
+                        <canvas id="avatar" height="40"> </canvas>
+                        <i class="fa fa-arrow-right"></i>
                     </div>
                 </div>
                 <div class="start">
@@ -141,5 +146,6 @@
         <script src="js/ie10-viewport-bug-workaround.js"></script>
         <!-- Game script -->
         <script src="js/game.js"></script>
+        <script src="js/avatar.js"></script>
     </body>
 </html>
