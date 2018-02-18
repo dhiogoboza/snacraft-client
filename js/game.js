@@ -28,12 +28,14 @@ var head_i = 0, head_j = 0;
 var t_head_i = 0, t_head_j = 0;
 var head_canvas;
 
+var data = null;
+
 var position, score;
 
 var eyes_color = "#000000";
 
 var offset_i_left = 0, offset_j_left = 0, offset_i_right = 0, offset_j_right = 0;
-var i_start, i_end, j_start, j_end;
+var i_start, i_end, j_start = 0, j_end = 0;
 
 var horizontal_items, vertical_items;
 var focus_offset_i, focus_offset_j;
@@ -262,48 +264,51 @@ function connect(server) {
 }
 
 function onMessage(event) {
-    var data = null;
+    
+    // FIXME: handle blob event.data type
+    
     if (event.data instanceof ArrayBuffer) {
-        data = new TextDecoder().decode(new Uint8Array(event.data));
+        data = new Uint8Array(event.data);
+        switch (data[0]) {
+            case 1:
+                // Head
+                head_i = data[1];
+                head_j = data[2];
+
+                center_i = head_i;
+                center_j = head_j;
+            case 2:
+                // Game data updated
+                drawMobs(data);
+                drawMobsAtMap();
+                drawHead();
+                break;
+        }
     } else if (typeof event.data === "string") {
         data = event.data;
-    }
-    // FIXME: handle blob event.data type
-    switch (data.charCodeAt(0)) {
-        case 0:
-            // Init loop
-            initMatrix(data);
-            break;
-        case 1:
-            // Head
-            head_i = data.charCodeAt(1);
-            head_j = data.charCodeAt(2);
-
-            center_i = head_i;
-            center_j = head_j;
-        case 2:
-            // Game data updated
-            drawMobs(data);
-            drawMobsAtMap();
-            drawHead();
-            break;
-        case 3:
-            // Game stats updated
-            drawStats(data);
-            break;
-        case 4:
-            // Game over
-            socket.close();
-            drawGameover();
-            break;
-        case 5:
-            // Ranking
-            drawRanking(data);
-            break;
-        case 6:
-            // Leader board
-            drawLeaderBoard(data);
-            break;
+        switch (data.charCodeAt(0)) {
+            case 0:
+                // Init loop
+                initMatrix(data);
+                break;
+            case 3:
+                // Game stats updated
+                drawStats(data);
+                break;
+            case 4:
+                // Game over
+                socket.close();
+                drawGameover();
+                break;
+            case 5:
+                // Ranking
+                drawRanking(data);
+                break;
+            case 6:
+                // Leader board
+                drawLeaderBoard(data);
+                break;
+        }
     }
 }
 
@@ -314,8 +319,8 @@ function drawHead() {
 }
 
 function drawMobs(mobs_data) {
-    t_head_i = mobs_data.charCodeAt(1);
-    t_head_j = mobs_data.charCodeAt(2);
+    t_head_i = mobs_data[1];//.charCodeAt(1);
+    t_head_j = mobs_data[2];//.charCodeAt(2);
     
     if (head_i < t_head_i) {
         head_canvas["current"] = head_canvas["down"];
@@ -343,7 +348,9 @@ function drawMobs(mobs_data) {
     }
 
     for (var i = 3; i < mobs_data.length; i++) {
-        matrix_mobs[mobs_data.charCodeAt(i)][mobs_data.charCodeAt(++i)] = mobs_data.charCodeAt(++i);
+        //console.log("[" + mobs_data.charCodeAt(i) + "][" + mobs_data.charCodeAt(i + 1) + "]")
+        //matrix_mobs[mobs_data.charCodeAt(i)][mobs_data.charCodeAt(++i)] = mobs_data.charCodeAt(++i);
+        matrix_mobs[mobs_data[i]][mobs_data[++i]] = mobs_data[++i];
     }
 }
 
