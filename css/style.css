@@ -237,10 +237,15 @@ option {
 /* Beta Ribbon */
 
 .ribbon {
-   width: 172px;
-   position: absolute;
-   left: 420px;
-   top: 48px;
+   z-index: 9999;
+   width: 256px;
+   position: fixed;
+   top: 30px;
+   left: -90px;
+   -webkit-transform: rotate(-45deg);
+   -moz-transform: rotate(-45deg);
+   -ms-transform: rotate(-45deg);
+   transform: rotate(-45deg);
    text-align: center;
    font-size: 16px!important;
    background: #3c8ea2;
@@ -261,46 +266,6 @@ option {
    text-shadow: black 0 1px 0;
    margin:0px;
    padding: 15px 10px;
-   }
-.ribbon:before, .ribbon:after {
-   content: '';
-   position: absolute;
-   display: block;
-   bottom: -1em;
-   border: 1.5em solid #3c8ea2;
-   z-index: -1;
-   }
-.ribbon:before {
-   left: -2em;
-   border-right-width: 1.5em;
-   border-left-color: transparent;
-   -webkit-box-shadow: rgba(000,000,000,0.4) 1px 1px 1px;
-   -moz-box-shadow: rgba(000,000,000,0.4) 1px 1px 1px;
-   box-shadow: rgba(000,000,000,0.4) 1px 1px 1px;
-   }
-.ribbon:after {
-   right: -2em;
-   border-left-width: 1.5em;
-   border-right-color: transparent;
-   -webkit-box-shadow: rgba(000,000,000,0.4) -1px 1px 1px;
-   -moz-box-shadow: rgba(000,000,000,0.4) -1px 1px 1px;
-   box-shadow: rgba(000,000,000,0.4) -1px 1px 1px;
-   }
-.ribbon .ribbon-content:before, .ribbon .ribbon-content:after {
-   border-color: #143138 transparent transparent transparent;
-   position: absolute;
-   display: block;
-   border-style: solid;
-   bottom: -1em;
-   content: '';
-   }
-.ribbon .ribbon-content:before {
-   left: 0;
-   border-width: 1em 0 0 1em;
-   }
-.ribbon .ribbon-content:after {
-   right: 0;
-   border-width: 1em 1em 0 0;
    }
 .ribbon-stitches-top {
    margin-top:2px;
