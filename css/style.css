@@ -242,6 +242,7 @@ option {
    position: fixed;
    top: 30px;
    left: -90px;
+   padding-left: 20px;
    -webkit-transform: rotate(-45deg);
    -moz-transform: rotate(-45deg);
    -ms-transform: rotate(-45deg);
