@@ -1,3 +1,11 @@
+@font-face {
+    font-family: 'minecraft_evenings';
+    src: url('fonts/minecraftevenings-webfont.woff2') format('woff2'),
+         url('fonts/minecraftevenings-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 html {
     position: relative;
     overflow: hidden;
@@ -18,7 +26,7 @@ body > .container {
 }
 
 .navbar-inverse {
-	background-color: rgba(0, 0, 0, 0.75);
+	background-color: rgba(0, 0, 0, 0.0);
 	border: none;
 	margin-bottom: 0;
 	padding: 0;
@@ -27,8 +35,10 @@ body > .container {
 
 .navbar-inverse .navbar-brand {
 	color: #FFF;
-	font-family: 'Press Start 2P', cursive;
-	font-size: 28px;
+	font-family: 'minecraft_evenings';
+	font-size: 58px;
+	padding-top: 70px;
+	padding-bottom: 40px;
 }
 
 #game-container {
@@ -45,24 +55,22 @@ body > .container {
 }
 
 #game-stats {
+    color: #FFFFFF;
     display: none;
     position: absolute;
     right: 0;
     top: 0;
-    color: rgba(0, 0, 0, 0.75);
-    background-color: transparent;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 3px;
     padding: 0 10px;
+    margin-right: 10px;
+    margin-top: 10px;
 }
 
 #game-stats h3 {
     font-family: 'Press Start 2P', cursive;
     text-align: center;
     font-size: 14px;
-    color: #000;
-}
-
-#game-stats table {
-    border-top: 1px solid #DDD;
 }
 
 #game-stats table td {
@@ -77,19 +85,45 @@ body > .container {
     position: absolute;
     left: 0;
     right: 0;
-    top: 25%;
+    top: 22%;
     background-color: rgba(0,0,0,0.75);
     width: 50%;
     margin: 0 auto;
-    padding: 50px;
+    padding-left: 50px;
+    padding-right: 50px;
 }
 
 .heading h1 {
-    font-family: 'Press Start 2P', cursive;
+    font-family: 'minecraft_evenings';
     font-size: 38px;
     text-align: center;
     margin-bottom: 20px;
     color: #EEE;
+}
+
+#connect-form-gameover {
+    font-family: 'minecraft_evenings';
+    font-size: 28px;
+}
+
+.heading .message {
+    visibility: hidden;
+    text-align: center;
+    padding: 10px;
+    color: white;
+}
+
+#score {
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+    padding-top: 0px;
+}
+
+.social_buttons {
+    position: absolute;
+    z-index: 9999;
+    bottom: 20px;
+    right: 20px;
 }
 
 input[type="text"], input[type="password"], select {
@@ -126,16 +160,63 @@ option {
   margin: 20px 0;
 }
 
+#connect-form .form {
+    display: table;
+    width: 100%;
+}
+
+#connect-form .form > * {
+    display: table-cell;
+    vertical-align: top;
+}
+
+#connect-form .form .start {
+    width: 95px;
+}
+
+#connect-form .fields > * {
+    display: inline-block;
+    width: 48%;
+    margin-right: 3px;
+    height: 40px;
+}
+
+#connect-form .fields #avatar-chooser {
+    width: 100%;
+    padding-right: 14px;
+    text-align: center;
+    font-size: 25px;
+    user-select: none; 
+}
+
+#connect-form .fields #avatar-chooser i {
+    vertical-align: top;
+    margin-top: 5px;
+    color: #0199e6;
+    cursor: pointer;
+}
+
+#connect-form .fields #avatar-chooser i:active {
+    color: #FFFFFF;
+}
+
+#connect-form .fields #avatar-chooser #avatar {
+    display: inline-block;
+    border: 1px solid #0199e6;
+}
+
 .footer {
     position: absolute;
     bottom: 0;
+    left: 0;
     width: 100%;
     /* Set the fixed height of the footer here */
-    height: 60px;
-    background-color: #262626;
+    height: 100px;
 }
 
 .footer > .container {
+    font-weight: bold;
+    padding-top: 10px;
     padding-right: 15px;
     padding-left: 15px;
 }
@@ -143,3 +224,61 @@ option {
 .footer p.text-muted {
     color: #CCC;
 }
+
+#ads {
+    position: absolute;
+    z-index: 99999;
+    top: calc(23% + 210px);
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+
+/* Beta Ribbon */
+
+.ribbon {
+   z-index: 9999;
+   width: 256px;
+   position: fixed;
+   top: 30px;
+   left: -90px;
+   padding-left: 20px;
+   -webkit-transform: rotate(-45deg);
+   -moz-transform: rotate(-45deg);
+   -ms-transform: rotate(-45deg);
+   transform: rotate(-45deg);
+   text-align: center;
+   font-size: 16px!important;
+   background: #3c8ea2;
+   background: -webkit-gradient(linear, left top, left bottom, from(#3c8ea2), to(#28606d));
+   background: -webkit-linear-gradient(top, #3c8ea2, #28606d);
+   background: -moz-linear-gradient(top, #3c8ea2, #28606d);
+   background: -ms-linear-gradient(top, #3c8ea2, #28606d);
+   background: -o-linear-gradient(top, #d3c8ea2, #28606d);
+   background-image: -ms-linear-gradient(top, #3c8ea2 0%, #28606d 100%);
+   -webkit-box-shadow: rgba(000,000,000,0.3) 0 1px 1px;
+   -moz-box-shadow: rgba(000,000,000,0.3) 0 1px 1px;
+   box-shadow: rgba(000,000,000,0.3) 0 1px 1px;
+   font-family: 'minecraft_evenings';
+   }
+.ribbon h1 {
+   font-size: 30px!important;
+   color: white;
+   text-shadow: black 0 1px 0;
+   margin:0px;
+   padding: 15px 10px;
+   }
+.ribbon-stitches-top {
+   margin-top:2px;
+   border-top: 1px dashed rgba(0, 0, 0, 0.2);
+   -moz-box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5);
+   -webkit-box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5);
+   box-shadow: 0px 0px 2px rgba(255, 255, 255, 0.5);
+   }
+.ribbon-stitches-bottom {
+   margin-bottom:2px;
+   border-top: 1px dashed rgba(0, 0, 0, 0.2);
+   -moz-box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.3);
+   -webkit-box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.3);
+   box-shadow: 0px 0px 2px rgba(255, 255, 255, 0.3);
+   }
