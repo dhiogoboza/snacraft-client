@@ -283,6 +283,10 @@ function onMessage(event) {
                 drawMobsAtMap();
                 drawHead();
                 break;
+            case 3:
+                // Game stats updated
+                drawStats(data);
+                break;
         }
     } else if (typeof event.data === "string") {
         data = event.data;
@@ -290,10 +294,6 @@ function onMessage(event) {
             case 0:
                 // Init loop
                 initMatrix(data);
-                break;
-            case 3:
-                // Game stats updated
-                drawStats(data);
                 break;
             case 4:
                 // Game over
@@ -437,7 +437,7 @@ function drawMobsAtMap() {
 }
 
 function drawStats(data) {
-    score = data.charCodeAt(1);
+    score = data[1];
     document.getElementById("snake-size").innerHTML = score;
 }
 
