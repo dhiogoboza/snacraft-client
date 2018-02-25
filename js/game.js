@@ -15,6 +15,8 @@ var matrix = [];
 var current_matrix = [];
 var matrix_mobs = [];
 
+var players_list = {};
+
 // images
 var image_MoveSpeed;
 
@@ -308,6 +310,10 @@ function onMessage(event) {
                 // Leader board
                 drawLeaderBoard(data);
                 break;
+            case 7:
+                // Players list
+                initPlayersList(data);
+                break;
         }
     }
 }
@@ -436,6 +442,28 @@ function drawMobsAtMap() {
     }
 }
 
+function initPlayersList(data) {
+    var player_data, player_name;
+    players_list = {}
+    
+    //             0           1             2            3
+    // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | ... ]
+    
+    for (i = 1; i < data.length; i++) {
+        name_size = data[i + 1];
+        i++;
+        
+        player_name = "";
+        
+        for (j = 0; j < name_size; j++) {
+            player_name += data[i];
+            i++;
+        }
+        
+        players_list[data[i]] = player_name;
+    }
+}
+
 function drawStats(data) {
     score = data[1];
     document.getElementById("snake-size").innerHTML = score;
@@ -459,7 +487,7 @@ function drawRanking(data) {
 function drawLeaderBoard(data) {
     tBodyElem.innerHTML = "";
     var leaders = data.substring(1).split(",");
-    for (var i = 0; i < leaders.length; i++) {
+    for (i = 0; i < leaders.length; i++) {
         var leader = leaders[i];
 
         if (leader) {
