@@ -289,6 +289,14 @@ function onMessage(event) {
                 // Game stats updated
                 drawStats(data);
                 break;
+            case 6:
+                // Leader board
+                drawLeaderBoard(data);
+                break;
+            case 7:
+                // Players list
+                initPlayersList(data);
+                break;
         }
     } else if (typeof event.data === "string") {
         data = event.data;
@@ -305,14 +313,6 @@ function onMessage(event) {
             case 5:
                 // Ranking
                 drawRanking(data);
-                break;
-            case 6:
-                // Leader board
-                drawLeaderBoard(data);
-                break;
-            case 7:
-                // Players list
-                initPlayersList(data);
                 break;
         }
     }
@@ -443,24 +443,24 @@ function drawMobsAtMap() {
 }
 
 function initPlayersList(data) {
-    var player_data, player_name;
+    var player_name, id;
     players_list = {}
     
     //             0           1             2            3
     // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | ... ]
     
     for (i = 1; i < data.length; i++) {
-        name_size = data[i + 1];
+        id = data[i];
         i++;
+        name_size = data[i];
         
         player_name = "";
-        
         for (j = 0; j < name_size; j++) {
-            player_name += data[i];
             i++;
+            player_name += String.fromCharCode(data[i]);
         }
         
-        players_list[data[i]] = player_name;
+        players_list[id] = player_name;
     }
 }
 
@@ -485,14 +485,20 @@ function drawRanking(data) {
 }
 
 function drawLeaderBoard(data) {
+    console.log(data)
+    console.log(players_list)
     tBodyElem.innerHTML = "";
-    var leaders = data.substring(1).split(",");
-    for (i = 0; i < leaders.length; i++) {
-        var leader = leaders[i];
+    
+    for (i = 1; i < data.length; i++) {
+        var leader = data[i];
+        console.log(leader);
 
         if (leader) {
             var tableRow = document.createElement("tr");
-            tableRow.innerHTML = "<td><strong> " + "#" + (i + 1) + " </strong></td><td>" + leader + "</td>";
+            tableRow.innerHTML = "<td><strong> #" + (i + 1) +
+                    "</strong></td><td>" +
+                    players_list[leader] + "</td>";
+                    
             tBodyElem.appendChild(tableRow);
         }
     }
