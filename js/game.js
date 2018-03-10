@@ -285,16 +285,14 @@ function onMessage(event) {
                 
                 players_list[id] = my_snake;
                 
-                console.log("init");
-                console.log(my_snake);
-                
                 break;
             case 2:
                 // Game data updated
                 drawMobs(data);
                 drawMobsAtMap();
-                drawHead();
                 
+                // TODO: draw head of all snakes
+                drawHead();
                 
                 drawStats();
                 break;
@@ -368,14 +366,7 @@ function drawMobs(mobs_data) {
         for (k = 1; k < cur_snake["size"]; k++) {
             matrix_mobs[mobs_data[j++]][mobs_data[j++]] = mobs_data[j++];
         }
-
-        console.log("mobs_data");
-        console.log(mobs_data);
-        console.log(j);
     }
-    
-    console.log("my_snake 2");
-    console.log(my_snake);
     
     // get another mobs
     for (i = j; i < mobs_data.length; i++) {
