@@ -15,12 +15,17 @@ var matrix = [];
 var current_matrix = [];
 var matrix_mobs = [];
 
+var players_list = {};
+
 // images
 var image_MoveSpeed;
 
 var connected = false;
 var socket;
 var nickname;
+var id;
+var leaderboard;
+var my_snake;
 var lines = 0, columns = 0;
 
 var center_i = 0, center_j = 0;
@@ -225,7 +230,7 @@ function connect(server) {
         snakeRanking = document.getElementById("snake-ranking");
 
         // setup nickname
-        var nickname = document.getElementById("nickname").value;
+        nickname = document.getElementById("nickname").value;
         if (!nickname) {
             nickname = 'snake-' + parseInt(Math.random() * 1e5).toString();
         }
@@ -235,38 +240,35 @@ function connect(server) {
 
     // Connection closed
     socket.addEventListener('close', function (event) {
-        socket = null;
-
-        connected = false;
-
-        document.getElementById("connect").disabled = false;
-
-        document.getElementById('game-stats').style.display = "none";
-        document.getElementById('connect-form').style.display = "block";
-        document.getElementById('navbar').style.display = "block";
-        document.getElementById('footer').style.display = "block";
-        document.getElementById('beta').style.display = "block";
-        document.getElementById('ads').style.display = "block";
-        document.getElementById('social-buttons').style.display = "block";
+        closeConnection();
     });
 
     // Connection failed
     socket.addEventListener('error', function (event) {
-        socket = null;
-
-        connected = false;
-
-        document.getElementById("connect").disabled = false;
+        closeConnection();
     });
 
     // Listen for messages
     socket.addEventListener('message', onMessage);
 }
 
+function closeConnection() {
+    socket = null;
+    connected = false;
+
+    document.getElementById("connect").disabled = false;
+    document.getElementById('game-stats').style.display = "none";
+    document.getElementById('connect-form').style.display = "block";
+    document.getElementById('navbar').style.display = "block";
+    document.getElementById('footer').style.display = "block";
+    document.getElementById('beta').style.display = "block";
+    document.getElementById('ads').style.display = "block";
+    document.getElementById('social-buttons').style.display = "block";
+}
+
 function onMessage(event) {
     
     // FIXME: handle blob event.data type
-    
     if (event.data instanceof ArrayBuffer) {
         data = new Uint8Array(event.data);
         switch (data[0]) {
@@ -274,18 +276,31 @@ function onMessage(event) {
                 // Head
                 head_i = data[1];
                 head_j = data[2];
+                id = data[3];
 
                 center_i = head_i;
                 center_j = head_j;
+                
+                my_snake = {"name": nickname, "i": head_i, "j": head_j, "size": 0};
+                
+                players_list[id] = my_snake;
+                
+                console.log("init");
+                console.log(my_snake);
+                
+                break;
             case 2:
                 // Game data updated
                 drawMobs(data);
                 drawMobsAtMap();
                 drawHead();
+                
+                
+                drawStats();
                 break;
-            case 3:
-                // Game stats updated
-                drawStats(data);
+            case 7:
+                // Players list
+                initPlayersList(data);
                 break;
         }
     } else if (typeof event.data === "string") {
@@ -300,14 +315,6 @@ function onMessage(event) {
                 socket.close();
                 drawGameover();
                 break;
-            case 5:
-                // Ranking
-                drawRanking(data);
-                break;
-            case 6:
-                // Leader board
-                drawLeaderBoard(data);
-                break;
         }
     }
 }
@@ -319,8 +326,65 @@ function drawHead() {
 }
 
 function drawMobs(mobs_data) {
-    t_head_i = mobs_data[1];//.charCodeAt(1);
-    t_head_j = mobs_data[2];//.charCodeAt(2);
+    var snakes_count = mobs_data[1];
+    var cur_i, cur_j;
+    j = 2;
+    leaderboard = [];
+    
+    // get snakes
+    for (i = 0; i < snakes_count; i++) {
+        // current snake id
+        cur_id = mobs_data[j++];
+        
+        // push ids at ranking array
+        leaderboard.push(cur_id);
+        
+        // get current snake by index
+        cur_snake = players_list[cur_id];
+        
+        if (!cur_snake) {
+            cur_snake = {};
+        }
+        
+        // snake size
+        cur_snake["size"] = mobs_data[j++];
+        
+        // snake head
+        cur_i = mobs_data[j++];
+        cur_j = mobs_data[j++];
+        
+        cur_snake["i"] = cur_i;
+        cur_snake["j"] = cur_j;
+        
+        if (cur_id == id) {
+            my_snake = cur_snake;
+            my_snake["position"] = i + 1;
+        }
+        
+        // put snake head at mobs matrix
+        matrix_mobs[cur_snake["i"]][cur_snake["j"]] = mobs_data[j++];
+        
+        // snake pixels
+        for (k = 1; k < cur_snake["size"]; k++) {
+            matrix_mobs[mobs_data[j++]][mobs_data[j++]] = mobs_data[j++];
+        }
+
+        console.log("mobs_data");
+        console.log(mobs_data);
+        console.log(j);
+    }
+    
+    console.log("my_snake 2");
+    console.log(my_snake);
+    
+    // get another mobs
+    for (i = j; i < mobs_data.length; i++) {
+        matrix_mobs[mobs_data[i]][mobs_data[++i]] = mobs_data[++i];
+    }
+    
+    // update current view flags
+    t_head_i = my_snake["i"];
+    t_head_j = my_snake["j"];
     
     if (head_i < t_head_i) {
         head_canvas["current"] = head_canvas["down"];
@@ -345,12 +409,6 @@ function drawMobs(mobs_data) {
         center_j--;
     } else if (head_j - center_j > focus_offset_j) {
         center_j++;
-    }
-
-    for (var i = 3; i < mobs_data.length; i++) {
-        //console.log("[" + mobs_data.charCodeAt(i) + "][" + mobs_data.charCodeAt(i + 1) + "]")
-        //matrix_mobs[mobs_data.charCodeAt(i)][mobs_data.charCodeAt(++i)] = mobs_data.charCodeAt(++i);
-        matrix_mobs[mobs_data[i]][mobs_data[++i]] = mobs_data[++i];
     }
 }
 
@@ -436,9 +494,52 @@ function drawMobsAtMap() {
     }
 }
 
-function drawStats(data) {
-    score = data[1];
+function initPlayersList(data) {
+    var player_name, cur_id;
+    
+    //             0           1             2            3
+    // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | ... ]
+    
+    for (i = 1; i < data.length; i++) {
+        cur_id = data[i];
+        i++;
+        name_size = data[i];
+        
+        player_name = "";
+        for (j = 0; j < name_size; j++) {
+            i++;
+            player_name += String.fromCharCode(data[i]);
+        }
+        
+        players_list[cur_id] = {"name": player_name, "i": 0, "j": 0, "size": 0};
+    }
+}
+
+function drawStats() {
+    // my score
+    score = my_snake["size"];
     document.getElementById("snake-size").innerHTML = score;
+    
+    // my snake position
+    position = my_snake["position"]
+    snakeRanking.innerHTML = position;
+    
+    tBodyElem.innerHTML = "";
+    
+    var cur_snake;
+    for (i = 0; i < leaderboard.length; i++) {
+        cur_snake = players_list[leaderboard[i]];
+        
+        if (cur_snake) {
+            var tableRow = document.createElement("tr");
+            tableRow.innerHTML = "<td><strong> #" + (i + 1) +
+                    "</strong></td><td>" +
+                    cur_snake["name"] + "</td>";
+                    
+            tBodyElem.appendChild(tableRow);
+        }
+    }
+    
 }
 
 function drawGameover() {
@@ -449,25 +550,6 @@ function drawGameover() {
     document.getElementById("connect-form-gameover").style.visibility = "visible";
     
     drawGrid(true);
-}
-
-function drawRanking(data) {
-    position = data.charCodeAt(1) + "/" + data.charCodeAt(2)
-    snakeRanking.innerHTML = position;
-}
-
-function drawLeaderBoard(data) {
-    tBodyElem.innerHTML = "";
-    var leaders = data.substring(1).split(",");
-    for (var i = 0; i < leaders.length; i++) {
-        var leader = leaders[i];
-
-        if (leader) {
-            var tableRow = document.createElement("tr");
-            tableRow.innerHTML = "<td><strong> " + "#" + (i + 1) + " </strong></td><td>" + leader + "</td>";
-            tBodyElem.appendChild(tableRow);
-        }
-    }
 }
 
 function keyPressed(e) {
