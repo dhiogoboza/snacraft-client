@@ -23,6 +23,7 @@ var image_MoveSpeed;
 var connected = false;
 var socket;
 var nickname;
+var id;
 var lines = 0, columns = 0;
 
 var center_i = 0, center_j = 0;
@@ -237,38 +238,35 @@ function connect(server) {
 
     // Connection closed
     socket.addEventListener('close', function (event) {
-        socket = null;
-
-        connected = false;
-
-        document.getElementById("connect").disabled = false;
-
-        document.getElementById('game-stats').style.display = "none";
-        document.getElementById('connect-form').style.display = "block";
-        document.getElementById('navbar').style.display = "block";
-        document.getElementById('footer').style.display = "block";
-        document.getElementById('beta').style.display = "block";
-        document.getElementById('ads').style.display = "block";
-        document.getElementById('social-buttons').style.display = "block";
+        closeConnection();
     });
 
     // Connection failed
     socket.addEventListener('error', function (event) {
-        socket = null;
-
-        connected = false;
-
-        document.getElementById("connect").disabled = false;
+        closeConnection();
     });
 
     // Listen for messages
     socket.addEventListener('message', onMessage);
 }
 
+function closeConnection() {
+    socket = null;
+    connected = false;
+
+    document.getElementById("connect").disabled = false;
+    document.getElementById('game-stats').style.display = "none";
+    document.getElementById('connect-form').style.display = "block";
+    document.getElementById('navbar').style.display = "block";
+    document.getElementById('footer').style.display = "block";
+    document.getElementById('beta').style.display = "block";
+    document.getElementById('ads').style.display = "block";
+    document.getElementById('social-buttons').style.display = "block";
+}
+
 function onMessage(event) {
     
     // FIXME: handle blob event.data type
-    
     if (event.data instanceof ArrayBuffer) {
         data = new Uint8Array(event.data);
         switch (data[0]) {
@@ -276,6 +274,7 @@ function onMessage(event) {
                 // Head
                 head_i = data[1];
                 head_j = data[2];
+                id = data[3];
 
                 center_i = head_i;
                 center_j = head_j;
@@ -444,7 +443,6 @@ function drawMobsAtMap() {
 
 function initPlayersList(data) {
     var player_name, id;
-    players_list = {}
     
     //             0           1             2            3
     // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | ... ]
@@ -485,22 +483,20 @@ function drawRanking(data) {
 }
 
 function drawLeaderBoard(data) {
-    console.log(data)
-    console.log(players_list)
+    console.log("leaderBoard: " + data);
+    console.log(players_list);
+
     tBodyElem.innerHTML = "";
     
     for (i = 1; i < data.length; i++) {
         var leader = data[i];
-        console.log(leader);
 
-        if (leader) {
-            var tableRow = document.createElement("tr");
-            tableRow.innerHTML = "<td><strong> #" + (i + 1) +
-                    "</strong></td><td>" +
-                    players_list[leader] + "</td>";
-                    
-            tBodyElem.appendChild(tableRow);
-        }
+        var tableRow = document.createElement("tr");
+        tableRow.innerHTML = "<td><strong> #" + (i + 1) +
+                "</strong></td><td>" +
+                players_list[leader] + "</td>";
+                
+        tBodyElem.appendChild(tableRow);
     }
 }
 
