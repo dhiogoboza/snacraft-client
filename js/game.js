@@ -11,6 +11,8 @@ var FOCUS_OFFSET_PERCENTAGE = 0.2;
 
 var TILE_MOVE_SPEED = 5;
 
+var NAMES_HEIGHT = 12;
+
 var matrix = [];
 var current_matrix = [];
 var matrix_mobs = [];
@@ -31,7 +33,9 @@ var lines = 0, columns = 0;
 var center_i = 0, center_j = 0;
 var head_i = 0, head_j = 0;
 var t_head_i = 0, t_head_j = 0;
-var head_canvas;
+
+var head_black;
+var head_white;
 
 var data = null;
 
@@ -82,6 +86,7 @@ var TILES = [
 
 // canvas context
 var ctx;
+var ctx2;
 
 // canvas size
 var width;
@@ -205,6 +210,9 @@ function connect(server) {
     // Connection opened
     socket.addEventListener('open', function (event) {
         connected = true;
+        
+        // clear snakes name
+        ctx2.clearRect(0, 0, width, height);
 
         var button = document.getElementById("connect");
         button.disabled = false;
@@ -218,9 +226,6 @@ function connect(server) {
         document.getElementById('beta').style.display = "none";
         document.getElementById('ads').style.display = "none";
         document.getElementById('social-buttons').style.display = "none";
-        
-        // setup snake head
-        head_canvas["current"] = head_canvas["up"];
 
         // init ui items
         leaderBoardTable = document.getElementById("leader-board-table");
@@ -273,15 +278,25 @@ function onMessage(event) {
         data = new Uint8Array(event.data);
         switch (data[0]) {
             case 1:
+                id = data[1];
+                color = data[2];
                 // Head
-                head_i = data[1];
-                head_j = data[2];
-                id = data[3];
-
+                head_i = data[3];
+                head_j = data[4];
+                
                 center_i = head_i;
                 center_j = head_j;
                 
-                my_snake = {"name": nickname, "i": head_i, "j": head_j, "size": 0};
+                my_snake = {"name": nickname, "i": head_i, "j": head_j, "color": color};
+                
+                if (color == initial_av_index + 2 ||
+                        color == initial_av_index + 3) {
+                    my_snake["eyes"] = 1;
+                } else {
+                    my_snake["eyes"] = 0;
+                }
+                
+                initPlayer(my_snake);
                 
                 players_list[id] = my_snake;
                 
@@ -292,13 +307,23 @@ function onMessage(event) {
                 drawMobsAtMap();
                 
                 // TODO: draw head of all snakes
-                drawHead();
+                //drawHead();
                 
                 drawStats();
                 break;
             case 7:
                 // Players list
                 initPlayersList(data);
+                break;
+            case 8:
+                // Player left the game
+                snake = players_list[data[1]];
+                
+                if (snake) {
+                    ctx2.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], NAMES_HEIGHT);
+                    delete players_list[data[1]];
+                }
+                
                 break;
         }
     } else if (typeof event.data === "string") {
@@ -310,17 +335,12 @@ function onMessage(event) {
                 break;
             case 4:
                 // Game over
+                
                 socket.close();
                 drawGameover();
                 break;
         }
     }
-}
-
-function drawHead() {
-    var head_position = current_matrix[head_i - i_start][head_j - j_start];
-    head_position["i"] = -1;
-    ctx.drawImage(head_canvas["current"], head_position["x"], head_position["y"], item_size, item_size);
 }
 
 function drawMobs(mobs_data) {
@@ -340,9 +360,29 @@ function drawMobs(mobs_data) {
         // get current snake by index
         cur_snake = players_list[cur_id];
         
+        // snake color
+        color = mobs_data[j++];
+        
+        // TODO: do not receive snakes until players list is received
         if (!cur_snake) {
             cur_snake = {};
+            
+            if (color == initial_av_index + 2 ||
+                    color == initial_av_index + 3) {
+                cur_snake["eyes"] = 1;
+            } else {
+                cur_snake["eyes"] = 0;
+            }
+            
+            cur_snake["name"] = "";
+            cur_snake["i"] = 0;
+            cur_snake["j"] = 0;
+            
+            players_list[cur_id] = cur_snake;
         }
+        
+        // set snake color
+        cur_snake["color"] = color;
         
         // snake size
         cur_snake["size"] = mobs_data[j++];
@@ -351,6 +391,18 @@ function drawMobs(mobs_data) {
         cur_i = mobs_data[j++];
         cur_j = mobs_data[j++];
         
+        // detect snake direction
+        if (cur_snake["i"] < cur_i) {
+            cur_snake["head"] = cur_snake["eyes"]? head_white["down"] : head_black["down"];
+        } else if (cur_snake["i"] > cur_i) {
+            cur_snake["head"] = cur_snake["eyes"]? head_white["up"] : head_black["up"];
+        } else if (cur_snake["j"] < cur_j) {
+            cur_snake["head"] = cur_snake["eyes"]? head_white["right"] : head_black["right"];
+        } else if (cur_snake["j"] > cur_j) {
+            cur_snake["head"] = cur_snake["eyes"]? head_white["left"] : head_black["left"];
+        }
+        
+        // set snake positions
         cur_snake["i"] = cur_i;
         cur_snake["j"] = cur_j;
         
@@ -360,11 +412,11 @@ function drawMobs(mobs_data) {
         }
         
         // put snake head at mobs matrix
-        matrix_mobs[cur_snake["i"]][cur_snake["j"]] = mobs_data[j++];
+        matrix_mobs[cur_snake["i"]][cur_snake["j"]] = -cur_id;
         
         // snake pixels
         for (k = 1; k < cur_snake["size"]; k++) {
-            matrix_mobs[mobs_data[j++]][mobs_data[j++]] = mobs_data[j++];
+            matrix_mobs[mobs_data[j++]][mobs_data[j++]] = cur_snake["color"];
         }
     }
     
@@ -374,21 +426,8 @@ function drawMobs(mobs_data) {
     }
     
     // update current view flags
-    t_head_i = my_snake["i"];
-    t_head_j = my_snake["j"];
-    
-    if (head_i < t_head_i) {
-        head_canvas["current"] = head_canvas["down"];
-    } else if (head_i > t_head_i) {
-        head_canvas["current"] = head_canvas["up"];
-    } else if (head_j < t_head_j) {
-        head_canvas["current"] = head_canvas["right"];
-    } else if (head_j > t_head_j) {
-        head_canvas["current"] = head_canvas["left"];
-    }
-    
-    head_i = t_head_i;
-    head_j = t_head_j;
+    head_i = my_snake["i"];
+    head_j = my_snake["j"];
 
     if (head_i - center_i < -focus_offset_i) {
         center_i--;
@@ -400,6 +439,26 @@ function drawMobs(mobs_data) {
         center_j--;
     } else if (head_j - center_j > focus_offset_j) {
         center_j++;
+    }
+}
+
+function drawItemAtCanvas(tile, current) {
+    if (tile["image"]) {
+        ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
+    } else {
+        previous = TILES[current["i"]];
+        if (!previous || (previous["image"] || previous["off"])) {
+            // clear rect
+            ctx.fillStyle = grid_color;
+            ctx.fillRect(current["x"], current["y"], item_size, item_size);
+        }
+        
+        ctx.fillStyle = tile["item"];
+        if (tile["off"]) {
+            ctx.fillRect(current["x"], current["y"], item_size, item_size);
+        } else {
+            ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
+        }
     }
 }
 
@@ -426,31 +485,37 @@ function drawMobsAtMap() {
         j_start = columns - horizontal_items;
     }
     
-    var tile, previous;
+    var tile, previous, snake;
     for (i = i_start, _i = 0; i < i_end; i++, _i++) {
         for (j = j_start, _j = 0; j < j_end; j++, _j++) {
             current = current_matrix[_i][_j];
             
-            if (matrix_mobs[i][j] == 0) {
+            if (matrix_mobs[i][j] < 0) {
+                snake = players_list[-matrix_mobs[i][j]];
+                
+                tile = TILES[snake["color"]];
+                
+                drawItemAtCanvas(tile, current);
+                
+                ctx.drawImage(snake["head"], current["x"], current["y"], item_size, item_size);
+                
+                // clear previous name
+                ctx2.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], NAMES_HEIGHT);
+                
+                // save last snake name position
+                snake["name_x"] = current["x"] + item_size;
+                snake["name_y"] = current["y"] - item_size;
+                
+                // draw snake name
+                ctx2.fillText(snake["name"], snake["name_x"], snake["name_y"]);
+                
+                // set negative to invalidate draw in the next step
+                current["i"] = -snake["color"];
+            } else if (matrix_mobs[i][j] == 0) {
                 if (matrix[i][j] != current["i"]) {
                     tile = TILES[matrix[i][j]];
-                    if (tile["image"]) {
-                        ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
-                    } else {
-                        previous = TILES[current["i"]];
-                        if (!previous || (previous["image"] || previous["off"])) {
-                            // clear rect
-                            ctx.fillStyle = grid_color;
-                            ctx.fillRect(current["x"], current["y"], item_size, item_size);
-                        }
-                        
-                        ctx.fillStyle = tile["item"];
-                        if (tile["off"]) {
-                            ctx.fillRect(current["x"], current["y"], item_size, item_size);
-                        } else {
-                            ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
-                        }
-                    }
+                    
+                    drawItemAtCanvas(tile, current);
                     
                     current["i"] = matrix[i][j];
                 }
@@ -458,23 +523,7 @@ function drawMobsAtMap() {
                 if (matrix_mobs[i][j] != current["i"]) {
                     tile = TILES[matrix_mobs[i][j]];
                     
-                    if (tile["image"]) {
-                        ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
-                    } else {
-                        previous = TILES[current["i"]];
-                        if (!previous || (previous["image"] || previous["off"])) {
-                            // clear rect
-                            ctx.fillStyle = grid_color;
-                            ctx.fillRect(current["x"], current["y"], item_size, item_size);
-                        }
-                        
-                        ctx.fillStyle = tile["item"];
-                        if (tile["off"]) {
-                            ctx.fillRect(current["x"], current["y"], item_size, item_size);
-                        } else {
-                            ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
-                        }
-                    }
+                    drawItemAtCanvas(tile, current);
 
                     current["i"] = matrix_mobs[i][j];
                 }
@@ -485,11 +534,19 @@ function drawMobsAtMap() {
     }
 }
 
+function initPlayer(cur_player) {
+    measure = ctx2.measureText(cur_player["name"]);
+    cur_player["name_w"] = measure.width;
+    cur_player["name_x"] = 0;
+    cur_player["name_y"] = 0;
+    cur_player["size"] = 0;
+}
+
 function initPlayersList(data) {
-    var player_name, cur_id;
+    var player_name, cur_id, cur_player, name_size;
     
-    //             0           1             2            3
-    // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | ... ]
+    //             0           1             2            3           4         5
+    // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | DIRECTION | COLOR | ... ]
     
     for (i = 1; i < data.length; i++) {
         cur_id = data[i];
@@ -502,7 +559,24 @@ function initPlayersList(data) {
             player_name += String.fromCharCode(data[i]);
         }
         
-        players_list[cur_id] = {"name": player_name, "i": 0, "j": 0, "size": 0};
+        cur_player = {
+                "name": player_name,
+                "i": 0,
+                "j": 0,
+                "direction": data[i++],
+                "color": data[i++]
+            };
+        
+        initPlayer(cur_player);
+        
+        if (players_list["color"] == initial_av_index + 2||
+                players_list["color"] == initial_av_index + 3) {
+            cur_player["eyes"] = 1;
+        } else {
+            cur_player["eyes"] = 0;
+        }
+        
+        players_list[cur_id] = cur_player;
     }
 }
 
@@ -802,17 +876,18 @@ function initTiles() {
         }
     }
     
-    updateHead();
+    head_black = createHead("#000000");
+    head_white = createHead("#FFFFFF");
 }
 
-function updateHead() {
+function createHead(eyes_color) {
     var s15 = item_size_1 / 5;
     var s25 = 2 * s15;
     var s35 = 3 * s15;
     var s45 = 4 * s15;
     
     // init head canvas
-    head_canvas = {}
+    var head_canvas = {}
     
     // head up
     var canvas = document.createElement("canvas");
@@ -865,6 +940,8 @@ function updateHead() {
     dctx.fillRect(s35, s35, s15, s15);
 
     head_canvas["right"] = canvas;
+    
+    return head_canvas;
 }
 
 function drawCircle(dctx, s18, c1, c2, c3, radius) {
@@ -917,10 +994,11 @@ function drawCircle(dctx, s18, c1, c2, c3, radius) {
 
 document.addEventListener("DOMContentLoaded", function(event) {
     var c = document.getElementById("canvas");
-
-    width = c.width = $(document).width();
-    height = c.height = $(document).height();
-
+    var c2 = document.getElementById("canvas2");
+    
+    width = c.width = c2.width = $(document).width();
+    height = c.height = c2.height = $(document).height();
+    
     horizontal_items = parseInt(width / item_size) + 1;
     vertical_items = parseInt(height / item_size) + 1;
 
@@ -939,6 +1017,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
     
     drawGrid(false);
     initTiles();
+    
+    ctx2 = c2.getContext("2d");
+    ctx2.textAlign="left";
+    ctx2.textBaseline="top";
+    ctx2.font = NAMES_HEIGHT + "px Roboto";
     
     document.getElementById("nickname").value = getCookie("nickname");
     var server = document.getElementById("server");
