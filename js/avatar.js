@@ -59,8 +59,12 @@ function drawAvatar(a_index) {
     var s = Math.floor(item_size / 8);
     var avatar = TILES[a_index];
     
-    eyes_color = colors[a_index - initial_av_index][1];
-    updateHead();
+    if (a_index == initial_av_index + 2 ||
+            a_index == initial_av_index + 3) {
+        head_canvas = head_white;
+    } else {
+        head_canvas = head_black;
+    }
     
     x = s;
     for (i = 0; i < ITEMS; i++) {
@@ -121,14 +125,6 @@ function initAvatarChooser() {
         avatar_ctx.moveTo(x, 0);
         avatar_ctx.lineTo(x, avatar_canvas.height);
         avatar_ctx.stroke();
-        
-        /*if (i > 1 && i < 8) {
-            avatar_ctx.drawImage(TILES[TILES.length - 1].item, x, s, item_size_1, item_size_1);
-            
-            if (i == 7) {
-                avatar_ctx.drawImage(head_canvas["right"], x, s, item_size_1, item_size_1);
-            }
-        }*/
         
         x += item_size;
     }
