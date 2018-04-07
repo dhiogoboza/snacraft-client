@@ -443,21 +443,23 @@ function drawMobs(mobs_data) {
 }
 
 function drawItemAtCanvas(tile, current) {
-    if (tile["image"]) {
-        ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
-    } else {
-        previous = TILES[current["i"]];
-        if (!previous || (previous["image"] || previous["off"])) {
-            // clear rect
-            ctx.fillStyle = grid_color;
-            ctx.fillRect(current["x"], current["y"], item_size, item_size);
-        }
-        
-        ctx.fillStyle = tile["item"];
-        if (tile["off"]) {
-            ctx.fillRect(current["x"], current["y"], item_size, item_size);
+    if (tile) {
+        if (tile["image"]) {
+            ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
         } else {
-            ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
+            previous = TILES[current["i"]];
+            if (!previous || (previous["image"] || previous["off"])) {
+                // clear rect
+                ctx.fillStyle = grid_color;
+                ctx.fillRect(current["x"], current["y"], item_size, item_size);
+            }
+            
+            ctx.fillStyle = tile["item"];
+            if (tile["off"]) {
+                ctx.fillRect(current["x"], current["y"], item_size, item_size);
+            } else {
+                ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
+            }
         }
     }
 }
