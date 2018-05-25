@@ -306,9 +306,6 @@ function onMessage(event) {
                 drawMobs(data);
                 drawMobsAtMap();
                 
-                // TODO: draw head of all snakes
-                //drawHead();
-                
                 drawStats();
                 break;
             case 7:
@@ -547,8 +544,8 @@ function initPlayer(cur_player) {
 function initPlayersList(data) {
     var player_name, cur_id, cur_player, name_size;
     
-    //             0           1             2            3           4         5
-    // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | DIRECTION | COLOR | ... ]
+    //             0           1             2            3         4
+    // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | COLOR | ... ]
     
     for (i = 1; i < data.length; i++) {
         cur_id = data[i];
@@ -565,7 +562,6 @@ function initPlayersList(data) {
                 "name": player_name,
                 "i": 0,
                 "j": 0,
-                "direction": data[i++],
                 "color": data[i++]
             };
         
