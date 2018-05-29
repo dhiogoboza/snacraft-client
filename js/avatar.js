@@ -6,8 +6,9 @@ var initial_av_index;
 var avatars = [];
 
 var colors = [
-    ["Cyan", "#000000", "#006064", "#00BCD4", "#B2EBF2"],
-    ["Red", "#000000", "#B71C1C", "#E53935", "#F44336"],
+    //["Cyan", "#FF0000", "#006064", "#00BCD4", "#B2EBF2"],
+    ["Cyan", "#FF0000", "#006064", "#00BCD4", "#B2EBF2"],
+    ["Wood", "#000000", "#322114", "#8d6b3c", "#9d7942"],
     ["Purple", "#FFFFFF", "#4A148C", "#8E24AA", "#E1BEE7"],
     ["Indigo", "#FFFFFF", "#1A237E", "#303F9F", "#9FA8DA"],
     ["Teal", "#000000", "#009688", "#4DB6AC", "#00897B"]
