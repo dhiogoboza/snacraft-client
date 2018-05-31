@@ -49,10 +49,10 @@ var i_start, i_end, j_start = 0, j_end = 0;
 var horizontal_items, vertical_items;
 var focus_offset_i, focus_offset_j;
 
-var grid_color = "#D5D5D5";
+var grid_color = "#6d953e"; // D5D5D5
 var TILES = [
     // empty
-    {item: "#DDDDDD", off: false},
+    {item: "#80af49", off: false}, //DDDDDD
     
     // stones
     {item: "#686868", off: true}, {item: "#6e6e6e", off: true},
@@ -91,7 +91,7 @@ var ctx2;
 // canvas size
 var width;
 var height;
-var item_size = 25, item_size_1 = item_size - 1;
+var item_size = 26, item_size_1 = item_size - 2;
 var i, j;
 
 // ui items
@@ -272,7 +272,6 @@ function closeConnection() {
 }
 
 function onMessage(event) {
-    
     // FIXME: handle blob event.data type
     if (event.data instanceof ArrayBuffer) {
         data = new Uint8Array(event.data);
@@ -287,14 +286,13 @@ function onMessage(event) {
                 center_i = head_i;
                 center_j = head_j;
                 
-                my_snake = {"name": nickname, "i": head_i, "j": head_j, "color": color};
-                
-                if (color == initial_av_index + 2 ||
-                        color == initial_av_index + 3) {
-                    my_snake["eyes"] = 1;
-                } else {
-                    my_snake["eyes"] = 0;
-                }
+                my_snake = {
+                    "name": nickname,
+                    "i": head_i,
+                    "j": head_j,
+                    "color": color,
+                    "eyes": colors[color - initial_av_index][1] == "#FFFFFF" ? 1 : 0
+                };
                 
                 initPlayer(my_snake);
                 
@@ -363,13 +361,8 @@ function drawMobs(mobs_data) {
         // TODO: do not receive snakes until players list is received
         if (!cur_snake) {
             cur_snake = {};
-            
-            if (color == initial_av_index + 2 ||
-                    color == initial_av_index + 3) {
-                cur_snake["eyes"] = 1;
-            } else {
-                cur_snake["eyes"] = 0;
-            }
+            var snake_skin = color - initial_av_index;
+            cur_snake["eyes"] = colors[snake_skin][1] == "#FFFFFF" ? 1 : 0;
             
             cur_snake["name"] = "";
             cur_snake["i"] = 0;
@@ -535,7 +528,7 @@ function drawMobsAtMap() {
 
 function initPlayer(cur_player) {
     measure = ctx2.measureText(cur_player["name"]);
-    cur_player["name_w"] = measure.width;
+    cur_player["name_w"] = measure.width + 2;
     cur_player["name_x"] = 0;
     cur_player["name_y"] = 0;
     cur_player["size"] = 0;
@@ -559,20 +552,14 @@ function initPlayersList(data) {
         }
         
         cur_player = {
-                "name": player_name,
-                "i": 0,
-                "j": 0,
-                "color": data[i++]
-            };
+            "name": player_name,
+            "i": 0,
+            "j": 0,
+            "color": data[i++],
+            "eyes": colors[color - initial_av_index][1] == "#FFFFFF" ? 1 : 0
+        };
         
         initPlayer(cur_player);
-        
-        if (players_list["color"] == initial_av_index + 2||
-                players_list["color"] == initial_av_index + 3) {
-            cur_player["eyes"] = 1;
-        } else {
-            cur_player["eyes"] = 0;
-        }
         
         players_list[cur_id] = cur_player;
     }
@@ -702,7 +689,7 @@ function initTiles() {
             dctx.fillStyle = TILES[0]["item"];
             dctx.fillRect(0, 0, item_size_1, item_size_1);
             
-            var s18 = Math.floor(item_size_1 / 8);
+            var s18 = item_size_1 / 8;
             var s28 = 2 * s18;
             var s38 = 3 * s18;
             var s48 = 4 * s18;
@@ -712,7 +699,7 @@ function initTiles() {
             var s88 = 8 * s18;
             var m8 = (s18/2);
             
-            var s110 = Math.floor(item_size_1 / 10);
+            var s110 = item_size_1 / 10;
             var s210 = 2 * s110;
             var s310 = 3 * s110;
             var s410 = 4 * s110;
@@ -725,7 +712,7 @@ function initTiles() {
             
             switch (TILES[i]["item"]) {
                 case 'CHICKEN':
-                    var s = Math.floor(item_size_1 / 10);
+                    var s = item_size_1 / 10;
                     var tw = 8 * s;
                     var s2 = 2 * s;
                     
@@ -857,8 +844,8 @@ function initTiles() {
                     h = item_size_1 + s28;
                     
                     var canvas_snake = document.createElement("canvas");
-                    canvas_snake.height = item_size;
-                    canvas_snake.width = item_size;
+                    canvas_snake.height = item_size_1;
+                    canvas_snake.width = item_size_1;
                     
                     var dctx_snake = canvas_snake.getContext("2d");
                     drawCircle(dctx_snake, s18, "#006064", "#00BCD4", "#B2EBF2", false);
@@ -1017,9 +1004,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
     initTiles();
     
     ctx2 = c2.getContext("2d");
-    ctx2.textAlign="left";
-    ctx2.textBaseline="top";
-    ctx2.font = NAMES_HEIGHT + "px Roboto";
+    ctx2.textAlign = "left";
+    ctx2.textBaseline = "top";
+    ctx2.font = "bold " + NAMES_HEIGHT + "px Roboto";
+    ctx2.fillStyle = "#FFFFFF";
     
     document.getElementById("nickname").value = getCookie("nickname");
     var server = document.getElementById("server");

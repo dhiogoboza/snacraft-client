@@ -6,10 +6,9 @@ var initial_av_index;
 var avatars = [];
 
 var colors = [
-    //["Cyan", "#FF0000", "#006064", "#00BCD4", "#B2EBF2"],
-    ["Cyan", "#FF0000", "#006064", "#00BCD4", "#B2EBF2"],
-    ["Wood", "#000000", "#322114", "#8d6b3c", "#9d7942"],
+    ["Cyan", "#000000", "#006064", "#00BCD4", "#B2EBF2"],
     ["Purple", "#FFFFFF", "#4A148C", "#8E24AA", "#E1BEE7"],
+    ["Wood", "#FFFFFF", "#322114", "#8d6b3c", "#9d7942"],
     ["Indigo", "#FFFFFF", "#1A237E", "#303F9F", "#9FA8DA"],
     ["Teal", "#000000", "#009688", "#4DB6AC", "#00897B"]
 ];
@@ -18,11 +17,11 @@ function createAvatars() {
     initial_av_index = TILES.length;
     current_avatar_index = initial_av_index;
     
-    var s = Math.floor(item_size / 8);
+    var s = item_size_1 / 8;
     var w = item_size_1 + (s);
     var h = item_size_1 + (s);
     
-    var s18 = Math.floor(item_size_1 / 8);
+    var s18 = item_size / 8;
     var s28 = 2 * s18;
     
     for (var i = 0; i < colors.length; i++) {
@@ -60,12 +59,7 @@ function drawAvatar(a_index) {
     var s = Math.floor(item_size / 8);
     var avatar = TILES[a_index];
     
-    if (a_index == initial_av_index + 2 ||
-            a_index == initial_av_index + 3) {
-        head_canvas = head_white;
-    } else {
-        head_canvas = head_black;
-    }
+    head_canvas = colors[a_index - initial_av_index][1] == "#FFFFFF" ? head_white : head_black;
     
     x = s;
     for (i = 0; i < ITEMS; i++) {
