@@ -79,9 +79,6 @@ var TILES = [
     
     // move speed
     {item: "MOVE_SPEED", off: false}
-    
-    // snake color
-    //{item: "SNAKE1", off: false}
 ]
 
 // canvas context
@@ -148,7 +145,6 @@ function drawGrid(only_header) {
             footer_first = false;
         }
         
-        
         y += item_size;
         
     }
@@ -156,11 +152,11 @@ function drawGrid(only_header) {
 
 function resetCurrentMatrix() {
     var line;
-    var y = 0, x;
+    var y = -item_size, x;
     current_matrix = [];
     for (i = 0; i < vertical_items; i++) {
         line = [];
-        x = 0;
+        x = -item_size;
         for (j = 0; j < horizontal_items; j++) {
             line.push({"i": -1, "x": x, "y": y, "off": true});
 
@@ -826,6 +822,11 @@ function initTiles() {
                     h = item_size_1 * 0.8;
                     
                     dctx.drawImage(TILES[xp1_index].item, x, y, w, h);
+                    
+                    // Removing big XP borders
+                    dctx.fillStyle = TILES[0]["item"];
+                    dctx.fillRect(0, h, item_size_1, s18);
+                    dctx.fillRect(w, 0, s18, item_size_1);
                     break;
                 case "XP4":
                     x = item_size_1 * 0.1;
@@ -835,24 +836,13 @@ function initTiles() {
                     h = item_size_1 * 0.8;
                     
                     dctx.drawImage(TILES[xp2_index].item, x, y, w, h);
+                    
+                    // Removing big XP borders
+                    dctx.fillStyle = TILES[0]["item"];
+                    dctx.fillRect(0, h, item_size_1, s18);
+                    dctx.fillRect(w, 0, s18, item_size_1);
                     break;
-                case "SNAKE1":
-                    x = -(s18);
-                    y = -(s18);
-                    
-                    w = item_size_1 + s28;
-                    h = item_size_1 + s28;
-                    
-                    var canvas_snake = document.createElement("canvas");
-                    canvas_snake.height = item_size_1;
-                    canvas_snake.width = item_size_1;
-                    
-                    var dctx_snake = canvas_snake.getContext("2d");
-                    drawCircle(dctx_snake, s18, "#006064", "#00BCD4", "#B2EBF2", false);
-                    
-                    dctx.drawImage(canvas_snake, x, y, w, h);
-                    
-                    break;
+                
             }
             
             TILES[i]["item"] = canvas; // recycle field with canvas
@@ -929,7 +919,9 @@ function createHead(eyes_color) {
     return head_canvas;
 }
 
-function drawCircle(dctx, s18, c1, c2, c3, radius) {
+function drawCircle(dctx, s18, c1, c2, c3, radius, margin) {
+    if (margin === undefined) margin = 0;
+    
     var s28 = 2 * s18;
     var s38 = 3 * s18;
     var s48 = 4 * s18;
@@ -938,6 +930,8 @@ function drawCircle(dctx, s18, c1, c2, c3, radius) {
     var s78 = 7 * s18;
     var s88 = 8 * s18;
     var m8 = (s18/2);
+    
+    s18 += margin;
     
     // center 2
     dctx.fillStyle = c1;
@@ -984,8 +978,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
     width = c.width = c2.width = $(document).width();
     height = c.height = c2.height = $(document).height();
     
-    horizontal_items = parseInt(width / item_size) + 1;
-    vertical_items = parseInt(height / item_size) + 1;
+    horizontal_items = parseInt(width / item_size) + 1 + 2;
+    vertical_items = parseInt(height / item_size) + 1 + 2;
 
     offset_i_left = parseInt(vertical_items / 2);
     offset_j_left = parseInt(horizontal_items / 2);
