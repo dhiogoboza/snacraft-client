@@ -5,14 +5,6 @@ var current_avatar_index = 0;
 var initial_av_index;
 var avatars = [];
 
-var colors = [
-    ["Cyan", "#000000", "#006064", "#00BCD4", "#B2EBF2"],
-    ["Purple", "#FFFFFF", "#4A148C", "#8E24AA", "#E1BEE7"],
-    ["Wood", "#FFFFFF", "#322114", "#8d6b3c", "#9d7942"],
-    ["Indigo", "#FFFFFF", "#1A237E", "#303F9F", "#9FA8DA"],
-    ["Teal", "#000000", "#009688", "#4DB6AC", "#00897B"]
-];
-
 function createAvatars() {
     initial_av_index = TILES.length;
     current_avatar_index = initial_av_index;
