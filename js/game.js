@@ -7,6 +7,11 @@ var KEY_DOWN_1 = 40;
 var KEY_LEFT_1 = 37;
 var KEY_RIGHT_1 = 39;
 
+var DIRECTION_DOWN = 0;
+var DIRECTION_RIGHT = 1;
+var DIRECTION_LEFT = 2;
+var DIRECTION_UP = 3;
+
 var FOCUS_OFFSET_PERCENTAGE = 0.2;
 
 var TILE_MOVE_SPEED = 5;
@@ -32,7 +37,6 @@ var lines = 0, columns = 0;
 
 var center_i = 0, center_j = 0;
 var head_i = 0, head_j = 0;
-var t_head_i = 0, t_head_j = 0;
 
 var head_black;
 var head_white;
@@ -50,6 +54,16 @@ var horizontal_items, vertical_items;
 var focus_offset_i, focus_offset_j;
 
 var grid_color = "#6d953e"; // D5D5D5
+
+// avatares colors
+var colors = [
+    ["Cyan", "#000000", "#006064", "#00BCD4", "#B2EBF2"],
+    ["Purple", "#FFFFFF", "#4A148C", "#8E24AA", "#E1BEE7"],
+    ["Wood", "#FFFFFF", "#322114", "#8d6b3c", "#9d7942"],
+    ["Indigo", "#FFFFFF", "#1A237E", "#303F9F", "#9FA8DA"],
+    ["Teal", "#000000", "#009688", "#4DB6AC", "#00897B"]
+];
+
 var TILES = [
     // empty
     {item: "#80af49", off: false}, //DDDDDD
@@ -283,9 +297,13 @@ function onMessage(event) {
                 center_j = head_j;
                 
                 my_snake = {
+                    "id": id,
                     "name": nickname,
                     "i": head_i,
                     "j": head_j,
+                    "direction": DIRECTION_DOWN,
+                    "x": 0,
+                    "y": 0,
                     "color": color,
                     "eyes": colors[color - initial_av_index][1] == "#FFFFFF" ? 1 : 0
                 };
@@ -358,6 +376,7 @@ function drawMobs(mobs_data) {
         if (!cur_snake) {
             cur_snake = {};
             var snake_skin = color - initial_av_index;
+            cur_snake["id"] = cur_id;
             cur_snake["eyes"] = colors[snake_skin][1] == "#FFFFFF" ? 1 : 0;
             
             cur_snake["name"] = "";
@@ -380,12 +399,16 @@ function drawMobs(mobs_data) {
         // detect snake direction
         if (cur_snake["i"] < cur_i) {
             cur_snake["head"] = cur_snake["eyes"]? head_white["down"] : head_black["down"];
+            cur_snake["direction"] = DIRECTION_DOWN;
         } else if (cur_snake["i"] > cur_i) {
             cur_snake["head"] = cur_snake["eyes"]? head_white["up"] : head_black["up"];
+            cur_snake["direction"] = DIRECTION_UP;
         } else if (cur_snake["j"] < cur_j) {
             cur_snake["head"] = cur_snake["eyes"]? head_white["right"] : head_black["right"];
+            cur_snake["direction"] = DIRECTION_RIGHT;
         } else if (cur_snake["j"] > cur_j) {
             cur_snake["head"] = cur_snake["eyes"]? head_white["left"] : head_black["left"];
+            cur_snake["direction"] = DIRECTION_LEFT;
         }
         
         // set snake positions
@@ -489,10 +512,15 @@ function drawMobsAtMap() {
                 
                 // clear previous name
                 ctx2.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], NAMES_HEIGHT);
-                
+                                
                 // save last snake name position
                 snake["name_x"] = current["x"] + item_size;
                 snake["name_y"] = current["y"] - item_size;
+                
+                if (snake["id"] == my_snake["id"]) {
+                    my_snake["x"] = snake["name_x"];
+                    my_snake["y"] = snake["name_y"];
+                }
                 
                 // draw snake name
                 ctx2.fillText(snake["name"], snake["name_x"], snake["name_y"]);
@@ -531,7 +559,7 @@ function initPlayer(cur_player) {
 }
 
 function initPlayersList(data) {
-    var player_name, cur_id, cur_player, name_size;
+    var player_name, cur_id, cur_player, name_size, color;
     
     //             0           1             2            3         4
     // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | COLOR | ... ]
@@ -547,11 +575,13 @@ function initPlayersList(data) {
             player_name += String.fromCharCode(data[i]);
         }
         
+        i++;
+        color = data[i];
         cur_player = {
             "name": player_name,
             "i": 0,
             "j": 0,
-            "color": data[i++],
+            "color": color,
             "eyes": colors[color - initial_av_index][1] == "#FFFFFF" ? 1 : 0
         };
         
@@ -599,12 +629,16 @@ function drawGameover() {
 }
 
 function keyPressed(e) {
+    sendKey(e.keyCode);
+}
+
+function sendKey(keyCode) {
     if (!connected) {
-        if (e.keyCode == 13) {
+        if (keyCode == 13) {
             document.getElementById("connect").click();
         }
     } else {
-        switch (e.keyCode) {
+        switch (keyCode) {
             case KEY_UP:
             case KEY_UP_1:
                 socket.send('1,0');
@@ -974,6 +1008,28 @@ function drawCircle(dctx, s18, c1, c2, c3, radius, margin) {
 document.addEventListener("DOMContentLoaded", function(event) {
     var c = document.getElementById("canvas");
     var c2 = document.getElementById("canvas2");
+    
+    c2.onclick = function(e) {
+        var y_diff = e.screenY - my_snake["y"];
+        var x_diff = e.screenX - my_snake["x"];
+        
+        switch (my_snake["direction"]) {
+            case DIRECTION_DOWN:
+            case DIRECTION_UP:
+                sendKey(x_diff > 0? KEY_RIGHT : KEY_LEFT);
+                break;
+            case DIRECTION_RIGHT:
+            case DIRECTION_LEFT:
+                console.log(y_diff)
+                sendKey(y_diff > 0? KEY_DOWN : KEY_UP);
+                break;
+        }
+        
+        console.log("x: " + x_diff);
+        console.log("y: " + y_diff);
+        
+        return false;
+    };
     
     width = c.width = c2.width = $(document).width();
     height = c.height = c2.height = $(document).height();
