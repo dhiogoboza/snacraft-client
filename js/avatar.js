@@ -9,9 +9,9 @@ function createAvatars() {
     initial_av_index = TILES.length;
     current_avatar_index = initial_av_index;
     
-    var s = item_size_1 / 8;
-    var w = item_size_1 + (s);
-    var h = item_size_1 + (s);
+    var s = item_size / 8;
+    var w = item_size + (s);
+    var h = item_size + (s);
     
     var s18 = item_size / 8;
     var s28 = 2 * s18;
@@ -48,17 +48,19 @@ function createAvatars() {
 }
 
 function drawAvatar(a_index) {
-    var s = Math.floor(item_size / 8);
+    var s = item_size / 8;
     var avatar = TILES[a_index];
     
     head_canvas = colors[a_index - initial_av_index][1] == "#FFFFFF" ? head_white : head_black;
     
     x = s;
-    for (i = 0; i < ITEMS; i++) {
-        if (i > 1 && i < 8) {
+    var start = window.innerWidth < SMALL_SCREEN? 0 : 1;
+    var end = window.innerWidth < SMALL_SCREEN? 6 : 7;
+    for (i = 0; i < end; i++) {
+        if (i > start) {
             avatar_ctx.drawImage(avatar["item"], x, s * 2, item_size, item_size);
             
-            if (i == 7) {
+            if (i == end  - 1) {
                 avatar_ctx.drawImage(head_canvas["right"], x, s * 2, item_size, item_size);
             }
         }
@@ -88,8 +90,14 @@ function changeAvatar(event) {
 function initAvatarChooser() {
     var s = 0.2 * item_size;
     
+    if (window.innerWidth < SMALL_SCREEN) {
+        ITEMS -= 2;
+    }
+    
+    var width = (window.innerWidth < SMALL_SCREEN? ITEMS - 1 : ITEMS) * item_size + 2 * s;;
+    
     avatar_canvas.height = 1.0 * item_size + 2 * s;
-    avatar_canvas.width = ITEMS * item_size + 2 * s;;
+    avatar_canvas.width = width;
     
     avatar_ctx.fillStyle = TILES[0].item;
     avatar_ctx.fillRect(0, 0, avatar_canvas.width, avatar_canvas.height);
@@ -107,7 +115,8 @@ function initAvatarChooser() {
     avatar_ctx.stroke();
     
     x = s;
-    for (i = 0; i < ITEMS; i++) {
+    var end = window.innerWidth < SMALL_SCREEN? 8 : 9;
+    for (i = 0; i < end; i++) {
         avatar_ctx.beginPath();
         avatar_ctx.moveTo(x, 0);
         avatar_ctx.lineTo(x, avatar_canvas.height);

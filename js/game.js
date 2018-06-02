@@ -12,6 +12,8 @@ var DIRECTION_RIGHT = 1;
 var DIRECTION_LEFT = 2;
 var DIRECTION_UP = 3;
 
+var SMALL_SCREEN = 650;
+
 var FOCUS_OFFSET_PERCENTAGE = 0.2;
 
 var TILE_MOVE_SPEED = 5;
@@ -124,7 +126,7 @@ function drawGrid(only_header) {
     var $footer = $("#footer");
     
     var footer_first = true;
-    var header_height = 5 * item_size;
+    var header_height = (window.innerWidth > SMALL_SCREEN? 5 : 4) * item_size;
     var footer_start = (vertical_items - 6) * item_size;
     
     var head_colors = ["#323232", "#373737", "#3a3a3a", "#3f3f3f", "#474747"];
@@ -234,7 +236,10 @@ function connect(server) {
         document.getElementById('navbar').style.display = "none";
         document.getElementById('footer').style.display = "none";
         document.getElementById('beta').style.display = "none";
-        document.getElementById('ads').style.display = "none";
+        var ads = document.getElementById('ads');
+        if (ads) {
+            ads.style.display = "none";
+        }
         document.getElementById('social-buttons').style.display = "none";
 
         // init ui items
@@ -277,7 +282,10 @@ function closeConnection() {
     document.getElementById('navbar').style.display = "block";
     document.getElementById('footer').style.display = "block";
     document.getElementById('beta').style.display = "block";
-    document.getElementById('ads').style.display = "block";
+    var ads = document.getElementById('ads');
+    if (ads) {
+        ads.style.display = "block";
+    }
     document.getElementById('social-buttons').style.display = "block";
 }
 
@@ -1010,8 +1018,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     var c2 = document.getElementById("canvas2");
     
     c2.onclick = function(e) {
-        console.log(e);
-        console.log("screen: " + e.x + " snake: " + my_snake["x"])
         switch (my_snake["direction"]) {
             case DIRECTION_DOWN:
             case DIRECTION_UP:
