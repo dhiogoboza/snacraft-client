@@ -1010,23 +1010,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
     var c2 = document.getElementById("canvas2");
     
     c2.onclick = function(e) {
-        var y_diff = e.screenY - my_snake["y"];
-        var x_diff = e.screenX - my_snake["x"];
-        
+        console.log(e);
+        console.log("screen: " + e.x + " snake: " + my_snake["x"])
         switch (my_snake["direction"]) {
             case DIRECTION_DOWN:
             case DIRECTION_UP:
-                sendKey(x_diff > 0? KEY_RIGHT : KEY_LEFT);
+                sendKey(e.x > my_snake["x"]? KEY_RIGHT : KEY_LEFT);
                 break;
             case DIRECTION_RIGHT:
             case DIRECTION_LEFT:
-                console.log(y_diff)
-                sendKey(y_diff > 0? KEY_DOWN : KEY_UP);
+                sendKey(e.y > my_snake["y"]? KEY_DOWN : KEY_UP);
                 break;
         }
-        
-        console.log("x: " + x_diff);
-        console.log("y: " + y_diff);
         
         return false;
     };
