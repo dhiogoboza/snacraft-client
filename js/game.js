@@ -14,6 +14,8 @@ var DIRECTION_UP = 3;
 
 var SMALL_SCREEN = 650;
 
+var smallScreen = false;
+
 var FOCUS_OFFSET_PERCENTAGE = 0.2;
 
 var TILE_MOVE_SPEED = 5;
@@ -126,7 +128,7 @@ function drawGrid(only_header) {
     var $footer = $("#footer");
     
     var footer_first = true;
-    var header_height = (window.innerWidth > SMALL_SCREEN? 5 : 4) * item_size;
+    var header_height = (smallScreen? 3 : 5) * item_size;
     var footer_start = (vertical_items - 6) * item_size;
     
     var head_colors = ["#323232", "#373737", "#3a3a3a", "#3f3f3f", "#474747"];
@@ -229,30 +231,15 @@ function connect(server) {
         var button = document.getElementById("connect");
         button.disabled = false;
         button.style.cursor = "pointer";
-
-        document.getElementById('game-container').style.display = "block";
-        document.getElementById('game-stats').style.display = "block";
-        document.getElementById('connect-form').style.display = "none";
-        document.getElementById('navbar').style.display = "none";
-        document.getElementById('footer').style.display = "none";
-        document.getElementById('beta').style.display = "none";
-        var ads = document.getElementById('ads');
-        if (ads) {
-            ads.style.display = "none";
-        }
-        document.getElementById('social-buttons').style.display = "none";
-
-        // init ui items
-        leaderBoardTable = document.getElementById("leader-board-table");
-        tBodyElem = document.createElement("tbody");
-        leaderBoardTable.innerHTML = "";
-        leaderBoardTable.appendChild(tBodyElem);
-        snakeRanking = document.getElementById("snake-ranking");
-
+        
+        startGame();
+        
         // setup nickname
         nickname = document.getElementById("nickname").value;
         if (!nickname) {
             nickname = 'snake-' + parseInt(Math.random() * 1e5).toString();
+        } else if (nickname.length > 10) {
+            nickname = nickname.substr(0, 10)
         }
         socket.send(nickname + "," + current_avatar_index);
         document.getElementById("snake-nickname").innerHTML = nickname;
@@ -260,24 +247,50 @@ function connect(server) {
 
     // Connection closed
     socket.addEventListener('close', function (event) {
-        closeConnection();
+        closeGame();
     });
 
     // Connection failed
     socket.addEventListener('error', function (event) {
-        closeConnection();
+        closeGame();
     });
 
     // Listen for messages
     socket.addEventListener('message', onMessage);
 }
 
-function closeConnection() {
+function startGame() {
+    document.getElementById('game-container').style.display = "block";
+    document.getElementById('game-stats').style.display = "block";
+    document.getElementById('keyboard').style.display = "block";
+    document.getElementById('connect-form').style.display = "none";
+    document.getElementById('navbar').style.display = "none";
+    document.getElementById('footer').style.display = "none";
+    document.getElementById('beta').style.display = "none";
+    var ads = document.getElementById('ads');
+    if (ads) {
+        ads.style.display = "none";
+    }
+    document.getElementById('social-buttons').style.display = "none";
+
+    // init ui items
+    leaderBoardTable = document.getElementById("leader-board-table");
+    tBodyElem = document.createElement("tbody");
+    leaderBoardTable.innerHTML = "";
+    leaderBoardTable.appendChild(tBodyElem);
+    snakeRanking = document.getElementById("snake-ranking");
+}
+
+function closeGame() {
     socket = null;
     connected = false;
 
     document.getElementById("connect").disabled = false;
     document.getElementById('game-stats').style.display = "none";
+    if (smallScreen) {
+        document.getElementById('keyboard').style.display = "none";
+    }
+    
     document.getElementById('connect-form').style.display = "block";
     document.getElementById('navbar').style.display = "block";
     document.getElementById('footer').style.display = "block";
@@ -303,15 +316,13 @@ function onMessage(event) {
                 
                 center_i = head_i;
                 center_j = head_j;
-                
+
                 my_snake = {
                     "id": id,
                     "name": nickname,
                     "i": head_i,
                     "j": head_j,
                     "direction": DIRECTION_DOWN,
-                    "x": 0,
-                    "y": 0,
                     "color": color,
                     "eyes": colors[color - initial_av_index][1] == "#FFFFFF" ? 1 : 0
                 };
@@ -525,11 +536,6 @@ function drawMobsAtMap() {
                 snake["name_x"] = current["x"] + item_size;
                 snake["name_y"] = current["y"] - item_size;
                 
-                if (snake["id"] == my_snake["id"]) {
-                    my_snake["x"] = snake["name_x"];
-                    my_snake["y"] = snake["name_y"];
-                }
-                
                 // draw snake name
                 ctx2.fillText(snake["name"], snake["name_x"], snake["name_y"]);
                 
@@ -637,16 +643,12 @@ function drawGameover() {
 }
 
 function keyPressed(e) {
-    sendKey(e.keyCode);
-}
-
-function sendKey(keyCode) {
     if (!connected) {
-        if (keyCode == 13) {
+        if (e.keyCode == 13) {
             document.getElementById("connect").click();
         }
     } else {
-        switch (keyCode) {
+        switch (e.keyCode) {
             case KEY_UP:
             case KEY_UP_1:
                 socket.send('1,0');
@@ -665,6 +667,10 @@ function sendKey(keyCode) {
                 break;
         }
     }
+}
+
+function virtualKeyPressed() {
+    socket.send('1,' + this.getAttribute("key"));
 }
 
 function setCookie(name, value, days) {
@@ -1014,23 +1020,15 @@ function drawCircle(dctx, s18, c1, c2, c3, radius, margin) {
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
+    smallScreen = window.innerWidth < SMALL_SCREEN;
+
     var c = document.getElementById("canvas");
     var c2 = document.getElementById("canvas2");
     
-    c2.onclick = function(e) {
-        switch (my_snake["direction"]) {
-            case DIRECTION_DOWN:
-            case DIRECTION_UP:
-                sendKey(e.x > my_snake["x"]? KEY_RIGHT : KEY_LEFT);
-                break;
-            case DIRECTION_RIGHT:
-            case DIRECTION_LEFT:
-                sendKey(e.y > my_snake["y"]? KEY_DOWN : KEY_UP);
-                break;
-        }
-        
-        return false;
-    };
+    var keys = document.querySelectorAll("#keyboard .key");
+    for (var i = 0; i < keys.length; i++) {
+        keys[i].addEventListener("click", virtualKeyPressed);
+    }
     
     width = c.width = c2.width = $(document).width();
     height = c.height = c2.height = $(document).height();
@@ -1069,6 +1067,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
         debugOption.text = debugOption.value;
 
         server.appendChild(debugOption);
+    }
+
+    if (findGetParameter("mobile") === "true") {
+        document.getElementById("ads").remove();
     }
 
     var cookie_server = getCookie("server");
