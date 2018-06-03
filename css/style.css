@@ -43,7 +43,7 @@ body > .container {
     height: 100%;
 }
 
-#game-container > div {
+#game-container > div:not(#keyboard) {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -56,6 +56,7 @@ body > .container {
     display: none;
     position: absolute;
     right: 0;
+    max-width: 158px;
     top: 0;
     background-color: rgba(0, 0, 0, 0.4);
     border-radius: 3px;
@@ -186,6 +187,10 @@ option {
     #connect-form .form .start {
         width: 95px;
     }
+    
+    .ribbon h1 {
+        font-size: 30px!important;
+    }
 }
 
 @media only screen and (max-width: 650px) {
@@ -209,7 +214,7 @@ option {
     
     .navbar-inverse .navbar-brand {
 	    font-size: 32px;
-	    padding-top: 60px;
+	    padding-top: 45px;
 	    padding-bottom: 40px;
 	    width: 100%;
 	    text-align: center;
@@ -219,6 +224,57 @@ option {
         width: 100%;
         margin-top: 10px;
     }
+    
+    .ribbon h1 {
+        font-size: 18px!important;
+    }
+    
+    #keyboard {
+        width: 100%;
+        height: 140px;
+        z-index: 9999;
+        position: absolute;
+        bottom: 0px;
+        text-align: center;
+    }
+    
+    #keyboard table {
+        border-radius: 20px;
+        background-color: rgba(0, 0, 0, 0.2);
+        display: inline-block;
+    }
+    
+    #keyboard table tr td {
+        text-align: center;
+        margin: 0px;
+        padding: 0px;
+    }
+    
+    #keyboard .key {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+    }
+    
+    #keyboard #right {
+        transform: scale(1.3);
+    }
+    
+    #keyboard #left {
+        transform: rotate(-180deg) scale(1.3);
+    }
+    
+    #keyboard #up {
+        transform: rotate(-90deg) scale(1.3);
+    }
+    
+    #keyboard #down {
+        transform: rotate(90deg) scale(1.3);
+    }
+}
+
+#keyboard {
+    display: none;
 }
 
 #connect-form-gameover {
@@ -310,7 +366,6 @@ option {
    font-family: 'minecraft_evenings';
    }
 .ribbon h1 {
-   font-size: 30px!important;
    color: white;
    text-shadow: black 0 1px 0;
    margin:0px;

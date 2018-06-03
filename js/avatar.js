@@ -54,8 +54,8 @@ function drawAvatar(a_index) {
     head_canvas = colors[a_index - initial_av_index][1] == "#FFFFFF" ? head_white : head_black;
     
     x = s;
-    var start = window.innerWidth < SMALL_SCREEN? 0 : 1;
-    var end = window.innerWidth < SMALL_SCREEN? 6 : 7;
+    var start = smallScreen? 0 : 1;
+    var end = smallScreen? 6 : 7;
     for (i = 0; i < end; i++) {
         if (i > start) {
             avatar_ctx.drawImage(avatar["item"], x, s * 2, item_size, item_size);
@@ -90,11 +90,11 @@ function changeAvatar(event) {
 function initAvatarChooser() {
     var s = 0.2 * item_size;
     
-    if (window.innerWidth < SMALL_SCREEN) {
+    if (smallScreen) {
         ITEMS -= 2;
     }
     
-    var width = (window.innerWidth < SMALL_SCREEN? ITEMS - 1 : ITEMS) * item_size + 2 * s;;
+    var width = (smallScreen? ITEMS - 1 : ITEMS) * item_size + 2 * s;;
     
     avatar_canvas.height = 1.0 * item_size + 2 * s;
     avatar_canvas.width = width;
@@ -115,7 +115,7 @@ function initAvatarChooser() {
     avatar_ctx.stroke();
     
     x = s;
-    var end = window.innerWidth < SMALL_SCREEN? 8 : 9;
+    var end = smallScreen? 8 : 9;
     for (i = 0; i < end; i++) {
         avatar_ctx.beginPath();
         avatar_ctx.moveTo(x, 0);
