@@ -1030,8 +1030,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         keys[i].addEventListener("click", virtualKeyPressed);
     }
     
-    width = c.width = c2.width = $(document).width();
-    height = c.height = c2.height = $(document).height();
+    width = c.width = c2.width = window.innerWidth;
+    height = c.height = c2.height = window.innerHeight;
     
     horizontal_items = parseInt(width / item_size) + 1 + 2;
     vertical_items = parseInt(height / item_size) + 1 + 2;

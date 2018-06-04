@@ -41,6 +41,7 @@ body > .container {
 #game-container {
     width: 100%;
     height: 100%;
+    position: relative;
 }
 
 #game-container > div:not(#keyboard) {
@@ -231,10 +232,10 @@ option {
     
     #keyboard {
         width: 100%;
-        height: 140px;
+        height: 125px;
         z-index: 9999;
         position: absolute;
-        bottom: 0px;
+        bottom: 5px;
         text-align: center;
     }
     
