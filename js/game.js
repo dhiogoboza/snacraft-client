@@ -346,10 +346,9 @@ function onMessage(event) {
             case 8:
                 // Player left the game
                 snake = players_list[data[1]];
-                
                 if (snake) {
                     ctx2.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], NAMES_HEIGHT);
-                    delete players_list[data[1]];
+                    players_list[data[1]] = undefined;
                 }
                 
                 break;
@@ -523,24 +522,26 @@ function drawMobsAtMap() {
             if (matrix_mobs[i][j] < 0) {
                 snake = players_list[-matrix_mobs[i][j]];
                 
-                tile = TILES[snake["color"]];
-                
-                drawItemAtCanvas(tile, current);
-                
-                ctx.drawImage(snake["head"], current["x"], current["y"], item_size, item_size);
-                
-                // clear previous name
-                ctx2.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], NAMES_HEIGHT);
-                                
-                // save last snake name position
-                snake["name_x"] = current["x"] + item_size;
-                snake["name_y"] = current["y"] - item_size;
-                
-                // draw snake name
-                ctx2.fillText(snake["name"], snake["name_x"], snake["name_y"]);
-                
-                // set negative to invalidate draw in the next step
-                current["i"] = -snake["color"];
+                if (snake) {
+                    tile = TILES[snake["color"]];
+                    
+                    drawItemAtCanvas(tile, current);
+                    
+                    ctx.drawImage(snake["head"], current["x"], current["y"], item_size, item_size);
+                    
+                    // clear previous name
+                    ctx2.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], NAMES_HEIGHT);
+                                    
+                    // save last snake name position
+                    snake["name_x"] = current["x"] + item_size;
+                    snake["name_y"] = current["y"] - item_size;
+                    
+                    // draw snake name
+                    ctx2.fillText(snake["name"], snake["name_x"], snake["name_y"]);
+                    
+                    // set negative to invalidate draw in the next step
+                    current["i"] = -snake["color"];
+                }
             } else if (matrix_mobs[i][j] == 0) {
                 if (matrix[i][j] != current["i"]) {
                     tile = TILES[matrix[i][j]];
@@ -1055,7 +1056,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     ctx2 = c2.getContext("2d");
     ctx2.textAlign = "left";
     ctx2.textBaseline = "top";
-    ctx2.font = "bold " + NAMES_HEIGHT + "px Roboto";
+    ctx2.font = "bold " + NAMES_HEIGHT + "px Arial";
     ctx2.fillStyle = "#FFFFFF";
     
     document.getElementById("nickname").value = getCookie("nickname");
