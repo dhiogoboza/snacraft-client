@@ -84,9 +84,9 @@ body > .container {
     position: absolute;
     left: 0;
     right: 0;
-    top: 22%;
     background-color: rgba(0,0,0,0.75);
     margin: 0 auto;
+    z-index: 999;
 }
 
 .heading h1 {
@@ -142,7 +142,7 @@ option {
     font-weight: 100;
     color: #EEE;
     padding: 20px;
-    background-color: rgba(102, 102, 102, 0.75);
+    background-color: #545751;
     border: none;
     border-radius: 0;
 }
@@ -236,7 +236,8 @@ option {
         z-index: 9999;
         position: absolute;
         bottom: 5px;
-        text-align: center;
+        right: 5px;
+        text-align: right;
     }
     
     #keyboard table {
@@ -271,6 +272,22 @@ option {
     
     #keyboard #down {
         transform: rotate(90deg) scale(1.3);
+    }
+}
+
+@media only screen and (min-height: 600px) {
+    .heading {
+        top: 22%;
+    }
+}
+
+@media only screen and (max-height: 600px) {
+    .heading {
+        top: 10%;
+    }
+    
+    .navbar-inverse .navbar-brand {
+	    padding-top: 15px;
     }
 }
 

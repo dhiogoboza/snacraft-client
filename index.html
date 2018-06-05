@@ -111,28 +111,29 @@
         
         <!-- Begin page content -->
         <div class="container">
-        <div class="heading" id="connect-form">
-            <div id="connect-form-gameover" class="message message-hidden">Game Over</div>
-            <div class="form">
-                <div class="fields">
-                    <input type="text" max="15" title="Nickname" name="nickname" placeholder="Nickname" id="nickname">
-                    <select title="Server" id="server" required="">
-                        <option selected="selected" value="secret-reaches-61045.herokuapp.com">secret-reaches</option>
-                        <option value="fast-island-17183.herokuapp.com">fast-island</option>
-                    </select>
-                    
-                    <div id="avatar-chooser">
-                        <i class="fa fa-arrow-left"></i>
-                        <canvas id="avatar" height="40"> </canvas>
-                        <i class="fa fa-arrow-right"></i>
+            <div class="heading" id="connect-form">
+                <div id="connect-form-gameover" class="message message-hidden">Game Over</div>
+                <div class="form">
+                    <div class="fields">
+                        <input type="text" max="15" title="Nickname" name="nickname" placeholder="Nickname" id="nickname">
+                        <select title="Server" id="server" required="">
+                            <option selected="selected" value="secret-reaches-61045.herokuapp.com">secret-reaches</option>
+                            <option value="fast-island-17183.herokuapp.com">fast-island</option>
+                        </select>
+                        
+                        <div id="avatar-chooser">
+                            <i class="fa fa-arrow-left"></i>
+                            <canvas id="avatar" height="40"> </canvas>
+                            <i class="fa fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    <div class="start">
+                        <button class="btn btn-default btn-lg btn-block" type="submit" id="connect">GO</button>
                     </div>
                 </div>
-                <div class="start">
-                    <button class="btn btn-default btn-lg btn-block" type="submit" id="connect">GO</button>
+                <div class="message" id="score">
+                    Score
                 </div>
-            </div>
-            <div class="message" id="score">
-                Score
             </div>
         </div>
         
