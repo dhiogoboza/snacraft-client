@@ -12,6 +12,8 @@ var DIRECTION_RIGHT = 1;
 var DIRECTION_LEFT = 2;
 var DIRECTION_UP = 3;
 
+var ZOMBIE_INDEX;
+
 var SMALL_SCREEN = 650;
 
 var smallScreen = false;
@@ -61,11 +63,17 @@ var grid_color = "#6d953e"; // D5D5D5
 
 // avatares colors
 var colors = [
-    ["Cyan", "#000000", "#006064", "#00BCD4", "#B2EBF2"],
+    ["Emerald", "#000000", "#006064", "#00BCD4", "#B2EBF2"],
     ["Purple", "#FFFFFF", "#4A148C", "#8E24AA", "#E1BEE7"],
     ["Wood", "#FFFFFF", "#322114", "#8d6b3c", "#9d7942"],
     ["Indigo", "#FFFFFF", "#1A237E", "#303F9F", "#9FA8DA"],
-    ["Teal", "#000000", "#009688", "#4DB6AC", "#00897B"]
+    ["Teal", "#000000", "#009688", "#4DB6AC", "#00897B"],
+    
+    // bots
+    ["Zombie", "#000000", "#1e2c13", "#385a27", "#567943"],
+    ["ZombieShirt", "#000000", "#007876", "#007e7b", "#007e7b"],
+    ["ZombiePant", "#000000", "#3a3189", "#463aa5", "#463aa5"],
+    ["Skeleton", "#000000", "#686868", "#939393", "#939393"]
 ];
 
 var TILES = [
@@ -373,6 +381,7 @@ function onMessage(event) {
 function drawMobs(mobs_data) {
     var snakes_count = mobs_data[1];
     var cur_i, cur_j;
+    var k, l;
     j = 2;
     leaderboard = [];
     
@@ -441,9 +450,33 @@ function drawMobs(mobs_data) {
         // put snake head at mobs matrix
         matrix_mobs[cur_snake["i"]][cur_snake["j"]] = -cur_id;
         
-        // snake pixels
-        for (k = 1; k < cur_snake["size"]; k++) {
-            matrix_mobs[mobs_data[j++]][mobs_data[j++]] = cur_snake["color"];
+        // Zombie
+        switch (color) {
+            case ZOMBIE_INDEX:
+                // shirt
+                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = 30;
+                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = 30;
+                
+                half = parseInt(cur_snake["size"] / 2) + 3
+
+                // pant
+                for (k = 3; k < half; k++) {
+                    matrix_mobs[mobs_data[j++]][mobs_data[j++]] = 31;
+                }
+                
+                // snake pixels
+                for (l = half; l < cur_snake["size"]; l++) {
+                    matrix_mobs[mobs_data[j++]][mobs_data[j++]] = cur_snake["color"];
+                }
+                
+                break;
+            default:
+	            // snake pixels
+	            for (k = 1; k < cur_snake["size"]; k++) {
+	                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = cur_snake["color"];
+	            }
+	            
+	            break;
         }
     }
     
@@ -593,6 +626,7 @@ function initPlayersList(data) {
         
         i++;
         color = data[i];
+        
         cur_player = {
             "name": player_name,
             "i": 0,

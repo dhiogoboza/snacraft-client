@@ -2,6 +2,7 @@ var SNAKE_SIZE = 6;
 var ITEMS = 10;
 
 var current_avatar_index = 0;
+var max_avatar_index;
 var initial_av_index;
 var avatars = [];
 
@@ -27,7 +28,7 @@ function createAvatars() {
         
         dctx.fillStyle = TILES[0]["item"];
         dctx.fillRect(0, 0, item_size_1, item_size_1);
-        
+
         x = -(s18);
         y = -(s18);
         
@@ -44,6 +45,15 @@ function createAvatars() {
         dctx.drawImage(canvas_snake, x, y, w, h);
         
         TILES[initial_av_index + i] = {item: canvas, off: false, image: true};
+        
+        if (colors[i][0] === "Zombie") {
+            ZOMBIE_INDEX = TILES.length - 1;
+        }
+        
+        
+        if (i == 4) {
+            max_avatar_index = TILES.length;
+        }
     }
 }
 
@@ -73,14 +83,14 @@ function changeAvatar(event) {
     if (event.currentTarget.className === "fa fa-arrow-right") {
         current_avatar_index++;
         
-        if (current_avatar_index == TILES.length) {
+        if (current_avatar_index == max_avatar_index) {
             current_avatar_index = initial_av_index;
         }
     } else {
         current_avatar_index--;
         
         if (current_avatar_index == initial_av_index - 1) {
-            current_avatar_index = TILES.length - 1;
+            current_avatar_index = max_avatar_index - 1;
         }
     }
     
