@@ -530,7 +530,7 @@ function drawMobsAtMap() {
                     ctx.drawImage(snake["head"], current["x"], current["y"], item_size, item_size);
                     
                     // clear previous name
-                    ctx2.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], NAMES_HEIGHT);
+                    ctx2.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], snake["name_h"]);
                                     
                     // save last snake name position
                     snake["name_x"] = current["x"] + item_size;
@@ -567,6 +567,7 @@ function drawMobsAtMap() {
 
 function initPlayer(cur_player) {
     measure = ctx2.measureText(cur_player["name"]);
+    cur_player["name_h"] = NAMES_HEIGHT + 2;
     cur_player["name_w"] = measure.width + 2;
     cur_player["name_x"] = 0;
     cur_player["name_y"] = 0;
@@ -579,7 +580,7 @@ function initPlayersList(data) {
     //             0           1             2            3         4
     // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | COLOR | ... ]
     
-    for (i = 1; i < data.length; i++) {
+    for (i = 1; i < data.length;) {
         cur_id = data[i];
         i++;
         name_size = data[i];
@@ -603,6 +604,8 @@ function initPlayersList(data) {
         initPlayer(cur_player);
         
         players_list[cur_id] = cur_player;
+        
+        i++;
     }
 }
 
