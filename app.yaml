@@ -29,4 +29,3 @@ handlers:
 
 - url: /api/servers.*
   script: api.servers.app
-  secure: always
