@@ -68,7 +68,7 @@ var colors = [
     ["Wood", "#FFFFFF", "#322114", "#8d6b3c", "#9d7942"],
     ["Indigo", "#FFFFFF", "#1A237E", "#303F9F", "#9FA8DA"],
     ["Teal", "#000000", "#009688", "#4DB6AC", "#00897B"],
-    
+
     // bots
     ["Zombie", "#000000", "#1e2c13", "#385a27", "#567943"],
     ["ZombieShirt", "#000000", "#007876", "#007e7b", "#007e7b"],
@@ -79,33 +79,42 @@ var colors = [
 var TILES = [
     // empty
     {item: "#80af49", off: false}, //DDDDDD
-    
+
     // stones
     {item: "#686868", off: true}, {item: "#6e6e6e", off: true},
     {item: "#747474", off: true}, {item: "#7e7e7e", off: true}, {item: "#8e8e8e", off: true},
-    
+
     // clay
     {item: "#2b1608", off: true}, {item: "#3b2711", off: true}, {item: "#593d2a", off: true},
     {item: "#715036", off: true}, {item: "#76553a", off: true},
-        
+
     // grass
     {item: "#346a2c", off: true}, {item: "#4b8435", off: true}, {item: "#508935", off: true},
     {item: "#548c35", off: true}, {item: "#7da658", off: true},
-    
+
     // eat
     {item: "CHICKEN", off: false},
     {item: "PIG", off: false},
     {item: "COW", off: false},
-    
+
     // corpse
     {item: "XP1", off: false},
     {item: "XP2", off: false},
     {item: "XP3", off: false},
     {item: "XP4", off: false},
-    
+
     // move speed
     {item: "MOVE_SPEED", off: false}
 ]
+
+// https://minecraft.gamepedia.com/Category:Soundtrack
+// https://minecraft.gamepedia.com/Category:Sound_effects
+var SOUNDS = {
+    "CHICKEN": new Audio('snd/chickenhurt.ogg'), // https://minecraft.gamepedia.com/File:Chickenhurt1.ogg
+    "COW": new Audio('snd/cowhurt.ogg'), // https://minecraft.gamepedia.com/File:Cowhurt1.ogg
+    "PIG": new Audio('snd/pigdeath.ogg'), // https://minecraft.gamepedia.com/File:Pigdeath.ogg
+    "XP": new Audio('snd/xp.ogg') // https://minecraft.gamepedia.com/File:XP_Old.ogg
+}
 
 // canvas context
 var ctx;
@@ -131,18 +140,18 @@ function randomInt(min, max) {
 
 function drawGrid(only_header) {
     var y = 0, x;
-    
+
     var $navbar = $("#navbar");
     var $footer = $("#footer");
-    
+
     var footer_first = true;
     var header_height = (smallScreen? 3 : 5) * item_size;
     var footer_start = (vertical_items - 6) * item_size;
-    
+
     var head_colors = ["#323232", "#373737", "#3a3a3a", "#3f3f3f", "#474747"];
     var grass_colors = ["#1a3516", "#183114", "#223d18", "#274018", "#3e532c"];
     var clay_colors = ["#150b04", "#1d1308", "#2c1e15", "#38281b", "#3b2a1d"];
-    
+
     for (i = 0; i < vertical_items + 1; i++) {
         x = 0;
         for (j = 0; j < horizontal_items + 1; j++) {
@@ -163,16 +172,16 @@ function drawGrid(only_header) {
                 ctx.fillStyle = TILES[0]["item"];
                 ctx.fillRect(x, y, item_size_1, item_size_1);
             }
-            
+
             x += item_size;
         }
-        
+
         if (y >= footer_start) {
             footer_first = false;
         }
-        
+
         y += item_size;
-        
+
     }
 }
 
@@ -201,10 +210,10 @@ function initMatrix(matrix_data) {
 
     lines = parseInt(matrix_split[1]);
     columns = parseInt(matrix_split[2]);
-    
+
     matrix_mobs = [];
     matrix = [];
-    
+
     var c = 3;
     var line;
     var y = 0, x;
@@ -232,16 +241,16 @@ function connect(server) {
     // Connection opened
     socket.addEventListener('open', function (event) {
         connected = true;
-        
+
         // clear snakes name
         ctx2.clearRect(0, 0, width, height);
 
         var button = document.getElementById("connect");
         button.disabled = false;
         button.style.cursor = "pointer";
-        
+
         startGame();
-        
+
         // setup nickname
         nickname = document.getElementById("nickname").value;
         if (!nickname) {
@@ -298,7 +307,7 @@ function closeGame() {
     if (smallScreen) {
         document.getElementById('keyboard').style.display = "none";
     }
-    
+
     document.getElementById('connect-form').style.display = "block";
     document.getElementById('navbar').style.display = "block";
     document.getElementById('footer').style.display = "block";
@@ -321,7 +330,7 @@ function onMessage(event) {
                 // Head
                 head_i = data[3];
                 head_j = data[4];
-                
+
                 center_i = head_i;
                 center_j = head_j;
 
@@ -334,17 +343,17 @@ function onMessage(event) {
                     "color": color,
                     "eyes": colors[color - initial_av_index][1] == "#FFFFFF" ? 1 : 0
                 };
-                
+
                 initPlayer(my_snake);
-                
+
                 players_list[id] = my_snake;
-                
+
                 break;
             case 2:
                 // Game data updated
                 drawMobs(data);
                 drawMobsAtMap();
-                
+
                 drawStats();
                 break;
             case 7:
@@ -358,7 +367,7 @@ function onMessage(event) {
                     ctx2.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], NAMES_HEIGHT);
                     players_list[data[1]] = undefined;
                 }
-                
+
                 break;
         }
     } else if (typeof event.data === "string") {
@@ -370,7 +379,7 @@ function onMessage(event) {
                 break;
             case 4:
                 // Game over
-                
+
                 socket.close();
                 drawGameover();
                 break;
@@ -384,45 +393,45 @@ function drawMobs(mobs_data) {
     var k, l;
     j = 2;
     leaderboard = [];
-    
+
     // get snakes
     for (i = 0; i < snakes_count; i++) {
         // current snake id
         cur_id = mobs_data[j++];
-        
+
         // push ids at ranking array
         leaderboard.push(cur_id);
-        
+
         // get current snake by index
         cur_snake = players_list[cur_id];
-        
+
         // snake color
         color = mobs_data[j++];
-        
+
         // TODO: do not receive snakes until players list is received
         if (!cur_snake) {
             cur_snake = {};
             var snake_skin = color - initial_av_index;
             cur_snake["id"] = cur_id;
             cur_snake["eyes"] = colors[snake_skin][1] == "#FFFFFF" ? 1 : 0;
-            
+
             cur_snake["name"] = "";
             cur_snake["i"] = 0;
             cur_snake["j"] = 0;
-            
+
             players_list[cur_id] = cur_snake;
         }
-        
+
         // set snake color
         cur_snake["color"] = color;
-        
+
         // snake size
         cur_snake["size"] = mobs_data[j++];
-        
+
         // snake head
         cur_i = mobs_data[j++];
         cur_j = mobs_data[j++];
-        
+
         // detect snake direction
         if (cur_snake["i"] < cur_i) {
             cur_snake["head"] = cur_snake["eyes"]? head_white["down"] : head_black["down"];
@@ -437,54 +446,54 @@ function drawMobs(mobs_data) {
             cur_snake["head"] = cur_snake["eyes"]? head_white["left"] : head_black["left"];
             cur_snake["direction"] = DIRECTION_LEFT;
         }
-        
+
         // set snake positions
         cur_snake["i"] = cur_i;
         cur_snake["j"] = cur_j;
-        
+
         if (cur_id == id) {
             my_snake = cur_snake;
             my_snake["position"] = i + 1;
         }
-        
+
         // put snake head at mobs matrix
         matrix_mobs[cur_snake["i"]][cur_snake["j"]] = -cur_id;
-        
+
         // Zombie
         switch (color) {
             case ZOMBIE_INDEX:
                 // shirt
                 matrix_mobs[mobs_data[j++]][mobs_data[j++]] = 30;
                 matrix_mobs[mobs_data[j++]][mobs_data[j++]] = 30;
-                
+
                 half = parseInt(cur_snake["size"] / 2) + 3
 
                 // pant
                 for (k = 3; k < half; k++) {
                     matrix_mobs[mobs_data[j++]][mobs_data[j++]] = 31;
                 }
-                
+
                 // snake pixels
                 for (l = half; l < cur_snake["size"]; l++) {
                     matrix_mobs[mobs_data[j++]][mobs_data[j++]] = cur_snake["color"];
                 }
-                
+
                 break;
             default:
 	            // snake pixels
 	            for (k = 1; k < cur_snake["size"]; k++) {
 	                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = cur_snake["color"];
 	            }
-	            
+
 	            break;
         }
     }
-    
+
     // get another mobs
     for (i = j; i < mobs_data.length; i++) {
         matrix_mobs[mobs_data[i]][mobs_data[++i]] = mobs_data[++i];
     }
-    
+
     // update current view flags
     head_i = my_snake["i"];
     head_j = my_snake["j"];
@@ -513,7 +522,7 @@ function drawItemAtCanvas(tile, current) {
                 ctx.fillStyle = grid_color;
                 ctx.fillRect(current["x"], current["y"], item_size, item_size);
             }
-            
+
             ctx.fillStyle = tile["item"];
             if (tile["off"]) {
                 ctx.fillRect(current["x"], current["y"], item_size, item_size);
@@ -546,47 +555,47 @@ function drawMobsAtMap() {
         j_end = columns;
         j_start = columns - horizontal_items;
     }
-    
+
     var tile, previous, snake;
     for (i = i_start, _i = 0; i < i_end; i++, _i++) {
         for (j = j_start, _j = 0; j < j_end; j++, _j++) {
             current = current_matrix[_i][_j];
-            
+
             if (matrix_mobs[i][j] < 0) {
                 snake = players_list[-matrix_mobs[i][j]];
-                
+
                 if (snake) {
                     tile = TILES[snake["color"]];
-                    
+
                     drawItemAtCanvas(tile, current);
-                    
+
                     ctx.drawImage(snake["head"], current["x"], current["y"], item_size, item_size);
-                    
+
                     // clear previous name
                     ctx2.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], snake["name_h"]);
-                                    
+
                     // save last snake name position
                     snake["name_x"] = current["x"] + item_size;
                     snake["name_y"] = current["y"] - item_size;
-                    
+
                     // draw snake name
                     ctx2.fillText(snake["name"], snake["name_x"], snake["name_y"]);
-                    
+
                     // set negative to invalidate draw in the next step
                     current["i"] = -snake["color"];
                 }
             } else if (matrix_mobs[i][j] == 0) {
                 if (matrix[i][j] != current["i"]) {
                     tile = TILES[matrix[i][j]];
-                    
+
                     drawItemAtCanvas(tile, current);
-                    
+
                     current["i"] = matrix[i][j];
                 }
             } else {
                 if (matrix_mobs[i][j] != current["i"]) {
                     tile = TILES[matrix_mobs[i][j]];
-                    
+
                     drawItemAtCanvas(tile, current);
 
                     current["i"] = matrix_mobs[i][j];
@@ -609,24 +618,24 @@ function initPlayer(cur_player) {
 
 function initPlayersList(data) {
     var player_name, cur_id, cur_player, name_size, color;
-    
+
     //             0           1             2            3         4
     // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | COLOR | ... ]
-    
+
     for (i = 1; i < data.length;) {
         cur_id = data[i];
         i++;
         name_size = data[i];
-        
+
         player_name = "";
         for (j = 0; j < name_size; j++) {
             i++;
             player_name += String.fromCharCode(data[i]);
         }
-        
+
         i++;
         color = data[i];
-        
+
         cur_player = {
             "name": player_name,
             "i": 0,
@@ -634,11 +643,11 @@ function initPlayersList(data) {
             "color": color,
             "eyes": colors[color - initial_av_index][1] == "#FFFFFF" ? 1 : 0
         };
-        
+
         initPlayer(cur_player);
-        
+
         players_list[cur_id] = cur_player;
-        
+
         i++;
     }
 }
@@ -647,36 +656,36 @@ function drawStats() {
     // my score
     score = my_snake["size"];
     document.getElementById("snake-size").innerHTML = score;
-    
+
     // my snake position
     position = my_snake["position"]
     snakeRanking.innerHTML = position;
-    
+
     tBodyElem.innerHTML = "";
-    
+
     var cur_snake;
     for (i = 0; i < leaderboard.length; i++) {
         cur_snake = players_list[leaderboard[i]];
-        
+
         if (cur_snake) {
             var tableRow = document.createElement("tr");
             tableRow.innerHTML = "<td><strong> #" + (i + 1) +
                     "</strong></td><td>" +
                     cur_snake["name"] + "</td>";
-                    
+
             tBodyElem.appendChild(tableRow);
         }
     }
-    
+
 }
 
 function drawGameover() {
     var score_dom = document.getElementById("score");
     score_dom.style.visibility = "visible";
     score_dom.innerHTML = "Score: " + score + " (" + position + ")";
-    
+
     document.getElementById("connect-form-gameover").style.visibility = "visible";
-    
+
     drawGrid(true);
 }
 
@@ -758,19 +767,19 @@ function initTiles() {
     for (i = 0; i < TILES.length; i++) {
         if (TILES[i]["item"].charAt(0) != '#') {
             TILES[i]["image"] = true;
-            
+
             // cache canvas
             canvas = document.createElement("canvas");
             canvas.height = item_size;
             canvas.width = item_size;
-            
+
             dctx = canvas.getContext("2d");
             dctx.fillStyle = grid_color;
             dctx.fillRect(0, 0, item_size, item_size);
-            
+
             dctx.fillStyle = TILES[0]["item"];
             dctx.fillRect(0, 0, item_size_1, item_size_1);
-            
+
             var s18 = item_size_1 / 8;
             var s28 = 2 * s18;
             var s38 = 3 * s18;
@@ -780,7 +789,7 @@ function initTiles() {
             var s78 = 7 * s18;
             var s88 = 8 * s18;
             var m8 = (s18/2);
-            
+
             var s110 = item_size_1 / 10;
             var s210 = 2 * s110;
             var s310 = 3 * s110;
@@ -789,62 +798,62 @@ function initTiles() {
             var s610 = 6 * s110;
             var s710 = 7 * s110;
             var s810 = 8 * s110;
-            
+
             var top = parseInt(s110 + (s110 / 2));
-            
+
             switch (TILES[i]["item"]) {
                 case 'CHICKEN':
                     var s = item_size_1 / 10;
                     var tw = 8 * s;
                     var s2 = 2 * s;
-                    
+
                     dctx.fillStyle = "#e8e8e8";
                     y = s;
                     dctx.fillRect(s, y, tw, s);
-                    
+
                     dctx.fillStyle = "#FFFFFF";
                     y += s;
                     dctx.fillRect(s, y, tw, s2);
-                    
+
                     // eyes
                     dctx.fillStyle = "#000000";
                     dctx.fillRect(s, y, s2, s2);
                     dctx.fillRect(3 * s2 + s, y, s2, s2);
-                    
+
                     dctx.fillStyle = "#c19343";
                     y += s2;
                     dctx.fillRect(s, y, tw, s2);
-                    
+
                     dctx.fillStyle = "#967234";
                     y += s2;
                     dctx.fillRect(s, y, tw, s2);
-                    
+
                     dctx.fillStyle = "#FFFFFF";
                     y += s2;
                     dctx.fillRect(s, y, tw, s);
-                    
+
                     dctx.fillStyle = "#FF0000";
                     dctx.fillRect(s2 + s2, y, s2 + s, s2);
-                    
+
                     break;
                 case "PIG":
                     // bg
                     dctx.fillStyle = "#f0acab";
                     dctx.fillRect(s110, top, s810, s710);
-                    
+
                     // ear
                     dctx.fillStyle = "#d58181";
                     dctx.fillRect(s210, top, s110, s210);
-                    
+
                     // eyes
                     dctx.fillStyle = "#000000";
                     dctx.fillRect(s110, s410, s210, s210);
                     dctx.fillRect(s710, s410, s210, s210);
-                    
+
                     dctx.fillStyle = "#FFFFFF";
                     dctx.fillRect(s310, s410, s110, s210);
                     dctx.fillRect(s610, s410, s110, s210);
-                    
+
                     // nose
                     dctx.fillStyle = "#965151";
                     dctx.fillRect(s410, s710, s110, s110);
@@ -854,31 +863,31 @@ function initTiles() {
                     // bg
                     dctx.fillStyle = "#573800";
                     dctx.fillRect(s110, top, s810, s710);
-                    
+
                     // white
                     dctx.fillStyle = "#e7e7e7";
                     dctx.fillRect(s410, top, s210, s210);
                     dctx.fillRect(s410, top, s310, s110);
                     dctx.fillRect(s410, top, s110, s310);
-                    
+
                     // eyes
                     dctx.fillStyle = "#FFFFFF";
                     dctx.fillRect(s110, s410, s210, s210);
                     dctx.fillRect(s710, s410, s210, s210);
-                    
+
                     dctx.fillStyle = "#000000";
                     dctx.fillRect(s110, s510, s110, s110);
                     dctx.fillRect(s810, s510, s110, s110);
-                    
+
                     // nose
                     dctx.fillStyle = "#FFFFFF";
                     dctx.fillRect(s410, s610, s210, s110);
                     dctx.fillRect(s210, s710, s510 + (s110/2), s210);
-                    
+
                     dctx.fillStyle = "#000000";
                     dctx.fillRect(s310, s710, s110, s110);
                     dctx.fillRect(s610, s710, s110, s110);
-                    
+
                     dctx.fillStyle = "#a5a5a5";
                     dctx.fillRect(s310, s810, s410, s110);
 
@@ -887,10 +896,10 @@ function initTiles() {
                     dctx.fillStyle = "#616161";
                     dctx.fillRect(s28, s18, s28, s78);
                     dctx.fillRect(s58, s18, s28, s78);
-                    
+
                     dctx.fillRect(s18, s68, s38, s28);
                     dctx.fillRect(s58, s68, s38, s28);
-                    
+
                     break;
                 case "XP1":
                     xp1_index = i;
@@ -903,12 +912,12 @@ function initTiles() {
                 case "XP3":
                     x = item_size_1 * 0.1;
                     y = item_size_1 * 0.1;
-                    
+
                     w = item_size_1 * 0.8;
                     h = item_size_1 * 0.8;
-                    
+
                     dctx.drawImage(TILES[xp1_index].item, x, y, w, h);
-                    
+
                     // Removing big XP borders
                     dctx.fillStyle = TILES[0]["item"];
                     dctx.fillRect(0, h, item_size_1, s18);
@@ -917,26 +926,26 @@ function initTiles() {
                 case "XP4":
                     x = item_size_1 * 0.1;
                     y = item_size_1 * 0.1;
-                    
+
                     w = item_size_1 * 0.8;
                     h = item_size_1 * 0.8;
-                    
+
                     dctx.drawImage(TILES[xp2_index].item, x, y, w, h);
-                    
+
                     // Removing big XP borders
                     dctx.fillStyle = TILES[0]["item"];
                     dctx.fillRect(0, h, item_size_1, s18);
                     dctx.fillRect(w, 0, s18, item_size_1);
                     break;
-                
+
             }
-            
+
             TILES[i]["item"] = canvas; // recycle field with canvas
         } else {
             TILES[i]["image"] = false;
         }
     }
-    
+
     head_black = createHead("#000000");
     head_white = createHead("#FFFFFF");
 }
@@ -946,68 +955,68 @@ function createHead(eyes_color) {
     var s25 = 2 * s15;
     var s35 = 3 * s15;
     var s45 = 4 * s15;
-    
+
     // init head canvas
     var head_canvas = {}
-    
+
     // head up
     var canvas = document.createElement("canvas");
     canvas.height = item_size;
     canvas.width = item_size;
-    
+
     var dctx = canvas.getContext("2d");
-    
+
     dctx.fillStyle = eyes_color;
     dctx.fillRect(s15, s15, s15, s15);
     dctx.fillRect(s35, s15, s15, s15);
 
     head_canvas["up"] = canvas;
-    
+
     // head down
     canvas = document.createElement("canvas");
     canvas.height = item_size;
     canvas.width = item_size;
-    
+
     dctx = canvas.getContext("2d");
-    
+
     dctx.fillStyle = eyes_color;
     dctx.fillRect(s15, s35, s15, s15);
     dctx.fillRect(s35, s35, s15, s15);
-    
+
     head_canvas["down"] = canvas;
-    
+
     // head left
     canvas = document.createElement("canvas");
     canvas.height = item_size;
     canvas.width = item_size;
-    
+
     dctx = canvas.getContext("2d");
-    
+
     dctx.fillStyle = eyes_color;
     dctx.fillRect(s15, s15, s15, s15);
     dctx.fillRect(s15, s35, s15, s15);
 
     head_canvas["left"] = canvas;
-    
+
     // head right
     canvas = document.createElement("canvas");
     canvas.height = item_size;
     canvas.width = item_size;
-    
+
     dctx = canvas.getContext("2d");
-    
+
     dctx.fillStyle = eyes_color;
     dctx.fillRect(s35, s15, s15, s15);
     dctx.fillRect(s35, s35, s15, s15);
 
     head_canvas["right"] = canvas;
-    
+
     return head_canvas;
 }
 
 function drawCircle(dctx, s18, c1, c2, c3, radius, margin) {
     if (margin === undefined) margin = 0;
-    
+
     var s28 = 2 * s18;
     var s38 = 3 * s18;
     var s48 = 4 * s18;
@@ -1016,40 +1025,40 @@ function drawCircle(dctx, s18, c1, c2, c3, radius, margin) {
     var s78 = 7 * s18;
     var s88 = 8 * s18;
     var m8 = (s18/2);
-    
+
     s18 += margin;
-    
+
     // center 2
     dctx.fillStyle = c1;
     dctx.fillRect(s18, s18, s68, s68);
-    
+
     // center 1
     dctx.fillStyle = c2;
     dctx.fillRect(s28, s28, s48, s48);
-    
+
     // center
     dctx.fillStyle = c3;
     dctx.fillRect(s38, s38, s28, s28);
-    
+
     if (radius) {
         // cutting
         dctx.fillStyle = TILES[0]["item"];
-        
+
         // top left
         dctx.fillRect(0, 0, s28 + m8, s18 + m8);
         dctx.fillRect(0, 0, s28, s28);
         dctx.fillRect(0, 0, s18 + m8, s28 + m8);
-        
+
         // top right
         dctx.fillRect(s68 + m8, 0, s18 + m8, s28 + m8);
         dctx.fillRect(s68, 0, s28, s28);
         dctx.fillRect(s58 + m8, 0, s28 + m8, s18 + m8);
-         
+
         // bottom left
         dctx.fillRect(0, s58 + m8, s18 + m8, s28 + m8);
         dctx.fillRect(0, s68, s28, s28);
         dctx.fillRect(0, s68 + m8, s28 + m8, s18 + m8);
-        
+
         // bottom right
         dctx.fillRect(s68 + m8, s58 + m8, s18 + m8, s28 + m8);
         dctx.fillRect(s68, s68, s28, s28);
@@ -1062,15 +1071,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     var c = document.getElementById("canvas");
     var c2 = document.getElementById("canvas2");
-    
+
     var keys = document.querySelectorAll("#keyboard .key");
     for (var i = 0; i < keys.length; i++) {
         keys[i].addEventListener("click", virtualKeyPressed);
     }
-    
+
     width = c.width = c2.width = window.innerWidth;
     height = c.height = c2.height = window.innerHeight;
-    
+
     horizontal_items = parseInt(width / item_size) + 1 + 2;
     vertical_items = parseInt(height / item_size) + 1 + 2;
 
@@ -1086,16 +1095,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
     ctx = c.getContext("2d");
     ctx.fillStyle = grid_color;
     ctx.fillRect(0, 0, width, height);
-    
+
     drawGrid(false);
     initTiles();
-    
+
     ctx2 = c2.getContext("2d");
     ctx2.textAlign = "left";
     ctx2.textBaseline = "top";
     ctx2.font = "bold " + NAMES_HEIGHT + "px Arial";
     ctx2.fillStyle = "#FFFFFF";
-    
+
     document.getElementById("nickname").value = getCookie("nickname");
     var server = document.getElementById("server");
 
@@ -1129,7 +1138,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         e.target.style.cursor = "wait";
         if (!connected) {
             resetCurrentMatrix();
-            
+
             var server = document.getElementById("server").value;
             var nickname = document.getElementById("nickname").value;
 
@@ -1139,11 +1148,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
             connect(server);
         }
     };
-    
+
     avatar_canvas = document.getElementById("avatar");
     avatar_ctx = avatar_canvas.getContext("2d");
-    
+
     initAvatarChooser();
-    
+
     window.addEventListener('keydown', keyPressed, false);
 });
