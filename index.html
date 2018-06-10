@@ -7,11 +7,11 @@
         <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
         <meta name="description" content="">
         <meta name="author" content="">
-        
+
         <link rel="icon" href="images/favicon.ico">
-        
+
         <title>Snacraft Beta</title>
-        
+
         <!-- Bootstrap core CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -22,10 +22,10 @@
         <!--<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700"	   type="text/css" media="all">-->
         <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,100,300,500" type="text/css" media="all">
         <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Press+Start+2P"		   type="text/css" media="all">
-        
+
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        
+
         <!-- //Fonts -->
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -35,7 +35,7 @@
     </head>
     <body>
         <!-- FB share button script
-            ================================================== 
+            ==================================================
             <div id="fb-root"></div>
             <script>(function(d, s, id) {
               var js, fjs = d.getElementsByTagName(s)[0];
@@ -55,7 +55,7 @@
                 </div>
             </div>
         </nav>
-        
+
         <div id="game-container">
             <div>
                 <canvas id="canvas" />
@@ -89,7 +89,7 @@
                 </table>
             </div>
         </div>
-        
+
         <div id="game-stats">
             <h3 id="snake-nickname"></h3>
             <table class="table table-condensed">
@@ -108,7 +108,7 @@
             <table id="leader-board-table" class="table table-condensed">
             </table>
         </div>
-        
+
         <!-- Begin page content -->
         <div class="container">
             <div class="heading" id="connect-form">
@@ -117,10 +117,8 @@
                     <div class="fields">
                         <input type="text" max="15" title="Nickname" name="nickname" placeholder="Nickname" id="nickname">
                         <select title="Server" id="server" required="">
-                            <option selected="selected" value="secret-reaches-61045.herokuapp.com">secret-reaches</option>
-                            <option value="fast-island-17183.herokuapp.com">fast-island</option>
                         </select>
-                        
+
                         <div id="avatar-chooser">
                             <i class="fa fa-arrow-left"></i>
                             <canvas id="avatar" height="40"> </canvas>
@@ -136,7 +134,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div id="ads">
             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
             <!-- Snacraft main -->
@@ -148,7 +146,7 @@
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
         </div>
-        
+
         <footer class="footer" id="footer">
             <div class="container">
                 <p class="text-muted">
@@ -157,14 +155,14 @@
                 </p>
             </div>
         </footer>
-        
+
         <div class="social_buttons" id="social-buttons">
             <!-- FB share button script
-                ================================================== 
+                ==================================================
                 <div class="fb-share-button" data-href="http://snacraft.tk" data-layout="button_count" data-size="small" data-mobile-iframe="true"><a target="_blank" href="http://snacraft.tk" class="fb-xfbml-parse-ignore">Compartilhar</a></div>
                 -->
         </div>
-        
+
         <!-- Bootstrap core JavaScript
             ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
@@ -174,6 +172,7 @@
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
         <script src="js/ie10-viewport-bug-workaround.js"></script>
         <!-- Game script -->
+        <script src="js/server-list.js"></script>
         <script src="js/game.js"></script>
         <script src="js/avatar.js"></script>
     </body>
