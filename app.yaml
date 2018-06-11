@@ -30,3 +30,6 @@ handlers:
 - url: /js/(.*)
   static_files: js/\1
   upload: js/(.*)
+
+- url: /api/servers.*
+  script: api.servers.app

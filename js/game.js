@@ -13,7 +13,6 @@ var DIRECTION_LEFT = 2;
 var DIRECTION_UP = 3;
 
 var ZOMBIE_INDEX;
-
 var SMALL_SCREEN = 650;
 
 var smallScreen = false;
@@ -369,6 +368,9 @@ function onMessage(event) {
                 }
 
                 break;
+            case 9:
+                // Ignore
+                break;
         }
     } else if (typeof event.data === "string") {
         data = event.data;
@@ -379,7 +381,6 @@ function onMessage(event) {
                 break;
             case 4:
                 // Game over
-
                 socket.close();
                 drawGameover();
                 break;
@@ -391,6 +392,7 @@ function drawMobs(mobs_data) {
     var snakes_count = mobs_data[1];
     var cur_i, cur_j;
     var k, l;
+
     j = 2;
     leaderboard = [];
 
@@ -1115,6 +1117,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         server.appendChild(debugOption);
     }
+
+    getServerList(document.getElementById("server"));
 
     if (findGetParameter("mobile") === "true") {
         document.getElementById("ads").remove();
