@@ -57,7 +57,7 @@ body > .container {
     display: none;
     position: absolute;
     right: 0;
-    max-width: 158px;
+    width: 158px;
     top: 0;
     background-color: rgba(0, 0, 0, 0.4);
     border-radius: 3px;
