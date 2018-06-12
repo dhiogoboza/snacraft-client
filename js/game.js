@@ -29,9 +29,6 @@ var matrix_mobs = [];
 
 var players_list = {};
 
-// images
-var image_MoveSpeed;
-
 var connected = false;
 var socket;
 var nickname;
@@ -92,9 +89,9 @@ var TILES = [
     {item: "#548c35", off: true}, {item: "#7da658", off: true},
 
     // eat
-    {item: "CHICKEN", off: false},
-    {item: "PIG", off: false},
-    {item: "COW", off: false},
+    {item: "CHICKEN", off: false}, // 16
+    {item: "PIG", off: false}, // 17
+    {item: "COW", off: false}, // 18
 
     // corpse
     {item: "XP1", off: false},
@@ -106,14 +103,8 @@ var TILES = [
     {item: "MOVE_SPEED", off: false}
 ]
 
-// https://minecraft.gamepedia.com/Category:Soundtrack
-// https://minecraft.gamepedia.com/Category:Sound_effects
-var SOUNDS = {
-    "CHICKEN": new Audio('snd/chickenhurt.ogg'), // https://minecraft.gamepedia.com/File:Chickenhurt1.ogg
-    "COW": new Audio('snd/cowhurt.ogg'), // https://minecraft.gamepedia.com/File:Cowhurt1.ogg
-    "PIG": new Audio('snd/pigdeath.ogg'), // https://minecraft.gamepedia.com/File:Pigdeath.ogg
-    "XP": new Audio('snd/xp.ogg') // https://minecraft.gamepedia.com/File:XP_Old.ogg
-}
+// sounds map
+var sounds;
 
 // canvas context
 var ctx;
@@ -295,6 +286,8 @@ function startGame() {
     leaderBoardTable.innerHTML = "";
     leaderBoardTable.appendChild(tBodyElem);
     snakeRanking = document.getElementById("snake-ranking");
+
+    startSound();
 }
 
 function closeGame() {
@@ -316,6 +309,8 @@ function closeGame() {
         ads.style.display = "block";
     }
     document.getElementById('social-buttons').style.display = "block";
+
+    stopSound();
 }
 
 function onMessage(event) {
@@ -369,7 +364,10 @@ function onMessage(event) {
 
                 break;
             case 9:
-                // Ignore
+                // TODO: what?
+                break;
+            case 10:
+                playSound(data[1]);
                 break;
         }
     } else if (typeof event.data === "string") {
@@ -1157,6 +1155,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     avatar_ctx = avatar_canvas.getContext("2d");
 
     initAvatarChooser();
+    initSounds();
 
     window.addEventListener('keydown', keyPressed, false);
 });
