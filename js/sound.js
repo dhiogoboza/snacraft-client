@@ -11,7 +11,7 @@ Array.prototype.choice = function () {
 // https://minecraft.gamepedia.com/Category:Sound_effects
 function initSounds() {
     walking_sound = new Audio('snd/sound.mp3');
-    
+
     var xp_sound = [new Audio('snd/xp.ogg')];
     // FIXME: XP volume doesn't working
     xp_sound.volume = MOBS_VOLUME;

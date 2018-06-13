@@ -9,43 +9,43 @@ var avatars = [];
 function createAvatars() {
     initial_av_index = TILES.length;
     current_avatar_index = initial_av_index;
-    
+
     var s = item_size / 8;
     var w = item_size + (s);
     var h = item_size + (s);
-    
+
     var s18 = item_size / 8;
     var s28 = 2 * s18;
-    
+
     for (var i = 0; i < colors.length; i++) {
         canvas = document.createElement("canvas");
         canvas.height = item_size;
         canvas.width = item_size;
-        
+
         dctx = canvas.getContext("2d");
         dctx.fillStyle = grid_color;
         dctx.fillRect(0, 0, item_size, item_size);
-        
+
         dctx.fillStyle = TILES[0]["item"];
         dctx.fillRect(0, 0, item_size_1, item_size_1);
 
         x = -(s18);
         y = -(s18);
-        
+
         w = item_size_1 + s28;
         h = item_size_1 + s28;
-        
+
         var canvas_snake = document.createElement("canvas");
         canvas_snake.height = item_size;
         canvas_snake.width = item_size;
-        
+
         var dctx_snake = canvas_snake.getContext("2d");
         drawCircle(dctx_snake, s18, colors[i][2], colors[i][3], colors[i][4], false);
-        
+
         dctx.drawImage(canvas_snake, x, y, w, h);
-        
+
         TILES[initial_av_index + i] = {item: canvas, off: false, image: true};
-        
+
         if (colors[i][0] === "Zombie") {
             ZOMBIE_INDEX = TILES.length - 1;
         }
