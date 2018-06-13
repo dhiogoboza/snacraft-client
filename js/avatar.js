@@ -82,18 +82,17 @@ function changeAvatar(event) {
     if (event.currentTarget.className === "fa fa-arrow-right") {
         current_avatar_index++;
 
-        if (current_avatar_index == max_avatar_index) {
+        if (current_avatar_index === max_avatar_index) {
             current_avatar_index = initial_av_index;
         }
     } else {
         current_avatar_index--;
-        
-        if (current_avatar_index == initial_av_index - 1) {
+
+        if (current_avatar_index === initial_av_index - 1) {
             current_avatar_index = max_avatar_index - 1;
-            current_avatar_index = TILES.length - 1;
         }
     }
-    
+
     drawAvatar(current_avatar_index);
 }
 
