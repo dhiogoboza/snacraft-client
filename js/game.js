@@ -15,6 +15,8 @@ var DIRECTION_UP = 3;
 var ZOMBIE_INDEX;
 var SMALL_SCREEN = 650;
 
+var RANKING_SIZE = 8;
+
 var smallScreen = false;
 
 var FOCUS_OFFSET_PERCENTAGE = 0.2;
@@ -35,6 +37,7 @@ var nickname;
 var id;
 var leaderboard;
 var my_snake;
+var snakes_count;
 var lines = 0, columns = 0;
 
 var center_i = 0, center_j = 0;
@@ -387,7 +390,7 @@ function onMessage(event) {
 }
 
 function drawMobs(mobs_data) {
-    var snakes_count = mobs_data[1];
+    snakes_count = mobs_data[1];
     var cur_i, cur_j;
     var k, l;
 
@@ -400,7 +403,9 @@ function drawMobs(mobs_data) {
         cur_id = mobs_data[j++];
 
         // push ids at ranking array
-        leaderboard.push(cur_id);
+        if (i < RANKING_SIZE) {
+            leaderboard.push(cur_id);
+        }
 
         // get current snake by index
         cur_snake = players_list[cur_id];
@@ -659,7 +664,7 @@ function drawStats() {
 
     // my snake position
     position = my_snake["position"]
-    snakeRanking.innerHTML = position;
+    snakeRanking.innerHTML = position + "/" + snakes_count;
 
     tBodyElem.innerHTML = "";
 
@@ -682,7 +687,7 @@ function drawStats() {
 function drawGameover() {
     var score_dom = document.getElementById("score");
     score_dom.style.visibility = "visible";
-    score_dom.innerHTML = "Score: " + score + " (" + position + ")";
+    score_dom.innerHTML = "Score: " + score + " (" + position + "/" + snakes_count + ")";
 
     document.getElementById("connect-form-gameover").style.visibility = "visible";
 
