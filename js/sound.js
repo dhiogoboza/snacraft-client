@@ -14,7 +14,7 @@ function initSounds() {
 
     var xp_sound = [new Audio('snd/xp.ogg')];
     // FIXME: XP volume doesn't working
-    xp_sound.volume = MOBS_VOLUME;
+    xp_sound[0].volume = MOBS_VOLUME;
 
     var chicken_hurt = new Audio('snd/chickenhurt.ogg');
     chicken_hurt.volume = MOBS_VOLUME;
@@ -57,6 +57,14 @@ function startSound() {
 }
 
 function stopSound() {
+    var dead = new Audio('snd/dead.ogg');
+    dead.volume = MOBS_VOLUME;
+
+    var hurt = new Audio('snd/hurt.ogg');
+    hurt.volume = MOBS_VOLUME;
+
+    [dead, hurt].choice().play();
+
     walking_sound.pause();
 }
 
