@@ -46,8 +46,8 @@ function getPlayersCount(serverList) {
         ws.onmessage = function (event) {
             if (event.data instanceof ArrayBuffer) {
                 var data = new Uint8Array(event.data);
-                if (data[0] == 9) {
-                    var playersCount = data[2];
+                if (data && data.length == 2 && data[0] == 9 && data[1]) {
+                    var playersCount = data[1];
 
                     // FIXME: find a better way to do this
                     var serverUrl = event.srcElement.url.substring(5, event.srcElement.url.length - 1);
@@ -60,4 +60,3 @@ function getPlayersCount(serverList) {
         };
     }
 }
-
