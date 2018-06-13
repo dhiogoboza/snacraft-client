@@ -61,7 +61,6 @@ function stopSound() {
 }
 
 function playSound(sound_id) {
-    console.log(sound_id);
     if (sound_id) {
         sound = sounds[sound_id];
         if (sound) {
