@@ -32,7 +32,7 @@ function initSounds() {
     cowhurt.volume = MOBS_VOLUME;
 
     var cow = new Audio('snd/cow.ogg');
-    cow.volume = MOBS_VOLUME;
+    cow.volume = MOBS_VOLUME * 2; // this sound volume is very low
 
     sounds = {
         //"CHICKEN"
