@@ -4,32 +4,32 @@ threadsafe: true
 
 handlers:
 - url: /
-  static_files: index.html
-  upload: index.html
+  static_files: dist/index.html
+  upload: dist/index.html
 
 - url: /index(.*)
-  static_files: index.html
-  upload: index.html
+  static_files: dist/index.html
+  upload: dist/index.html
 
 - url: /css/(.*)
-  static_files: css/\1
-  upload: css/(.*)
+  static_files: dist/css/\1
+  upload: dist/css/(.*)
 
 - url: /fonts/(.*)
-  static_files: fonts/\1
-  upload: fonts/(.*)
+  static_files: dist/fonts/\1
+  upload: dist/fonts/(.*)
 
 - url: /img/(.*)
-  static_files: img/\1
-  upload: img/(.*)
+  static_files: dist/img/\1
+  upload: dist/img/(.*)
 
 - url: /snd/(.*)
-  static_files: snd/\1
-  upload: snd/(.*)
+  static_files: dist/snd/\1
+  upload: dist/snd/(.*)
 
 - url: /js/(.*)
-  static_files: js/\1
-  upload: js/(.*)
+  static_files: dist/js/\1
+  upload: dist/js/(.*)
 
 - url: /api/servers.*
   script: api.servers.app

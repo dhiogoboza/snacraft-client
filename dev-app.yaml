@@ -1,0 +1,35 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /
+  static_files: index.html
+  upload: index.html
+
+- url: /index(.*)
+  static_files: index.html
+  upload: index.html
+
+- url: /css/(.*)
+  static_files: css/\1
+  upload: css/(.*)
+
+- url: /fonts/(.*)
+  static_files: fonts/\1
+  upload: fonts/(.*)
+
+- url: /img/(.*)
+  static_files: img/\1
+  upload: img/(.*)
+
+- url: /snd/(.*)
+  static_files: snd/\1
+  upload: snd/(.*)
+
+- url: /js/(.*)
+  static_files: js/\1
+  upload: js/(.*)
+
+- url: /api/servers.*
+  script: api.servers.app
