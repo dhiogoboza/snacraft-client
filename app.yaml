@@ -1,6 +1,20 @@
 runtime: python27
 api_version: 1
 threadsafe: true
+skip_files:
+- .git/
+- .gitingore
+- node_modules/
+- css/
+- fonts/
+- img/
+- js/
+- snd/
+- index.html
+- dev-app.yaml
+- package.json
+- package-lock.json
+- README.md
 
 handlers:
 - url: /
