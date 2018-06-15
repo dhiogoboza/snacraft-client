@@ -396,6 +396,7 @@ function drawMobs(mobs_data) {
     snakes_count = mobs_data[1];
     var cur_i, cur_j;
     var k, l;
+    var size_most, size_less;
 
     j = 2;
     leaderboard = [];
@@ -434,7 +435,9 @@ function drawMobs(mobs_data) {
         cur_snake["color"] = color;
 
         // snake size
-        cur_snake["size"] = mobs_data[j++];
+        size_most = mobs_data[j++];
+        size_less = mobs_data[j++];
+        cur_snake["size"] = size_most << 8 | size_less & 0xFF;
 
         // snake head
         cur_i = mobs_data[j++];
