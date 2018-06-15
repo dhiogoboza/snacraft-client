@@ -48,7 +48,7 @@ var head_white;
 
 var data = null;
 
-var position, score;
+var position, score, speed;
 
 var eyes_color = "#000000";
 
@@ -367,10 +367,13 @@ function onMessage(event) {
 
                 break;
             case 9:
-                // TODO: what?
+                // ingore players count
                 break;
             case 10:
                 playSound(data[1]);
+                break;
+            case 11:
+                speed = data[1];
                 break;
         }
     } else if (typeof event.data === "string") {
@@ -661,6 +664,9 @@ function drawStats() {
     // my score
     score = my_snake["size"];
     document.getElementById("snake-size").innerHTML = score;
+
+    // my speed
+    document.getElementById("snake-speed").innerHTML = speed;
 
     // my snake position
     position = my_snake["position"]
