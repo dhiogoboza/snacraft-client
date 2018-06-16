@@ -68,7 +68,7 @@ var grid_color = "#6d953e"; // D5D5D5
 
 // avatares colors
 var colors = [
-    ["Emerald", "#000000", "rect", "#006064", "#00BCD4", "#B2EBF2"],
+    ["Diamond", "#000000", "rect", "#006064", "#00BCD4", "#B2EBF2"],
     ["Purple", "#FFFFFF", "rect", "#4A148C", "#8E24AA", "#E1BEE7"],
     ["Wood", "#FFFFFF", "rect", "#322114", "#8d6b3c", "#9d7942"],
     ["Indigo", "#FFFFFF", "rect", "#1A237E", "#303F9F", "#9FA8DA"],
@@ -503,8 +503,8 @@ function drawMobs(mobs_data) {
                 matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_BOW;
 
                 for (k = 3; k < cur_snake["size"]; k++) {
-	                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_INDEX;
-	            }
+                    matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_INDEX;
+	        }
                 break;
             default:
 	            // snake pixels
@@ -864,7 +864,6 @@ function initTiles() {
 
                     dctx.fillStyle = "#FF0000";
                     dctx.fillRect(s2 + s2, y, s2 + s, s2);
-
                     break;
                 case "PIG":
                     // bg
@@ -966,6 +965,7 @@ function initTiles() {
                     dctx.fillStyle = TILES[0]["item"];
                     dctx.fillRect(0, h, item_size_1, s18);
                     dctx.fillRect(w, 0, s18, item_size_1);
+
                     break;
 
             }
