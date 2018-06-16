@@ -59,9 +59,9 @@ body > .container {
     right: 0;
     width: 158px;
     top: 0;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
-    padding: 0 10px;
+    padding: 10px 10px 0 10px;
     margin-right: 10px;
     margin-top: 10px;
 }
@@ -70,6 +70,8 @@ body > .container {
     font-family: 'Press Start 2P', cursive;
     text-align: center;
     font-size: 14px;
+    margin-top: 0px;
+    margin-bottom: 5px;
 }
 
 #game-stats table td {

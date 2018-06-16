@@ -6,6 +6,13 @@ var max_avatar_index;
 var initial_av_index;
 var avatars = [];
 
+var avatar_ctx;
+var avatar_canvas;
+
+function debug(c, x, y, s) {
+    ctx.drawImage(c, x, y, s, s);
+}
+
 function createAvatars() {
     initial_av_index = TILES.length;
     current_avatar_index = initial_av_index;
@@ -35,22 +42,65 @@ function createAvatars() {
         w = item_size_1 + s28;
         h = item_size_1 + s28;
 
-        var canvas_snake = document.createElement("canvas");
-        canvas_snake.height = item_size;
-        canvas_snake.width = item_size;
+        var canvas_avatar = document.createElement("canvas");
+        canvas_avatar.height = item_size;
+        canvas_avatar.width = item_size;
 
-        var dctx_snake = canvas_snake.getContext("2d");
-        drawCircle(dctx_snake, s18, colors[i][2], colors[i][3], colors[i][4], false);
+        var dctx_avatar = canvas_avatar.getContext("2d");
+        if (colors[i][2] == "rect") {
+            drawCircle(dctx_avatar, s18, colors[i][3], colors[i][4], colors[i][5], false);
+        } else if (colors[i][2] == "bow") {
+            drawCircle(dctx_avatar, s18, colors[i][3], colors[i][4], colors[i][4], false);
 
-        dctx.drawImage(canvas_snake, x, y, w, h);
+            var m = s18 / 2;
+            var s38 = 3 * s18;
+            var s48 = 4 * s18;
+            var s58 = 5 * s18;
+            var s68 = 6 * s18;
+            var s78 = 7 * s18;
+            var s88 = 8 * s18;
+
+            var x_bow = s28;
+            var y_bow = h - s48;
+            dctx_avatar.fillStyle = colors[i][5];
+            for (var j = 0; j < 3; j++) {
+                //dctx_avatar.fillRect(s28, h - s48, s18, s18);
+                dctx_avatar.fillRect(x_bow, y_bow, s18, s18);
+                x_bow += m;
+                y_bow -= 2 * m;
+            }
+            
+            for (var j = 0; j < 3; j++) {
+                //dctx_avatar.fillRect(s28, h - s48, s18, s18);
+                dctx_avatar.fillRect(x_bow, y_bow, s18, s18);
+                x_bow += 2 * m;
+                y_bow -= m;
+            }
+
+            dctx_avatar.strokeStyle = colors[i][6];
+            dctx_avatar.beginPath();
+            dctx_avatar.moveTo(s28 + m, h - s38);
+            dctx_avatar.lineTo(w - s38, s28);
+            dctx_avatar.stroke();
+
+            dctx.drawImage(canvas_avatar, x, y, w, h);
+            
+            debug(canvas, 103, 207, item_size);
+        }
+
+        // draw avatar at base avatar canvas
+        dctx.drawImage(canvas_avatar, x, y, w, h);
 
         TILES[initial_av_index + i] = {item: canvas, off: false, image: true};
 
         if (colors[i][0] === "Zombie") {
             ZOMBIE_INDEX = TILES.length - 1;
-        }
-
-        if (i == 4) {
+            ZOMBIE_SHIRT = ZOMBIE_INDEX + 1;
+            ZOMBIE_PANT = ZOMBIE_SHIRT + 1;
+        } else if (colors[i][0] === "Skeleton") {
+            SKELETON_INDEX = TILES.length - 1;
+            SKELETON_BOW = SKELETON_INDEX + 1;
+        } else if (i == 4) {
             max_avatar_index = TILES.length;
         }
     }
@@ -97,6 +147,9 @@ function changeAvatar(event) {
 }
 
 function initAvatarChooser() {
+    avatar_canvas = document.getElementById("avatar");
+    avatar_ctx = avatar_canvas.getContext("2d");
+
     var s = 0.2 * item_size;
 
     if (smallScreen) {

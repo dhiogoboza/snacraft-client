@@ -4,7 +4,7 @@ var AMBIENCE_VOLUME = 0.1;
 var walking_sound;
 
 Array.prototype.choice = function () {
-    return this[Math.floor(Math.random() * this.length)]
+    return this[Math.floor(Math.random() * this.length)];
 }
 
 // https://minecraft.gamepedia.com/Category:Soundtrack
@@ -23,19 +23,19 @@ function initSounds() {
     chicken_hurt.volume = MOBS_VOLUME;
 
     var chicken = new Audio('snd/chicken.ogg');
-    chicken.volume = MOBS_VOLUME;
+    chicken.volume = MOBS_VOLUME * 3.0;
 
     var pigdeath = new Audio('snd/pigdeath.ogg');
     pigdeath.volume = MOBS_VOLUME;
 
     var pig = new Audio('snd/pig.ogg');
-    pig.volume = MOBS_VOLUME;
+    pig.volume = MOBS_VOLUME * 3.0;
 
     var cowhurt = new Audio('snd/cowhurt.ogg');
     cowhurt.volume = MOBS_VOLUME;
 
     var cow = new Audio('snd/cow.ogg');
-    cow.volume = MOBS_VOLUME * 2; // this sound volume is very low
+    cow.volume = 1;
 
     sounds = {
         //"CHICKEN"

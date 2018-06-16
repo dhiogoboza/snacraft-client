@@ -13,6 +13,12 @@ var DIRECTION_LEFT = 2;
 var DIRECTION_UP = 3;
 
 var ZOMBIE_INDEX;
+var ZOMBIE_SHIRT;
+var ZOMBIE_PANT;
+
+var SKELETON_INDEX;
+var SKELETON_BOW;
+
 var SMALL_SCREEN = 650;
 
 var RANKING_SIZE = 8;
@@ -62,17 +68,18 @@ var grid_color = "#6d953e"; // D5D5D5
 
 // avatares colors
 var colors = [
-    ["Emerald", "#000000", "#006064", "#00BCD4", "#B2EBF2"],
-    ["Purple", "#FFFFFF", "#4A148C", "#8E24AA", "#E1BEE7"],
-    ["Wood", "#FFFFFF", "#322114", "#8d6b3c", "#9d7942"],
-    ["Indigo", "#FFFFFF", "#1A237E", "#303F9F", "#9FA8DA"],
-    ["Teal", "#000000", "#009688", "#4DB6AC", "#00897B"],
+    ["Emerald", "#000000", "rect", "#006064", "#00BCD4", "#B2EBF2"],
+    ["Purple", "#FFFFFF", "rect", "#4A148C", "#8E24AA", "#E1BEE7"],
+    ["Wood", "#FFFFFF", "rect", "#322114", "#8d6b3c", "#9d7942"],
+    ["Indigo", "#FFFFFF", "rect", "#1A237E", "#303F9F", "#9FA8DA"],
+    ["Teal", "#000000", "rect", "#009688", "#4DB6AC", "#00897B"],
 
     // bots
-    ["Zombie", "#000000", "#1e2c13", "#385a27", "#567943"],
-    ["ZombieShirt", "#000000", "#007876", "#007e7b", "#007e7b"],
-    ["ZombiePant", "#000000", "#3a3189", "#463aa5", "#463aa5"],
-    ["Skeleton", "#000000", "#686868", "#939393", "#939393"]
+    ["Zombie", "#000000", "rect", "#1e2c13", "#385a27", "#567943"],
+    ["ZombieShirt", "#000000", "rect", "#007876", "#007e7b", "#007e7b"],
+    ["ZombiePant", "#000000", "rect", "#3a3189", "#463aa5", "#463aa5"],
+    ["Skeleton", "#000000", "rect", "#686868", "#939393", "#939393"],
+    ["SkeletonBow", "#000000", "bow", "#686868", "#939393", "#896727", "#444444"]
 ];
 
 var TILES = [
@@ -116,6 +123,8 @@ var ctx2;
 // canvas size
 var width;
 var height;
+
+var DESIRED_HORIZONTAL_ITEMS = 55;
 var item_size = 26, item_size_1 = item_size - 2;
 var i, j;
 
@@ -123,9 +132,6 @@ var i, j;
 var leaderBoardTable;
 var tBodyElem;
 var snakeRanking;
-
-var avatar_ctx;
-var avatar_canvas;
 
 function randomInt(min, max) {
     return Math.floor(Math.random()*(max-min+1)+min);
@@ -367,7 +373,7 @@ function onMessage(event) {
 
                 break;
             case 9:
-                // ingore players count
+                // TODO: what?
                 break;
             case 10:
                 playSound(data[1]);
@@ -474,21 +480,31 @@ function drawMobs(mobs_data) {
         switch (color) {
             case ZOMBIE_INDEX:
                 // shirt
-                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = 30;
-                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = 30;
+                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_SHIRT;
+                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_SHIRT;
 
                 half = parseInt(cur_snake["size"] / 2) + 3
 
                 // pant
                 for (k = 3; k < half; k++) {
-                    matrix_mobs[mobs_data[j++]][mobs_data[j++]] = 31;
+                    matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_PANT;
                 }
 
                 // snake pixels
                 for (l = half; l < cur_snake["size"]; l++) {
-                    matrix_mobs[mobs_data[j++]][mobs_data[j++]] = cur_snake["color"];
+                    matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_INDEX;
                 }
 
+                break;
+            case SKELETON_INDEX:
+                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_INDEX;
+
+                // bow
+                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_BOW;
+
+                for (k = 3; k < cur_snake["size"]; k++) {
+	                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_INDEX;
+	            }
                 break;
             default:
 	            // snake pixels
@@ -1094,7 +1110,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
     width = c.width = c2.width = window.innerWidth;
     height = c.height = c2.height = window.innerHeight;
 
-    horizontal_items = parseInt(width / item_size) + 1 + 2;
+    //horizontal_items = parseInt(width / item_size) + 1 + 2;
+    //vertical_items = parseInt(height / item_size) + 1 + 2;
+
+    horizontal_items = DESIRED_HORIZONTAL_ITEMS;
+    
+    item_size = parseInt(width / (horizontal_items - 3));
+    if (item_size < 26) {
+        while (item_size % 8 != 0) {
+            item_size++;
+        }
+        horizontal_items = parseInt(width / item_size) + 1 + 2;
+    }
+    item_size_1 = item_size - 2;
     vertical_items = parseInt(height / item_size) + 1 + 2;
 
     offset_i_left = parseInt(vertical_items / 2);
@@ -1164,9 +1192,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
             connect(server);
         }
     };
-
-    avatar_canvas = document.getElementById("avatar");
-    avatar_ctx = avatar_canvas.getContext("2d");
 
     initAvatarChooser();
     initSounds();
