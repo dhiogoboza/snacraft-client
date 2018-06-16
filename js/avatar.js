@@ -84,8 +84,6 @@ function createAvatars() {
             dctx_avatar.stroke();
 
             dctx.drawImage(canvas_avatar, x, y, w, h);
-            
-            debug(canvas, 103, 207, item_size);
         }
 
         // draw avatar at base avatar canvas
