@@ -178,7 +178,7 @@ function initAvatarChooser() {
     avatar_ctx.stroke();
 
     x = s;
-    var end = smallScreen? 8 : 9;
+    var end = smallScreen? 9 : 10;
     for (i = 0; i < end; i++) {
         avatar_ctx.beginPath();
         avatar_ctx.moveTo(x, 0);
