@@ -62,23 +62,31 @@
                 <table>
                     <tr>
                         <td colspan="3">
-                            <img id="up" key="0" class="key" src="img/arrow.svg" />
+                            <div class="key-container">
+                                <img id="up" key="0" class="key" src="img/arrow.svg" />
+                            </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <img id="left" key="2" class="key" src="img/arrow.svg" />
+                            <div class="key-container">
+                                <img id="left" key="2" class="key" src="img/arrow.svg" />
+                            </div>
                         </td>
                         <td>
                             <div class="key" />
                         </td>
                         <td>
-                            <img id="right" key="3" class="key" src="img/arrow.svg" />
+                            <div class="key-container">
+                                <img id="right" key="3" class="key" src="img/arrow.svg" />
+                            </div>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3">
-                            <img id="down" key="1" class="key" src="img/arrow.svg" />
+                            <div class="key-container">
+                                <img id="down" key="1" class="key" src="img/arrow.svg" />
+                            </div>
                         </td>
                     </tr>
                 </table>
@@ -86,23 +94,25 @@
         </div>
 
         <div id="game-stats">
-            <h3 id="snake-nickname"></h3>
-            <table class="table table-condensed">
-                <tbody>
-                    <tr>
-                        <td><strong>Size</strong></td>
-                        <td id="snake-size"></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Speed</strong></td>
-                        <td id="snake-speed"></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Ranking</strong></td>
-                        <td id="snake-ranking"></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div id="player-stats">
+                <h3 id="snake-nickname"></h3>
+                <table class="table table-condensed">
+                    <tbody>
+                        <tr>
+                            <td><strong>Size</strong></td>
+                            <td id="snake-size"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Speed</strong></td>
+                            <td id="snake-speed"></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ranking</strong></td>
+                            <td id="snake-ranking"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <h3>Rank</h3>
             <table id="leader-board-table" class="table table-condensed">
             </table>
