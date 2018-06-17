@@ -342,7 +342,7 @@ function onMessage(event) {
                     "name": nickname,
                     "i": head_i,
                     "j": head_j,
-                    "direction": DIRECTION_DOWN,
+                    "direction": DIRECTION_UP,
                     "color": color,
                     "eyes": colors[color - initial_av_index][1] == "#FFFFFF" ? 1 : 0
                 };
