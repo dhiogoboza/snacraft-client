@@ -1099,6 +1099,11 @@ function drawCircle(dctx, s18, c1, c2, c3, radius, margin) {
 document.addEventListener("DOMContentLoaded", function(event) {
     smallScreen = window.innerWidth < SMALL_SCREEN;
 
+    if (smallScreen) {
+        // TODO: a better way to small screen devices
+        RANKING_SIZE = 4;
+    }
+
     var c = document.getElementById("canvas");
     var c2 = document.getElementById("canvas2");
 
