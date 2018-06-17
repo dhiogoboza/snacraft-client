@@ -105,6 +105,7 @@ function createAvatars() {
 }
 
 function drawAvatar(a_index) {
+    var item_size = 33;
     var s = item_size / 8;
     var avatar = TILES[a_index];
 
@@ -145,6 +146,8 @@ function changeAvatar(event) {
 }
 
 function initAvatarChooser() {
+    var item_size = 33;
+
     avatar_canvas = document.getElementById("avatar");
     avatar_ctx = avatar_canvas.getContext("2d");
 

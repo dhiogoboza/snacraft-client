@@ -6,6 +6,15 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'mcfont';
+    src: url('../fonts/mcfont.eot');
+    src: url('../fonts/mcfont.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/mcfont.woff') format('woff'),
+        url('../fonts/mcfont.ttf')  format('truetype'),
+        url('../fonts/mcfont.svg#svgFontName') format('svg');
+}
+
 html {
     position: relative;
     overflow: hidden;
@@ -26,16 +35,16 @@ body > .container {
 }
 
 .navbar-inverse {
-	background-color: rgba(0, 0, 0, 0.0);
-	border: none;
-	margin-bottom: 0;
-	padding: 0;
-	border-radius: 0;
+    background-color: rgba(0, 0, 0, 0.0);
+    border: none;
+    margin-bottom: 0;
+    padding: 0;
+    border-radius: 0;
 }
 
 .navbar-inverse .navbar-brand {
-	color: #FFF;
-	font-family: 'minecraft_evenings';
+    color: #FFF;
+    font-family: 'minecraft_evenings';
 }
 
 #game-container {
@@ -68,7 +77,7 @@ body > .container {
 }
 
 #game-stats h3 {
-    font-family: 'Press Start 2P', cursive;
+    font-family: 'mcfont', cursive;
     text-align: center;
     font-size: 14px;
     margin-top: 0px;
@@ -87,7 +96,8 @@ body > .container {
     position: absolute;
     left: 0;
     right: 0;
-    background-color: rgba(0,0,0,0.75);
+    background-color: #333333;
+    border: 2px solid #9f9f9f;
     margin: 0 auto;
     z-index: 999;
 }
@@ -108,7 +118,7 @@ body > .container {
 }
 
 #score {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'mcfont', sans-serif;
     font-size: 20px;
     padding-top: 0px;
 }
@@ -121,17 +131,17 @@ body > .container {
 }
 
 input[type="text"], input[type="password"], select {
-	width: 100%;
-	padding: 7px;
-	border: 1px solid #0199e6;
-	color: #fff;
-	outline: none;
-	background: transparent;
-	border-left: 5px solid #0199e6;
-	border-radius: 0;
-	margin-bottom: 10px;
-	font-size: 14px;
-	font-weight: 500;
+    width: 100%;
+    font-family: 'mcfont', cursive;
+    padding: 7px;
+    border: 2px solid #9f9f9f;
+    color: #fff;
+    outline: none;
+    background: #000000;
+    border-radius: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 option {
@@ -140,18 +150,46 @@ option {
 }
 
 .heading button {
-    font-family: 'Roboto', sans-serif;
-    font-size: 40px;
+    font-family: 'mcfont', sans-serif;
+    font-size: 30px;
     font-weight: 100;
     color: #EEE;
-    padding: 20px;
+    padding: 25px;
     background-color: #545751;
-    border: none;
     border-radius: 0;
 }
 
 .container .text-muted {
   margin: 20px 0;
+}
+
+.mn-button {
+    display: inline-block;
+    outline: 2px solid black;
+    margin: 0;
+    background-image: url('../img/button.png');
+    text-shadow: 3px 3px #4C4C4C;
+    background-repeat: repeat;
+    padding: 0;
+    text-align: center;
+    color: white;
+    border-bottom: 4px solid #565656;
+    border-right: 2px solid #565656;
+    border-left: 2px solid #AAA;
+    border-top: 2px solid #AAA;
+}
+
+.mn-button:not(i) {
+    font-family: 'mcfont' !important;
+}
+
+.mn-button:hover {
+  border-bottom: 4px solid #59639A;
+  border-right: 2px solid #59639A;
+  border-left: 2px solid #BDC6FF;
+  border-top: 2px solid #BDC6FF;
+  background-image: url('../img/button_active.png');
+  color: #FFFFA0;
 }
 
 @media only screen and (min-width: 650px) {
@@ -167,7 +205,7 @@ option {
 
     #connect-form .fields > * {
         display: inline-block;
-        width: 48%;
+        width: 47%;
         margin-right: 3px;
         height: 40px;
     }
@@ -183,9 +221,9 @@ option {
     }
 
     .navbar-inverse .navbar-brand {
-	    font-size: 58px;
-	    padding-top: 70px;
-	    padding-bottom: 40px;
+        font-size: 58px;
+        padding-top: 70px;
+        padding-bottom: 40px;
     }
 
     #connect-form .form .start {
@@ -217,11 +255,11 @@ option {
     }
 
     .navbar-inverse .navbar-brand {
-	    font-size: 32px;
-	    padding-top: 45px;
-	    padding-bottom: 40px;
-	    width: 100%;
-	    text-align: center;
+        font-size: 32px;
+        padding-top: 45px;
+        padding-bottom: 40px;
+        width: 100%;
+        text-align: center;
     }
 
     #connect-form .form .start {
@@ -256,8 +294,8 @@ option {
     }
 
     #keyboard .key-container {
-        height: 40;
-        width: 40;
+        height: 40px;
+        width: 40px;
         display: inline-block;
         outline: 2px solid black;
         margin: 0;
@@ -317,7 +355,7 @@ option {
     }
 
     .navbar-inverse .navbar-brand {
-	    padding-top: 15px;
+        padding-top: 15px;
     }
 }
 
@@ -343,18 +381,19 @@ option {
 
 #connect-form .fields #avatar-chooser i {
     vertical-align: top;
-    margin-top: 5px;
-    color: #0199e6;
+    padding-top: 8px;
+    margin-top: 0px;
     cursor: pointer;
+    width: 40px;
+    height: 45px;
 }
 
 #connect-form .fields #avatar-chooser i:active {
-    color: #FFFFFF;
+    
 }
 
 #connect-form .fields #avatar-chooser #avatar {
-    display: inline-block;
-    border: 1px solid #0199e6;
+    
 }
 
 .footer {
