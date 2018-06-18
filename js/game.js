@@ -140,9 +140,6 @@ function randomInt(min, max) {
 function drawGrid(only_header) {
     var y = 0, x;
 
-    var $navbar = $("#navbar");
-    var $footer = $("#footer");
-
     var footer_first = true;
     var header_height = (smallScreen? 3 : 5) * item_size;
     var footer_start = (vertical_items - 6) * item_size;

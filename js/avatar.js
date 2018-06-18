@@ -191,5 +191,6 @@ function initAvatarChooser() {
     createAvatars();
     drawAvatar(current_avatar_index);
 
-    $(".fa-arrow-left, .fa-arrow-right").on("click", changeAvatar);
+    document.querySelector(".fa-arrow-left").addEventListener("click", changeAvatar);
+    document.querySelector(".fa-arrow-right").addEventListener("click", changeAvatar);
 }
