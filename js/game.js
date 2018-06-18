@@ -1164,6 +1164,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     if (findGetParameter("mobile") === "true" || findGetParameter("n") === "1") {
         document.getElementById("ads").remove();
+    } else {
+        (adsbygoogle = window.adsbygoogle || []).push({});
     }
 
     var cookie_server = getCookie("server");
