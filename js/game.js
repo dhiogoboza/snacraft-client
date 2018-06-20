@@ -1162,7 +1162,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     getServerList(document.getElementById("server"));
 
-    if (findGetParameter("mobile") === "true" || findGetParameter("n") === "1") {
+    if (navigator.userAgent == "snacraft-app" || findGetParameter("n") === "1") {
         document.getElementById("ads").remove();
     } else {
         (adsbygoogle = window.adsbygoogle || []).push({});

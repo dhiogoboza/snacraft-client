@@ -154,7 +154,7 @@ option {
     font-size: 30px;
     font-weight: 100;
     color: #EEE;
-    padding: 25px;
+    padding: 20px;
     background-color: #545751;
     border-radius: 0;
 }
@@ -193,23 +193,6 @@ option {
 }
 
 @media only screen and (min-width: 650px) {
-    #connect-form .form {
-        display: table;
-        width: 100%;
-    }
-
-    #connect-form .form > * {
-        display: table-cell;
-        vertical-align: top;
-    }
-
-    #connect-form .fields > * {
-        display: inline-block;
-        width: 47%;
-        margin-right: 3px;
-        height: 40px;
-    }
-
     #connect-form-gameover {
         font-size: 28px;
     }
@@ -226,23 +209,12 @@ option {
         padding-bottom: 40px;
     }
 
-    #connect-form .form .start {
-        width: 95px;
-    }
-
     .ribbon h1 {
         font-size: 30px!important;
     }
 }
 
 @media only screen and (max-width: 650px) {
-    #connect-form .fields > * {
-        display: inline;
-        width: 100%;
-        margin-right: 3px;
-        height: 40px;
-    }
-
     #connect-form-gameover {
         font-size: 15px;
     }
@@ -260,11 +232,6 @@ option {
         padding-bottom: 40px;
         width: 100%;
         text-align: center;
-    }
-
-    #connect-form .form .start {
-        width: 100%;
-        margin-top: 10px;
     }
 
     .ribbon h1 {
@@ -369,9 +336,25 @@ option {
 
 #connect-form .form .start {
     display: inline-block;
+    width: 90px;
+    vertical-align: top;
+    margin-top: 0px;
+    margin-left: 5px;
 }
 
-#connect-form .fields #avatar-chooser {
+.fields-container {
+    margin-bottom: 5px;
+}
+
+.fields-container > * {
+    display: inline-block;
+}
+
+.fields-container .fields {
+    width: calc(100% - 100px);
+}
+
+#avatar-chooser {
     width: 100%;
     padding-right: 14px;
     text-align: center;
@@ -379,7 +362,7 @@ option {
     user-select: none;
 }
 
-#connect-form .fields #avatar-chooser i {
+#avatar-chooser i {
     vertical-align: top;
     padding-top: 8px;
     margin-top: 0px;
@@ -388,11 +371,11 @@ option {
     height: 45px;
 }
 
-#connect-form .fields #avatar-chooser i:active {
+#avatar-chooser i:active {
     
 }
 
-#connect-form .fields #avatar-chooser #avatar {
+#avatar-chooser #avatar {
     
 }
 
