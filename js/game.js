@@ -293,6 +293,10 @@ function startGame() {
     leaderBoardTable.appendChild(tBodyElem);
     snakeRanking = document.getElementById("snake-ranking");
 
+    if (app) {
+        app.hideAds();
+    }
+
     startSound();
 }
 
@@ -315,6 +319,10 @@ function closeGame() {
         ads.style.display = "block";
     }
     document.getElementById('social-buttons').style.display = "block";
+
+    if (app) {
+        app.showAds();
+    }
 
     stopSound();
 }
