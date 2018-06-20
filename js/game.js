@@ -293,7 +293,7 @@ function startGame() {
     leaderBoardTable.appendChild(tBodyElem);
     snakeRanking = document.getElementById("snake-ranking");
 
-    if (app) {
+    if (typeof app !== 'undefined') {
         app.hideAds();
     }
 
@@ -320,7 +320,7 @@ function closeGame() {
     }
     document.getElementById('social-buttons').style.display = "block";
 
-    if (app) {
+    if (typeof app !== 'undefined') {
         app.showAds();
     }
 
