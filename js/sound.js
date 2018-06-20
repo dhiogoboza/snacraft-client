@@ -1,5 +1,5 @@
 var MOBS_VOLUME = 0.3;
-var AMBIENCE_VOLUME = 0.1;
+var AMBIENCE_VOLUME = 0.7;
 
 var walking_sound;
 
@@ -10,14 +10,14 @@ Array.prototype.choice = function () {
 // https://minecraft.gamepedia.com/Category:Soundtrack
 // https://minecraft.gamepedia.com/Category:Sound_effects
 function initSounds() {
-    walking_sound = new Audio('snd/sound.mp3');
+    walking_sound = new Audio('snd/sound.ogg');
 
     var xp = [new Audio('snd/xp.ogg')];
     // FIXME: XP volume doesn't working
     xp[0].volume = MOBS_VOLUME;
 
     var move_speed = new Audio('snd/gallop1.ogg');
-    move_speed.volume = MOBS_VOLUME;
+    move_speed.volume = MOBS_VOLUME + 0.4;
 
     var chicken_hurt = new Audio('snd/chickenhurt.ogg');
     chicken_hurt.volume = MOBS_VOLUME;
@@ -25,10 +25,10 @@ function initSounds() {
     var chicken = new Audio('snd/chicken.ogg');
     chicken.volume = MOBS_VOLUME * 3.0;
 
-    var pigdeath = new Audio('snd/pigdeath.ogg');
+    var pigdeath = new Audio('snd/pigdeath.mp3');
     pigdeath.volume = MOBS_VOLUME;
 
-    var pig = new Audio('snd/pig.ogg');
+    var pig = new Audio('snd/pig.mp3');
     pig.volume = MOBS_VOLUME * 3.0;
 
     var cowhurt = new Audio('snd/cowhurt.ogg');
