@@ -1156,7 +1156,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
         var debugOption = document.createElement("option");
         debugOption.value = "localhost:8080";
         debugOption.text = debugOption.value;
+        server.appendChild(debugOption);
 
+        debugOption = document.createElement("option");
+        debugOption.value = "secret-reaches-61045.herokuapp.com";
+        debugOption.text = "Secret Reaches";
+        server.appendChild(debugOption);
+
+        debugOption = document.createElement("option");
+        debugOption.value = "fast-island-17183.herokuapp.com";
+        debugOption.text = "Fast Island";
         server.appendChild(debugOption);
     }
 
