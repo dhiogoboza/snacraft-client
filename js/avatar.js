@@ -128,7 +128,7 @@ function drawAvatar(a_index) {
 }
 
 function changeAvatar(event) {
-    if (event.currentTarget.className === "fa fa-arrow-right") {
+    if (event.currentTarget.className === "mn-button fa fa-arrow-right") {
         current_avatar_index++;
 
         if (current_avatar_index === max_avatar_index) {

@@ -28,6 +28,7 @@ body {
     box-sizing: border-box;
     margin: 0px;
     height: 100%;
+    background: #80af49;
 }
 
 body > .container {

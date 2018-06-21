@@ -284,7 +284,10 @@ function startGame() {
     if (ads) {
         ads.style.display = "none";
     }
-    document.getElementById('social-buttons').style.display = "none";
+
+    if (navigator.userAgent != "snacraft-app") {
+        document.getElementById('social-buttons').style.display = "none";
+    }
 
     // init ui items
     leaderBoardTable = document.getElementById("leader-board-table");
@@ -318,7 +321,10 @@ function closeGame() {
     if (ads) {
         ads.style.display = "block";
     }
-    document.getElementById('social-buttons').style.display = "block";
+
+    if (navigator.userAgent != "snacraft-app") {
+        document.getElementById('social-buttons').style.display = "block";
+    }
 
     if (typeof app !== 'undefined') {
         app.showAds();
@@ -1181,6 +1187,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     if (navigator.userAgent == "snacraft-app" || findGetParameter("n") === "1") {
         document.getElementById("ads").remove();
+        
+        if (navigator.userAgent == "snacraft-app") {
+            document.getElementById("social-buttons").remove();
+        }
     } else {
         (adsbygoogle = window.adsbygoogle || []).push({});
     }
