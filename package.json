@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "Snacraft is an IO game inspired on classic snake and Minecraft",
   "scripts": {
-    "build": "npm run clean && npm run minify-js && npm run minify-css && npm run cp-other-content",
-    "clean": "rm -rf dist/css && rm -rf dist/js && rm -rf dist/fonts && rm -rf dist/img && rm -rf dist/snd",
+    "build": "npm run clean && npm run strip-html && npm run minify-js && npm run minify-css && npm run cp-other-content",
+    "clean": "rm -rf dist/*",
     "minify-js": "node-minify --compressor babel-minify --input 'js/*.js' --output 'dist/js/main.js'",
     "minify-css": "node-minify --compressor clean-css --input 'css/*.css' --output 'dist/css/style.css'",
-    "cp-other-content": "npm run cp-other-content-fonts && npm run cp-other-content-img && npm run cp-other-content-js-vendor && npm run cp-other-content-snd",
+    "strip-html": "node strip-index-html.js",
+    "cp-other-content": "npm run cp-other-favicon && npm run cp-other-content-fonts && npm run cp-other-content-img && npm run cp-other-content-js-vendor && npm run cp-other-content-snd",
+    "cp-other-favicon": "cp favicon.ico dist/",
     "cp-other-content-fonts": "mkdir dist/fonts/ && cp -rfa fonts/* dist/fonts/",
     "cp-other-content-img": "mkdir dist/img/ && cp -rfa img/* dist/img/",
     "cp-other-content-js-vendor": "mkdir dist/js/vendor && cp -rfa js/vendor/* dist/js/vendor",
@@ -15,6 +17,7 @@
   },
   "author": "Dhiogo Boza <dhiogoboza@gmail.com>",
   "devDependencies": {
-    "node-minify": "3.0.1"
+    "node-minify": "3.0.1",
+    "xmldom": "0.1.27"
   }
 }
