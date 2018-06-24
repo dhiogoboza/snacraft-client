@@ -19,7 +19,9 @@ fs.readFile(filePath, 'utf8', function(error, data) {
         var mainScript = document.createElement("script");
         mainScript.setAttribute("src", "js/main.js");
         document.getElementsByTagName("body")[0].appendChild(mainScript);
-        fs.writeFile("dist/index.html", new XMLSerializer().serializeToString(document), function(error) {
+        var documentContent = new XMLSerializer().serializeToString(document);
+        documentContent = documentContent.replace("async=\"async\"", "async");
+        fs.writeFile("dist/index.html", documentContent, function(error) {
             if (error) {
                 return console.log(error);
             }
