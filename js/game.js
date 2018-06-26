@@ -994,7 +994,7 @@ function initTiles() {
     heads = {
         "#000000": createHead("#000000", s15),
         "#FFFFFF": createHead("#FFFFFF", s15),
-        "#b50c0f": createHead("#b50c0f", item_size_1 / 4)
+        "#b50c0f": createHead("#b50c0f", s15)
     };
 }
 
