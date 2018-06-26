@@ -46,6 +46,9 @@ function createAvatars() {
         canvas_avatar.height = item_size;
         canvas_avatar.width = item_size;
 
+        // set head
+        colors[i][1] = heads[colors[i][1]];
+
         var dctx_avatar = canvas_avatar.getContext("2d");
         if (colors[i][2] == "rect") {
             drawCircle(dctx_avatar, s18, colors[i][3], colors[i][4], colors[i][5], false);
@@ -109,7 +112,7 @@ function drawAvatar(a_index) {
     var s = item_size / 8;
     var avatar = TILES[a_index];
 
-    head_canvas = colors[a_index - initial_av_index][1] == "#FFFFFF" ? head_white : head_black;
+    head_canvas = colors[a_index - initial_av_index][1];
 
     x = s;
     var start = smallScreen? 0 : 1;

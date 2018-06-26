@@ -49,8 +49,7 @@ var lines = 0, columns = 0;
 var center_i = 0, center_j = 0;
 var head_i = 0, head_j = 0;
 
-var head_black;
-var head_white;
+var heads;
 
 var data = null;
 
@@ -78,8 +77,11 @@ var colors = [
     ["Zombie", "#000000", "rect", "#1e2c13", "#385a27", "#567943"],
     ["ZombieShirt", "#000000", "rect", "#007876", "#007e7b", "#007e7b"],
     ["ZombiePant", "#000000", "rect", "#3a3189", "#463aa5", "#463aa5"],
+
     ["Skeleton", "#000000", "rect", "#686868", "#939393", "#939393"],
-    ["SkeletonBow", "#000000", "bow", "#686868", "#939393", "#896727", "#444444"]
+    ["SkeletonBow", "#000000", "bow", "#686868", "#939393", "#896727", "#444444"],
+
+    ["Spider", "#b50c0f", "rect", "#050404", "#18151c", "#211d27"]
 ];
 
 var TILES = [
@@ -355,7 +357,7 @@ function onMessage(event) {
                     "j": head_j,
                     "direction": DIRECTION_UP,
                     "color": color,
-                    "eyes": colors[color - initial_av_index][1] == "#FFFFFF" ? 1 : 0
+                    "eyes": colors[color - initial_av_index][1]
                 };
 
                 initPlayer(my_snake);
@@ -439,7 +441,7 @@ function drawMobs(mobs_data) {
             cur_snake = {};
             var snake_skin = color - initial_av_index;
             cur_snake["id"] = cur_id;
-            cur_snake["eyes"] = colors[snake_skin][1] == "#FFFFFF" ? 1 : 0;
+            cur_snake["eyes"] = colors[snake_skin][1];
 
             cur_snake["name"] = "";
             cur_snake["i"] = 0;
@@ -462,16 +464,16 @@ function drawMobs(mobs_data) {
 
         // detect snake direction
         if (cur_snake["i"] < cur_i) {
-            cur_snake["head"] = cur_snake["eyes"]? head_white["down"] : head_black["down"];
+            cur_snake["head"] = cur_snake["eyes"]["down"];
             cur_snake["direction"] = DIRECTION_DOWN;
         } else if (cur_snake["i"] > cur_i) {
-            cur_snake["head"] = cur_snake["eyes"]? head_white["up"] : head_black["up"];
+            cur_snake["head"] = cur_snake["eyes"]["up"];
             cur_snake["direction"] = DIRECTION_UP;
         } else if (cur_snake["j"] < cur_j) {
-            cur_snake["head"] = cur_snake["eyes"]? head_white["right"] : head_black["right"];
+            cur_snake["head"] = cur_snake["eyes"]["right"];
             cur_snake["direction"] = DIRECTION_RIGHT;
         } else if (cur_snake["j"] > cur_j) {
-            cur_snake["head"] = cur_snake["eyes"]? head_white["left"] : head_black["left"];
+            cur_snake["head"] = cur_snake["eyes"]["left"];
             cur_snake["direction"] = DIRECTION_LEFT;
         }
 
@@ -679,7 +681,7 @@ function initPlayersList(data) {
             "i": 0,
             "j": 0,
             "color": color,
-            "eyes": colors[color - initial_av_index][1] == "#FFFFFF" ? 1 : 0
+            "eyes": colors[color - initial_av_index][1]
         };
 
         initPlayer(cur_player);
@@ -987,15 +989,19 @@ function initTiles() {
         }
     }
 
-    head_black = createHead("#000000");
-    head_white = createHead("#FFFFFF");
+    var s15 = item_size_1 / 5;
+
+    heads = {
+        "#000000": createHead("#000000", s15),
+        "#FFFFFF": createHead("#FFFFFF", s15),
+        "#b50c0f": createHead("#b50c0f", item_size_1 / 4)
+    };
 }
 
-function createHead(eyes_color) {
-    var s15 = item_size_1 / 5;
-    var s25 = 2 * s15;
-    var s35 = 3 * s15;
-    var s45 = 4 * s15;
+function createHead(eyes_color, baseSize) {
+    var s25 = 2 * baseSize;
+    var s35 = 3 * baseSize;
+    var s45 = 4 * baseSize;
 
     // init head canvas
     var head_canvas = {}
@@ -1008,8 +1014,8 @@ function createHead(eyes_color) {
     var dctx = canvas.getContext("2d");
 
     dctx.fillStyle = eyes_color;
-    dctx.fillRect(s15, s15, s15, s15);
-    dctx.fillRect(s35, s15, s15, s15);
+    dctx.fillRect(baseSize, baseSize, baseSize, baseSize);
+    dctx.fillRect(s35, baseSize, baseSize, baseSize);
 
     head_canvas["up"] = canvas;
 
@@ -1021,8 +1027,8 @@ function createHead(eyes_color) {
     dctx = canvas.getContext("2d");
 
     dctx.fillStyle = eyes_color;
-    dctx.fillRect(s15, s35, s15, s15);
-    dctx.fillRect(s35, s35, s15, s15);
+    dctx.fillRect(baseSize, s35, baseSize, baseSize);
+    dctx.fillRect(s35, s35, baseSize, baseSize);
 
     head_canvas["down"] = canvas;
 
@@ -1034,8 +1040,8 @@ function createHead(eyes_color) {
     dctx = canvas.getContext("2d");
 
     dctx.fillStyle = eyes_color;
-    dctx.fillRect(s15, s15, s15, s15);
-    dctx.fillRect(s15, s35, s15, s15);
+    dctx.fillRect(baseSize, baseSize, baseSize, baseSize);
+    dctx.fillRect(baseSize, s35, baseSize, baseSize);
 
     head_canvas["left"] = canvas;
 
@@ -1047,8 +1053,8 @@ function createHead(eyes_color) {
     dctx = canvas.getContext("2d");
 
     dctx.fillStyle = eyes_color;
-    dctx.fillRect(s35, s15, s15, s15);
-    dctx.fillRect(s35, s35, s15, s15);
+    dctx.fillRect(s35, baseSize, baseSize, baseSize);
+    dctx.fillRect(s35, s35, baseSize, baseSize);
 
     head_canvas["right"] = canvas;
 
