@@ -1,4 +1,4 @@
-var MOBS_VOLUME = 0.3;
+var MOBS_VOLUME = 1;
 var AMBIENCE_VOLUME = 0.7;
 
 var walking_sound;
@@ -17,22 +17,22 @@ function initSounds() {
     xp[0].volume = MOBS_VOLUME;
 
     var move_speed = new Audio('snd/gallop1.ogg');
-    move_speed.volume = MOBS_VOLUME + 0.4;
+    move_speed.volume = MOBS_VOLUME;
 
     var chicken_hurt = new Audio('snd/chickenhurt.ogg');
     chicken_hurt.volume = MOBS_VOLUME;
 
     var chicken = new Audio('snd/chicken.ogg');
-    chicken.volume = MOBS_VOLUME * 3.0;
+    chicken.volume = MOBS_VOLUME;
 
     var pigdeath = new Audio('snd/pigdeath.mp3');
-    pigdeath.volume = MOBS_VOLUME;
+    pigdeath.volume = MOBS_VOLUME * 0.8;
 
     var pig = new Audio('snd/pig.mp3');
-    pig.volume = MOBS_VOLUME * 3.0;
+    pig.volume = MOBS_VOLUME;
 
     var cowhurt = new Audio('snd/cowhurt.ogg');
-    cowhurt.volume = MOBS_VOLUME;
+    cowhurt.volume = MOBS_VOLUME * 0.4;
 
     var cow = new Audio('snd/cow.ogg');
     cow.volume = 1;
