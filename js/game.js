@@ -19,7 +19,7 @@ var ZOMBIE_PANT;
 var SKELETON_INDEX;
 var SKELETON_BOW;
 
-var SMALL_SCREEN = 650;
+var SMALL_SCREEN = 680;
 
 var RANKING_SIZE = 8;
 
@@ -31,8 +31,9 @@ var TILE_MOVE_SPEED = 5;
 
 var NAMES_HEIGHT = 12;
 
-var matrix = [];
+var matrix_map = [];
 var current_matrix = [];
+var current_matrix_map = [];
 var matrix_mobs = [];
 
 var players_list = {};
@@ -45,6 +46,10 @@ var leaderboard;
 var my_snake;
 var snakes_count;
 var lines = 0, columns = 0;
+
+// Draw loop variables
+var tile, previous, snake;
+var current, current_map;
 
 var center_i = 0, center_j = 0;
 var head_i = 0, head_j = 0;
@@ -119,8 +124,9 @@ var TILES = [
 var sounds;
 
 // canvas context
+var ctx_below;
 var ctx;
-var ctx2;
+var ctx_above;
 
 // canvas size
 var width;
@@ -150,25 +156,31 @@ function drawGrid(only_header) {
     var grass_colors = ["#1a3516", "#183114", "#223d18", "#274018", "#3e532c"];
     var clay_colors = ["#150b04", "#1d1308", "#2c1e15", "#38281b", "#3b2a1d"];
 
+    // clear another canvas
+    ctx_above.clearRect(0, 0, width, height);
+
+    ctx.clearRect(0, 0, width, header_height + item_size);
+    ctx.clearRect(0, footer_start, width, height);
+
     for (i = 0; i < vertical_items + 1; i++) {
         x = 0;
         for (j = 0; j < horizontal_items + 1; j++) {
             if (y >= footer_start) {
                 if (footer_first) {
-                    ctx.fillStyle = grass_colors[randomInt(0, 4)];
-                    ctx.fillRect(x, y, item_size, item_size);
+                    ctx_below.fillStyle = grass_colors[randomInt(0, 4)];
+                    ctx_below.fillRect(x, y, item_size, item_size);
                 } else {
-                    ctx.fillStyle = clay_colors[randomInt(0, 4)];
-                    ctx.fillRect(x, y, item_size, item_size);
+                    ctx_below.fillStyle = clay_colors[randomInt(0, 4)];
+                    ctx_below.fillRect(x, y, item_size, item_size);
                 }
             } else if (y <= header_height) {
-                ctx.fillStyle = head_colors[randomInt(0, 4)];
-                ctx.fillRect(x, y, item_size, item_size);
+                ctx_below.fillStyle = head_colors[randomInt(0, 4)];
+                ctx_below.fillRect(x, y, item_size, item_size);
             } else if (only_header) {
                 break;
             } else {
-                ctx.fillStyle = TILES[0]["item"];
-                ctx.fillRect(x, y, item_size_1, item_size_1);
+                ctx_below.fillStyle = TILES[0]["item"];
+                ctx_below.fillRect(x, y, item_size_1, item_size_1);
             }
 
             x += item_size;
@@ -179,18 +191,24 @@ function drawGrid(only_header) {
         }
 
         y += item_size;
-
     }
 }
 
 function resetCurrentMatrix() {
+    // clear canvas
+    ctx.clearRect(0, 0, width, height);
+    
+    var lineMobs;
     var line;
     var y = -item_size, x;
     current_matrix = [];
+    current_matrix_map = [];
     for (i = 0; i < vertical_items; i++) {
+        lineMobs = [];
         line = [];
         x = -item_size;
         for (j = 0; j < horizontal_items; j++) {
+            lineMobs.push({"i": 0, "x": x, "y": y, "off": true});
             line.push({"i": -1, "x": x, "y": y, "off": true});
 
             x += item_size;
@@ -198,7 +216,8 @@ function resetCurrentMatrix() {
 
         y += item_size;
 
-        current_matrix.push(line);
+        current_matrix.push(lineMobs);
+        current_matrix_map.push(line);
     }
 }
 
@@ -210,7 +229,7 @@ function initMatrix(matrix_data) {
     columns = parseInt(matrix_split[2]);
 
     matrix_mobs = [];
-    matrix = [];
+    matrix_map = [];
 
     var c = 3;
     var line;
@@ -227,7 +246,7 @@ function initMatrix(matrix_data) {
         }
 
         matrix_mobs[i] = line_snakes;
-        matrix[i] = line;
+        matrix_map[i] = line;
     }
 }
 
@@ -241,7 +260,7 @@ function connect(server) {
         connected = true;
 
         // clear snakes name
-        ctx2.clearRect(0, 0, width, height);
+        ctx_above.clearRect(0, 0, width, height);
 
         var button = document.getElementById("connect");
         button.disabled = false;
@@ -380,7 +399,7 @@ function onMessage(event) {
                 // Player left the game
                 snake = players_list[data[1]];
                 if (snake) {
-                    ctx2.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], NAMES_HEIGHT);
+                    ctx_above.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], NAMES_HEIGHT);
                     players_list[data[1]] = undefined;
                 }
 
@@ -551,9 +570,10 @@ function drawMobs(mobs_data) {
     }
 }
 
-function drawItemAtCanvas(tile, current) {
+function drawItemAtCanvas(tile, current, ctx) {
     if (tile) {
         if (tile["image"]) {
+            ctx.clearRect(current["x"], current["y"], item_size, item_size);
             ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
         } else {
             previous = TILES[current["i"]];
@@ -596,59 +616,69 @@ function drawMobsAtMap() {
         j_start = columns - horizontal_items;
     }
 
-    var tile, previous, snake;
     for (i = i_start, _i = 0; i < i_end; i++, _i++) {
         for (j = j_start, _j = 0; j < j_end; j++, _j++) {
             current = current_matrix[_i][_j];
+            current_map = current_matrix_map[_i][_j];
 
+            // Draw static map element
+            if (current_map["i"] != matrix_map[i][j]) {
+                tile = TILES[matrix_map[i][j]];
+                drawItemAtCanvas(tile, current_map, ctx_below);
+                current_map["i"] = matrix_map[i][j];
+            }
+
+            // Draw mob element
             if (matrix_mobs[i][j] < 0) {
+                // Snake head
                 snake = players_list[-matrix_mobs[i][j]];
-
                 if (snake) {
                     tile = TILES[snake["color"]];
 
-                    drawItemAtCanvas(tile, current);
+                    //drawItemAtCanvas(tile, current, ctx);
+                    ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
 
+                    // snake eyes
                     ctx.drawImage(snake["head"], current["x"], current["y"], item_size, item_size);
 
                     // clear previous name
-                    ctx2.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], snake["name_h"]);
+                    ctx_above.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], snake["name_h"]);
 
                     // save last snake name position
                     snake["name_x"] = current["x"] + item_size;
                     snake["name_y"] = current["y"] - item_size;
 
                     // draw snake name
-                    ctx2.fillText(snake["name"], snake["name_x"], snake["name_y"]);
-
-                    // set negative to invalidate draw in the next step
-                    current["i"] = -snake["color"];
+                    ctx_above.fillText(snake["name"], snake["name_x"], snake["name_y"]);
                 }
+
+                // set 0 to invalidate draw in the next step
+                current["i"] = -1;
+                // TODO: not change matrix_mobs
+                matrix_mobs[i][j] = 0;
             } else if (matrix_mobs[i][j] == 0) {
-                if (matrix[i][j] != current["i"]) {
-                    tile = TILES[matrix[i][j]];
-
-                    drawItemAtCanvas(tile, current);
-
-                    current["i"] = matrix[i][j];
+                if (current["i"] !== 0) {
+                    ctx.clearRect(current["x"], current["y"], item_size, item_size);
+                    current["i"] = 0;
                 }
-            } else {
+            } else { // less than 0 must be cleared
+                // Clear mobs canvas
                 if (matrix_mobs[i][j] != current["i"]) {
                     tile = TILES[matrix_mobs[i][j]];
-
-                    drawItemAtCanvas(tile, current);
-
+                    drawItemAtCanvas(tile, current, ctx);
                     current["i"] = matrix_mobs[i][j];
                 }
-
+                // TODO: not change matrix_mobs
                 matrix_mobs[i][j] = 0;
             }
         }
     }
+    
+    first_ = 0;
 }
 
 function initPlayer(cur_player) {
-    measure = ctx2.measureText(cur_player["name"]);
+    measure = ctx_above.measureText(cur_player["name"]);
     cur_player["name_h"] = NAMES_HEIGHT + 2;
     cur_player["name_w"] = measure.width + 2;
     cur_player["name_x"] = 0;
@@ -719,7 +749,6 @@ function drawStats() {
             tBodyElem.appendChild(tableRow);
         }
     }
-
 }
 
 function drawGameover() {
@@ -817,11 +846,6 @@ function initTiles() {
             canvas.width = item_size;
 
             dctx = canvas.getContext("2d");
-            dctx.fillStyle = grid_color;
-            dctx.fillRect(0, 0, item_size, item_size);
-
-            dctx.fillStyle = TILES[0]["item"];
-            dctx.fillRect(0, 0, item_size_1, item_size_1);
 
             var s18 = item_size_1 / 8;
             var s28 = 2 * s18;
@@ -980,7 +1004,6 @@ function initTiles() {
                     dctx.fillRect(w, 0, s18, item_size_1);
 
                     break;
-
             }
 
             TILES[i]["item"] = canvas; // recycle field with canvas
@@ -1113,24 +1136,25 @@ function drawCircle(dctx, s18, c1, c2, c3, radius, margin) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function(event) {
+function prepareGame(event) {
     smallScreen = window.innerWidth < SMALL_SCREEN;
 
     if (smallScreen) {
-        // TODO: a better way to small screen devices
+        // TODO: a better way to compatibilize with small screen devices
         RANKING_SIZE = 4;
     }
 
+    var c0 = document.getElementById("canvas_below");
     var c = document.getElementById("canvas");
-    var c2 = document.getElementById("canvas2");
+    var c2 = document.getElementById("canvas_above");
 
     var keys = document.querySelectorAll("#keyboard .key");
     for (var i = 0; i < keys.length; i++) {
         keys[i].addEventListener("click", virtualKeyPressed);
     }
 
-    width = c.width = c2.width = window.innerWidth;
-    height = c.height = c2.height = window.innerHeight;
+    width = c.width = c2.width = c0.width = window.innerWidth;
+    height = c.height = c2.height = c0.height = window.innerHeight;
 
     //horizontal_items = parseInt(width / item_size) + 1 + 2;
     //vertical_items = parseInt(height / item_size) + 1 + 2;
@@ -1156,18 +1180,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
     focus_offset_i = parseInt(vertical_items * FOCUS_OFFSET_PERCENTAGE);
     focus_offset_j = parseInt(horizontal_items * FOCUS_OFFSET_PERCENTAGE);
 
+    // Static map context
+    ctx_below = c0.getContext("2d");
+    ctx_below.fillStyle = grid_color;
+    ctx_below.fillRect(0, 0, width, height);
+
+    // Mobs context
     ctx = c.getContext("2d");
-    ctx.fillStyle = grid_color;
-    ctx.fillRect(0, 0, width, height);
+
+    ctx_above = c2.getContext("2d");
+    ctx_above.textAlign = "left";
+    ctx_above.textBaseline = "top";
+    ctx_above.font = "bold " + NAMES_HEIGHT + "px Arial";
+    ctx_above.fillStyle = "#FFFFFF";
 
     drawGrid(false);
     initTiles();
-
-    ctx2 = c2.getContext("2d");
-    ctx2.textAlign = "left";
-    ctx2.textBaseline = "top";
-    ctx2.font = "bold " + NAMES_HEIGHT + "px Arial";
-    ctx2.fillStyle = "#FFFFFF";
 
     document.getElementById("nickname").value = getCookie("nickname");
     var server = document.getElementById("server");
@@ -1198,6 +1226,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             document.getElementById("social-buttons").remove();
         }
     } else {
+        var heading = document.getElementById("connect-form")
+        var heading_top = parseInt(window.getComputedStyle(heading).top.replace("px", ""));
+        document.getElementById("ads").style.top = (heading.offsetHeight + heading_top) + "px";
         (adsbygoogle = window.adsbygoogle || []).push({});
     }
 
@@ -1223,8 +1254,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
             var server = document.getElementById("server").value;
             var nickname = document.getElementById("nickname").value;
 
-            setCookie("nickname", nickname, 5);
-            setCookie("server", server, 5);
+            setCookie("nickname", nickname, 300);
+            setCookie("server", server, 300);
 
             connect(server);
         }
@@ -1234,4 +1265,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
     initSounds();
 
     window.addEventListener('keydown', keyPressed, false);
+}
+
+window.addEventListener('resize', function(event) {
+    if (!connected) {
+        prepareGame(event);
+    } else {
+        // TODO: prepare game later
+    }
 });
+document.addEventListener("DOMContentLoaded", prepareGame);
