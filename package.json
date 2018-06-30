@@ -15,7 +15,7 @@
     "cp-other-content-js-vendor": "mkdir dist/js/vendor && cp -rfa js/vendor/* dist/js/vendor",
     "cp-other-content-snd": "mkdir dist/snd/ && cp -rfa snd/* dist/snd/"
   },
-  "author": "Dhiogo Boza <dhiogoboza@gmail.com>",
+  "author": "Dhiogo Boza <dhiogoboza@gmail.com>, Ruben O Chiavone <rubenochiavone@gmail.com>",
   "devDependencies": {
     "node-minify": "3.0.1",
     "xmldom": "0.1.27"
