@@ -1,4 +1,4 @@
-var SNAKE_SIZE = 6;
+var SNAKE_SIZE = 8;
 var ITEMS = 10;
 
 var current_avatar_index = 0;
@@ -115,10 +115,10 @@ function drawAvatar(a_index) {
     head_canvas = colors[a_index - initial_av_index][1];
 
     x = s;
-    var start = smallScreen? 0 : 1;
-    var end = smallScreen? 6 : 7;
+    var start = parseInt((ITEMS - SNAKE_SIZE) / 2);
+    var end = SNAKE_SIZE + start;
     for (i = 0; i < end; i++) {
-        if (i > start) {
+        if (i >= start) {
             avatar_ctx.drawImage(avatar["item"], x, s * 2, item_size, item_size);
 
             if (i == end  - 1) {
@@ -157,10 +157,11 @@ function initAvatarChooser() {
     var s = 0.2 * item_size;
 
     if (smallScreen) {
-        ITEMS -= 2;
+        ITEMS = ITEMS - 4;
+        SNAKE_SIZE = ITEMS - 2;
     }
 
-    var width = (smallScreen? ITEMS - 1 : ITEMS) * item_size + 2 * s;;
+    var width = ITEMS * item_size + 2 * s;
 
     avatar_canvas.height = 1.0 * item_size + 2 * s;
     avatar_canvas.width = width;
@@ -181,8 +182,7 @@ function initAvatarChooser() {
     avatar_ctx.stroke();
 
     x = s;
-    var end = smallScreen? 9 : 10;
-    for (i = 0; i < end; i++) {
+    for (i = 0; i < ITEMS; i++) {
         avatar_ctx.beginPath();
         avatar_ctx.moveTo(x, 0);
         avatar_ctx.lineTo(x, avatar_canvas.height);

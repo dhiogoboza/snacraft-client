@@ -193,7 +193,7 @@ option {
   color: #FFFFA0;
 }
 
-@media only screen and (min-width: 650px) {
+@media only screen and (min-width: 680px) {
     #connect-form-gameover {
         font-size: 28px;
     }
@@ -215,7 +215,7 @@ option {
     }
 }
 
-@media only screen and (max-width: 650px) {
+@media only screen and (max-width: 680px) {
     #connect-form-gameover {
         font-size: 15px;
     }
@@ -311,13 +311,13 @@ option {
     }
 }
 
-@media only screen and (min-height: 600px) {
+@media only screen and (min-height: 680px) {
     .heading {
         top: 22%;
     }
 }
 
-@media only screen and (max-height: 600px) {
+@media only screen and (max-height: 680px) {
     .heading {
         top: 10%;
     }
@@ -403,7 +403,7 @@ option {
 #ads {
     position: absolute;
     z-index: 99999;
-    top: calc(23% + 210px);
+    top: calc(22% + 260px);
     left: 0;
     width: 100%;
     text-align: center;
