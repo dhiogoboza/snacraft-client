@@ -297,6 +297,7 @@ function startGame() {
     document.getElementById('game-container').style.display = "block";
     document.getElementById('game-stats').style.display = "block";
     document.getElementById('keyboard').style.display = "block";
+    document.getElementById('arrows').style.display = "block";
     document.getElementById('connect-form').style.display = "none";
     document.getElementById('navbar').style.display = "none";
     document.getElementById('footer').style.display = "none";
@@ -330,6 +331,7 @@ function closeGame() {
 
     document.getElementById("connect").disabled = false;
     document.getElementById('game-stats').style.display = "none";
+    document.getElementById('arrows').style.display = "none";
     if (smallScreen) {
         document.getElementById('keyboard').style.display = "none";
     }
