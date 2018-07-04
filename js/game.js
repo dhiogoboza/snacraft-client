@@ -89,36 +89,7 @@ var colors = [
     ["Spider", "#b50c0f", "rect", "#050404", "#18151c", "#211d27"]
 ];
 
-var TILES = [
-    // empty
-    {item: "#80af49", off: false}, //DDDDDD
-
-    // stones
-    {item: "#686868", off: true}, {item: "#6e6e6e", off: true},
-    {item: "#747474", off: true}, {item: "#7e7e7e", off: true}, {item: "#8e8e8e", off: true},
-
-    // clay
-    {item: "#2b1608", off: true}, {item: "#3b2711", off: true}, {item: "#593d2a", off: true},
-    {item: "#715036", off: true}, {item: "#76553a", off: true},
-
-    // grass
-    {item: "#346a2c", off: true}, {item: "#4b8435", off: true}, {item: "#508935", off: true},
-    {item: "#548c35", off: true}, {item: "#7da658", off: true},
-
-    // eat
-    {item: "CHICKEN", off: false}, // 16
-    {item: "PIG", off: false}, // 17
-    {item: "COW", off: false}, // 18
-
-    // corpse
-    {item: "XP1", off: false},
-    {item: "XP2", off: false},
-    {item: "XP3", off: false},
-    {item: "XP4", off: false},
-
-    // move speed
-    {item: "MOVE_SPEED", off: false}
-]
+var TILES;
 
 // sounds map
 var sounds;
@@ -143,6 +114,39 @@ var snakeRanking;
 
 function randomInt(min, max) {
     return Math.floor(Math.random()*(max-min+1)+min);
+}
+
+function initTilesArray() {
+    TILES = [
+        // empty
+        {i: "#80af49", off: false},
+
+        // stones
+        {i: "#686868", off: true}, {i: "#6e6e6e", off: true},
+        {i: "#747474", off: true}, {i: "#7e7e7e", off: true}, {i: "#8e8e8e", off: true},
+
+        // clay
+        {i: "#2b1608", off: true}, {i: "#3b2711", off: true}, {i: "#593d2a", off: true},
+        {i: "#715036", off: true}, {i: "#76553a", off: true},
+
+        // grass
+        {i: "#346a2c", off: true}, {i: "#4b8435", off: true}, {i: "#508935", off: true},
+        {i: "#548c35", off: true}, {i: "#7da658", off: true},
+
+        // eat
+        {i: "CHICKEN", off: false}, // 16
+        {i: "PIG", off: false}, // 17
+        {i: "COW", off: false}, // 18
+
+        // corpse
+        {i: "XP1", off: false},
+        {i: "XP2", off: false},
+        {i: "XP3", off: false},
+        {i: "XP4", off: false},
+
+        // move speed
+        {i: "MOVE_SPEED", off: false}
+    ];
 }
 
 function drawGrid(only_header) {
@@ -179,7 +183,7 @@ function drawGrid(only_header) {
             } else if (only_header) {
                 break;
             } else {
-                ctx_below.fillStyle = TILES[0]["item"];
+                ctx_below.fillStyle = TILES[0]["i"];
                 ctx_below.fillRect(x, y, item_size_1, item_size_1);
             }
 
@@ -839,7 +843,7 @@ function initTiles() {
     var image, canvas, dctx;
     var xp1_index, xp2_index;
     for (i = 0; i < TILES.length; i++) {
-        if (TILES[i]["item"].charAt(0) != '#') {
+        if (TILES[i]["i"].charAt(0) != '#') {
             TILES[i]["image"] = true;
 
             // cache canvas
@@ -870,7 +874,7 @@ function initTiles() {
 
             var top = parseInt(s110 + (s110 / 2));
 
-            switch (TILES[i]["item"]) {
+            switch (TILES[i]["i"]) {
                 case 'CHICKEN':
                     var s = item_size_1 / 10;
                     var tw = 8 * s;
@@ -984,10 +988,10 @@ function initTiles() {
                     w = item_size_1 * 0.8;
                     h = item_size_1 * 0.8;
 
-                    dctx.drawImage(TILES[xp1_index].item, x, y, w, h);
+                    dctx.drawImage(TILES[xp1_index]["item"], x, y, w, h);
 
                     // Removing big XP borders
-                    dctx.fillStyle = TILES[0]["item"];
+                    dctx.fillStyle = TILES[0]["i"];
                     dctx.fillRect(0, h, item_size_1, s18);
                     dctx.fillRect(w, 0, s18, item_size_1);
                     break;
@@ -998,18 +1002,19 @@ function initTiles() {
                     w = item_size_1 * 0.8;
                     h = item_size_1 * 0.8;
 
-                    dctx.drawImage(TILES[xp2_index].item, x, y, w, h);
+                    dctx.drawImage(TILES[xp2_index]["item"], x, y, w, h);
 
                     // Removing big XP borders
-                    dctx.fillStyle = TILES[0]["item"];
+                    dctx.fillStyle = TILES[0]["i"];
                     dctx.fillRect(0, h, item_size_1, s18);
                     dctx.fillRect(w, 0, s18, item_size_1);
 
                     break;
             }
 
-            TILES[i]["item"] = canvas; // recycle field with canvas
+            TILES[i]["item"] = canvas;
         } else {
+            TILES[i]["item"] = TILES[i]["i"];
             TILES[i]["image"] = false;
         }
     }
@@ -1114,7 +1119,7 @@ function drawCircle(dctx, s18, c1, c2, c3, radius, margin) {
 
     if (radius) {
         // cutting
-        dctx.fillStyle = TILES[0]["item"];
+        dctx.fillStyle = TILES[0]["i"];
 
         // top left
         dctx.fillRect(0, 0, s28 + m8, s18 + m8);
@@ -1162,7 +1167,7 @@ function prepareGame(event) {
     //vertical_items = parseInt(height / item_size) + 1 + 2;
 
     horizontal_items = DESIRED_HORIZONTAL_ITEMS;
-    
+
     item_size = parseInt(width / (horizontal_items - 3));
     if (item_size < 26) {
         while (item_size % 8 != 0) {
@@ -1196,6 +1201,7 @@ function prepareGame(event) {
     ctx_above.font = "bold " + NAMES_HEIGHT + "px Arial";
     ctx_above.fillStyle = "#FFFFFF";
 
+    initTilesArray();
     drawGrid(false);
     initTiles();
 
@@ -1267,6 +1273,17 @@ function prepareGame(event) {
     initSounds();
 
     window.addEventListener('keydown', keyPressed, false);
+
+    var arrows_size = parseInt(window.innerWidth * 0.15);
+    if (arrows_size > 70) {
+        arrows_size = "70px";
+    } else {
+        arrows_size = arrows_size + "px";
+    }
+    document.getElementById('arrow-right').style.height = arrows_size;
+    document.getElementById('arrow-left').style.height = arrows_size;
+    document.getElementById('arrow-top').style.width = arrows_size;
+    document.getElementById('arrow-bottom').style.width = arrows_size;
 }
 
 window.addEventListener('resize', function(event) {

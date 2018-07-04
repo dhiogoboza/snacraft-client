@@ -331,6 +331,34 @@ option {
     display: none;
 }
 
+#arrows {
+    display: none;
+}
+
+#arrows img {
+    position: absolute;
+}
+
+#arrows img#arrow-right {
+    top: 42%;
+    right: 0px;
+}
+
+#arrows img#arrow-left {
+    top: 42%;
+    left: 0px;
+}
+
+#arrows img#arrow-top {
+    left: 42%;
+    top: 0px;
+}
+
+#arrows img#arrow-bottom {
+    left: 42%;
+    bottom: 0px;
+}
+
 #connect-form-gameover {
     font-family: 'minecraft_evenings';
 }

@@ -33,7 +33,7 @@ function createAvatars() {
         dctx.fillStyle = grid_color;
         dctx.fillRect(0, 0, item_size, item_size);
 
-        dctx.fillStyle = TILES[0]["item"];
+        dctx.fillStyle = TILES[0]["i"];
         dctx.fillRect(0, 0, item_size_1, item_size_1);
 
         x = -(s18);
@@ -166,7 +166,7 @@ function initAvatarChooser() {
     avatar_canvas.height = 1.0 * item_size + 2 * s;
     avatar_canvas.width = width;
 
-    avatar_ctx.fillStyle = TILES[0].item;
+    avatar_ctx.fillStyle = TILES[0]["i"];
     avatar_ctx.fillRect(0, 0, avatar_canvas.width, avatar_canvas.height);
 
     avatar_ctx.strokeStyle = grid_color;
