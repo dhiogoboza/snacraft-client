@@ -284,6 +284,7 @@ option {
         display: inline-block;
         width: 33px;
         height: 33px;
+        user-select: none;
     }
 
     #keyboard #right {
@@ -336,7 +337,9 @@ option {
 }
 
 #arrows img {
+    display: none;
     position: absolute;
+    user-select: none;
 }
 
 #arrows img#arrow-right {

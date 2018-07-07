@@ -22,6 +22,11 @@ var SKELETON_BOW;
 var SMALL_SCREEN = 680;
 
 var RANKING_SIZE = 8;
+var rankingSize;
+
+// flag to indicate that screen size changed in game
+// and game matrix must be recalculated
+var mustPrepare = false;
 
 var smallScreen = false;
 
@@ -35,6 +40,22 @@ var matrix_map = [];
 var current_matrix = [];
 var current_matrix_map = [];
 var matrix_mobs = [];
+
+// aray with mobs
+var mobs_data;
+
+// snakes variables
+var cur_i, cur_j, cur_id;
+var k, l;
+var size_most, size_less;
+var room_leader;
+
+// room leader arrows
+var arrow_top;
+var arrow_right;
+var arrow_bottom;
+var arrow_left;
+var crown;
 
 var players_list = {};
 
@@ -66,29 +87,15 @@ var offset_i_left = 0, offset_j_left = 0, offset_i_right = 0, offset_j_right = 0
 var i_start, i_end, j_start = 0, j_end = 0;
 
 var horizontal_items, vertical_items;
+var vertical_items_half, horizontal_items_half;
 var focus_offset_i, focus_offset_j;
 
 var grid_color = "#6d953e"; // D5D5D5
 
 // avatares colors
-var colors = [
-    ["Diamond", "#000000", "rect", "#006064", "#00BCD4", "#B2EBF2"],
-    ["Purple", "#FFFFFF", "rect", "#4A148C", "#8E24AA", "#E1BEE7"],
-    ["Wood", "#FFFFFF", "rect", "#322114", "#8d6b3c", "#9d7942"],
-    ["Indigo", "#FFFFFF", "rect", "#1A237E", "#303F9F", "#9FA8DA"],
-    ["Teal", "#000000", "rect", "#009688", "#4DB6AC", "#00897B"],
+var colors;
 
-    // bots
-    ["Zombie", "#000000", "rect", "#1e2c13", "#385a27", "#567943"],
-    ["ZombieShirt", "#000000", "rect", "#007876", "#007e7b", "#007e7b"],
-    ["ZombiePant", "#000000", "rect", "#3a3189", "#463aa5", "#463aa5"],
-
-    ["Skeleton", "#000000", "rect", "#686868", "#939393", "#939393"],
-    ["SkeletonBow", "#000000", "bow", "#686868", "#939393", "#896727", "#444444"],
-
-    ["Spider", "#b50c0f", "rect", "#050404", "#18151c", "#211d27"]
-];
-
+// map tiles
 var TILES;
 
 // sounds map
@@ -146,6 +153,24 @@ function initTilesArray() {
 
         // move speed
         {i: "MOVE_SPEED", off: false}
+    ];
+
+    colors = [
+        ["Diamond", "#000000", "rect", "#006064", "#00BCD4", "#B2EBF2"],
+        ["Purple", "#FFFFFF", "rect", "#4A148C", "#8E24AA", "#E1BEE7"],
+        ["Wood", "#FFFFFF", "rect", "#322114", "#8d6b3c", "#9d7942"],
+        ["Indigo", "#FFFFFF", "rect", "#1A237E", "#303F9F", "#9FA8DA"],
+        ["Teal", "#000000", "rect", "#009688", "#4DB6AC", "#00897B"],
+
+        // bots
+        ["Zombie", "#000000", "rect", "#1e2c13", "#385a27", "#567943"],
+        ["ZombieShirt", "#000000", "rect", "#007876", "#007e7b", "#007e7b"],
+        ["ZombiePant", "#000000", "rect", "#3a3189", "#463aa5", "#463aa5"],
+
+        ["Skeleton", "#000000", "rect", "#686868", "#939393", "#939393"],
+        ["SkeletonBow", "#000000", "bow", "#686868", "#939393", "#896727", "#444444"],
+
+        ["Spider", "#b50c0f", "rect", "#050404", "#18151c", "#211d27"]
     ];
 }
 
@@ -392,8 +417,10 @@ function onMessage(event) {
                 break;
             case 2:
                 // Game data updated
-                drawMobs(data);
+                mobs_data = data;
+                drawMobs();
                 drawMobsAtMap();
+                drawRoomLeader();
 
                 drawStats();
                 break;
@@ -436,122 +463,128 @@ function onMessage(event) {
     }
 }
 
-function drawMobs(mobs_data) {
-    snakes_count = mobs_data[1];
-    var cur_i, cur_j;
-    var k, l;
-    var size_most, size_less;
+function putSnakeAtMap() {
+    // current snake id
+    cur_id = mobs_data[j++];
 
+    // push ids at ranking array
+    if (i < rankingSize) {
+        leaderboard.push(cur_id);
+    }
+
+    // get current snake by index
+    cur_snake = players_list[cur_id];
+
+    // snake color
+    color = mobs_data[j++];
+
+    // TODO: do not receive snakes until players list is received
+    if (!cur_snake) {
+        cur_snake = {};
+        var snake_skin = color - initial_av_index;
+        cur_snake["id"] = cur_id;
+        cur_snake["eyes"] = colors[snake_skin][1];
+
+        cur_snake["name"] = "";
+        cur_snake["i"] = 0;
+        cur_snake["j"] = 0;
+
+        players_list[cur_id] = cur_snake;
+    }
+
+    // set snake color
+    cur_snake["color"] = color;
+
+    // snake size
+    size_most = mobs_data[j++];
+    size_less = mobs_data[j++];
+    cur_snake["size"] = size_most << 8 | size_less & 0xFF;
+
+    // snake head
+    cur_i = mobs_data[j++];
+    cur_j = mobs_data[j++];
+
+    // detect snake direction
+    if (cur_snake["i"] < cur_i) {
+        cur_snake["head"] = cur_snake["eyes"]["down"];
+        cur_snake["direction"] = DIRECTION_DOWN;
+    } else if (cur_snake["i"] > cur_i) {
+        cur_snake["head"] = cur_snake["eyes"]["up"];
+        cur_snake["direction"] = DIRECTION_UP;
+    } else if (cur_snake["j"] < cur_j) {
+        cur_snake["head"] = cur_snake["eyes"]["right"];
+        cur_snake["direction"] = DIRECTION_RIGHT;
+    } else if (cur_snake["j"] > cur_j) {
+        cur_snake["head"] = cur_snake["eyes"]["left"];
+        cur_snake["direction"] = DIRECTION_LEFT;
+    }
+
+    // set snake positions
+    cur_snake["i"] = cur_i;
+    cur_snake["j"] = cur_j;
+
+    if (cur_id == id) {
+        my_snake = cur_snake;
+        my_snake["position"] = i + 1;
+    }
+
+    // put snake head at mobs matrix
+    matrix_mobs[cur_snake["i"]][cur_snake["j"]] = -cur_id;
+
+    // Zombie
+    switch (color) {
+        case ZOMBIE_INDEX:
+            // shirt
+            matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_SHIRT;
+            matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_SHIRT;
+
+            half = parseInt(cur_snake["size"] / 2) + 3
+
+            // pant
+            for (k = 3; k < half; k++) {
+                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_PANT;
+            }
+
+            // snake pixels
+            for (l = half; l < cur_snake["size"]; l++) {
+                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_INDEX;
+            }
+
+            break;
+        case SKELETON_INDEX:
+            matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_INDEX;
+
+            // bow
+            matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_BOW;
+
+            for (k = 3; k < cur_snake["size"]; k++) {
+                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_INDEX;
+        }
+            break;
+        default:
+            // snake pixels
+            for (k = 1; k < cur_snake["size"]; k++) {
+                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = cur_snake["color"];
+            }
+
+            break;
+    }
+
+    return cur_snake;
+}
+
+function drawMobs() {
+    snakes_count = mobs_data[1];
     j = 2;
     leaderboard = [];
 
+    // room leader: first snake
+    i = 0;
+    room_leader = putSnakeAtMap();
+
     // get snakes
-    for (i = 0; i < snakes_count; i++) {
-        // current snake id
-        cur_id = mobs_data[j++];
-
-        // push ids at ranking array
-        if (i < RANKING_SIZE) {
-            leaderboard.push(cur_id);
-        }
-
-        // get current snake by index
-        cur_snake = players_list[cur_id];
-
-        // snake color
-        color = mobs_data[j++];
-
-        // TODO: do not receive snakes until players list is received
-        if (!cur_snake) {
-            cur_snake = {};
-            var snake_skin = color - initial_av_index;
-            cur_snake["id"] = cur_id;
-            cur_snake["eyes"] = colors[snake_skin][1];
-
-            cur_snake["name"] = "";
-            cur_snake["i"] = 0;
-            cur_snake["j"] = 0;
-
-            players_list[cur_id] = cur_snake;
-        }
-
-        // set snake color
-        cur_snake["color"] = color;
-
-        // snake size
-        size_most = mobs_data[j++];
-        size_less = mobs_data[j++];
-        cur_snake["size"] = size_most << 8 | size_less & 0xFF;
-
-        // snake head
-        cur_i = mobs_data[j++];
-        cur_j = mobs_data[j++];
-
-        // detect snake direction
-        if (cur_snake["i"] < cur_i) {
-            cur_snake["head"] = cur_snake["eyes"]["down"];
-            cur_snake["direction"] = DIRECTION_DOWN;
-        } else if (cur_snake["i"] > cur_i) {
-            cur_snake["head"] = cur_snake["eyes"]["up"];
-            cur_snake["direction"] = DIRECTION_UP;
-        } else if (cur_snake["j"] < cur_j) {
-            cur_snake["head"] = cur_snake["eyes"]["right"];
-            cur_snake["direction"] = DIRECTION_RIGHT;
-        } else if (cur_snake["j"] > cur_j) {
-            cur_snake["head"] = cur_snake["eyes"]["left"];
-            cur_snake["direction"] = DIRECTION_LEFT;
-        }
-
-        // set snake positions
-        cur_snake["i"] = cur_i;
-        cur_snake["j"] = cur_j;
-
-        if (cur_id == id) {
-            my_snake = cur_snake;
-            my_snake["position"] = i + 1;
-        }
-
-        // put snake head at mobs matrix
-        matrix_mobs[cur_snake["i"]][cur_snake["j"]] = -cur_id;
-
-        // Zombie
-        switch (color) {
-            case ZOMBIE_INDEX:
-                // shirt
-                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_SHIRT;
-                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_SHIRT;
-
-                half = parseInt(cur_snake["size"] / 2) + 3
-
-                // pant
-                for (k = 3; k < half; k++) {
-                    matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_PANT;
-                }
-
-                // snake pixels
-                for (l = half; l < cur_snake["size"]; l++) {
-                    matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_INDEX;
-                }
-
-                break;
-            case SKELETON_INDEX:
-                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_INDEX;
-
-                // bow
-                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_BOW;
-
-                for (k = 3; k < cur_snake["size"]; k++) {
-                    matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_INDEX;
-	        }
-                break;
-            default:
-	            // snake pixels
-	            for (k = 1; k < cur_snake["size"]; k++) {
-	                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = cur_snake["color"];
-	            }
-
-	            break;
-        }
+    for (i = 1; i < snakes_count; i++) {
+        putSnakeAtMap();
     }
 
     // get another mobs
@@ -577,24 +610,22 @@ function drawMobs(mobs_data) {
 }
 
 function drawItemAtCanvas(tile, current, ctx) {
-    if (tile) {
-        if (tile["image"]) {
-            ctx.clearRect(current["x"], current["y"], item_size, item_size);
-            ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
-        } else {
-            previous = TILES[current["i"]];
-            if (!previous || (previous["image"] || previous["off"])) {
-                // clear rect
-                ctx.fillStyle = grid_color;
-                ctx.fillRect(current["x"], current["y"], item_size, item_size);
-            }
+    if (tile["image"]) {
+        ctx.clearRect(current["x"], current["y"], item_size, item_size);
+        ctx.drawImage(tile["item"], current["x"], current["y"], item_size, item_size);
+    } else {
+        previous = TILES[current["i"]];
+        if (!previous || (previous["image"] || previous["off"])) {
+            // clear rect
+            ctx.fillStyle = grid_color;
+            ctx.fillRect(current["x"], current["y"], item_size, item_size);
+        }
 
-            ctx.fillStyle = tile["item"];
-            if (tile["off"]) {
-                ctx.fillRect(current["x"], current["y"], item_size, item_size);
-            } else {
-                ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
-            }
+        ctx.fillStyle = tile["item"];
+        if (tile["off"]) {
+            ctx.fillRect(current["x"], current["y"], item_size, item_size);
+        } else {
+            ctx.fillRect(current["x"], current["y"], item_size_1, item_size_1);
         }
     }
 }
@@ -647,6 +678,11 @@ function drawMobsAtMap() {
                     // snake eyes
                     ctx.drawImage(snake["head"], current["x"], current["y"], item_size, item_size);
 
+                    // crown
+                    if (room_leader["id"] === snake["id"]) {
+                        ctx.drawImage(crown, current["x"], current["y"], item_size, item_size);
+                    }
+
                     // clear previous name
                     ctx_above.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], snake["name_h"]);
 
@@ -679,8 +715,41 @@ function drawMobsAtMap() {
             }
         }
     }
-    
-    first_ = 0;
+}
+
+function drawRoomLeader() {
+    if (room_leader["id"] != my_snake["id"]) {
+        if (Math.abs(room_leader["j"] - my_snake["j"]) >= horizontal_items_half) {
+            if (room_leader["j"] > my_snake["j"]) {
+                arrow_right.style.display = "block";
+                arrow_left.style.display = "none";
+            } else {
+                arrow_right.style.display = "none";
+                arrow_left.style.display = "block";
+            }
+        } else {
+            arrow_right.style.display = "none";
+            arrow_left.style.display = "none";
+        }
+
+        if (Math.abs(room_leader["i"] - my_snake["i"]) >= vertical_items_half) {
+            if (room_leader["i"] > my_snake["i"]) {
+                arrow_bottom.style.display = "block";
+                arrow_top.style.display = "none";
+            } else {
+                arrow_bottom.style.display = "none";
+                arrow_top.style.display = "block";
+            }
+        } else {
+            arrow_bottom.style.display = "none";
+            arrow_top.style.display = "none";
+        }
+    } else {
+        arrow_right.style.display = "none";
+        arrow_left.style.display = "none";
+        arrow_bottom.style.display = "none";
+        arrow_top.style.display = "none";
+    }
 }
 
 function initPlayer(cur_player) {
@@ -713,6 +782,7 @@ function initPlayersList(data) {
         color = data[i];
 
         cur_player = {
+            "id": cur_id,
             "name": player_name,
             "i": 0,
             "j": 0,
@@ -763,6 +833,12 @@ function drawGameover() {
     score_dom.innerHTML = "Score: " + score + " (" + position + "/" + snakes_count + ")";
 
     document.getElementById("connect-form-gameover").style.visibility = "visible";
+
+    if (mustPrepare) {
+        // screen size has changed
+        prepareGame();
+        mustPrepare = false;
+    }
 
     drawGrid(true);
 }
@@ -1148,17 +1224,14 @@ function prepareGame(event) {
 
     if (smallScreen) {
         // TODO: a better way to compatibilize with small screen devices
-        RANKING_SIZE = 4;
+        rankingSize = 4;
+    } else {
+        rankingSize = RANKING_SIZE;
     }
 
     var c0 = document.getElementById("canvas_below");
     var c = document.getElementById("canvas");
     var c2 = document.getElementById("canvas_above");
-
-    var keys = document.querySelectorAll("#keyboard .key");
-    for (var i = 0; i < keys.length; i++) {
-        keys[i].addEventListener("click", virtualKeyPressed);
-    }
 
     width = c.width = c2.width = c0.width = window.innerWidth;
     height = c.height = c2.height = c0.height = window.innerHeight;
@@ -1177,6 +1250,9 @@ function prepareGame(event) {
     }
     item_size_1 = item_size - 2;
     vertical_items = parseInt(height / item_size) + 1 + 2;
+    
+    vertical_items_half = parseInt(vertical_items / 2);
+    horizontal_items_half = parseInt(horizontal_items / 2);
 
     offset_i_left = parseInt(vertical_items / 2);
     offset_j_left = parseInt(horizontal_items / 2);
@@ -1198,13 +1274,79 @@ function prepareGame(event) {
     ctx_above = c2.getContext("2d");
     ctx_above.textAlign = "left";
     ctx_above.textBaseline = "top";
-    ctx_above.font = "bold " + NAMES_HEIGHT + "px Arial";
+    ctx_above.font = "bold " + NAMES_HEIGHT + "px";
     ctx_above.fillStyle = "#FFFFFF";
+    
+    // crown
+    crown = document.createElement("canvas");
+    crown.height = item_size;
+    crown.width = item_size;
+
+    var crown_ctx = crown.getContext("2d");
+    crown_ctx.fillStyle = "#DDC436";
+    var s18 = item_size_1 / 8;
+    var c_height = item_size_1 / 3;
+    crown_ctx.fillRect(0, 0, item_size_1, c_height);
+    var st = s18 / 2;
+    crown_ctx.fillStyle = "#CAB43A";
+    for (var cr = 0; cr < 4; cr++) {
+        crown_ctx.fillRect(st + cr * 2 * s18, c_height, s18, s18);
+    }
+    crown_ctx.fillStyle = "#DDC436";
+    crown_ctx.fillRect(st + 3 * s18, c_height, s18, 2 * s18);
 
     initTilesArray();
     drawGrid(false);
     initTiles();
 
+    initAvatarChooser();
+}
+
+window.addEventListener('resize', function(event) {
+    if (!connected) {
+        prepareGame(event);
+    } else {
+        mustPrepare = true;
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function(event) {
+    // room leader arrows
+    arrow_top = document.getElementById('arrow-top');
+    arrow_right = document.getElementById('arrow-right');
+    arrow_bottom = document.getElementById('arrow-bottom');
+    arrow_left = document.getElementById('arrow-left');
+
+    var arrows_size = parseInt(window.innerWidth * 0.15);
+    if (arrows_size > 70) {
+        arrows_size = "70px";
+    } else {
+        arrows_size = arrows_size + "px";
+    }
+
+    arrow_top.style.width = arrows_size;
+    arrow_right.style.height = arrows_size;
+    arrow_bottom.style.width = arrows_size;
+    arrow_left.style.height = arrows_size;
+
+    // sounds
+    initSounds();
+
+    // ads
+    if (navigator.userAgent == "snacraft-app" || findGetParameter("n") === "1") {
+        document.getElementById("ads").remove();
+
+        if (navigator.userAgent == "snacraft-app") {
+            document.getElementById("social-buttons").remove();
+        }
+    } else {
+        var heading = document.getElementById("connect-form")
+        var heading_top = parseInt(window.getComputedStyle(heading).top.replace("px", ""));
+        document.getElementById("ads").style.top = (heading.offsetHeight + heading_top) + "px";
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    }
+    
+    // server
     document.getElementById("nickname").value = getCookie("nickname");
     var server = document.getElementById("server");
 
@@ -1227,19 +1369,6 @@ function prepareGame(event) {
 
     getServerList(document.getElementById("server"));
 
-    if (navigator.userAgent == "snacraft-app" || findGetParameter("n") === "1") {
-        document.getElementById("ads").remove();
-        
-        if (navigator.userAgent == "snacraft-app") {
-            document.getElementById("social-buttons").remove();
-        }
-    } else {
-        var heading = document.getElementById("connect-form")
-        var heading_top = parseInt(window.getComputedStyle(heading).top.replace("px", ""));
-        document.getElementById("ads").style.top = (heading.offsetHeight + heading_top) + "px";
-        (adsbygoogle = window.adsbygoogle || []).push({});
-    }
-
     var cookie_server = getCookie("server");
 
     if (cookie_server) {
@@ -1251,6 +1380,9 @@ function prepareGame(event) {
             }
         }
     }
+
+    // user input listeners
+    window.addEventListener('keydown', keyPressed, false);
 
     document.getElementById("connect").onclick = function(e) {
         // disable button
@@ -1269,28 +1401,11 @@ function prepareGame(event) {
         }
     };
 
-    initAvatarChooser();
-    initSounds();
-
-    window.addEventListener('keydown', keyPressed, false);
-
-    var arrows_size = parseInt(window.innerWidth * 0.15);
-    if (arrows_size > 70) {
-        arrows_size = "70px";
-    } else {
-        arrows_size = arrows_size + "px";
+    var keys = document.querySelectorAll("#keyboard .key");
+    for (var i = 0; i < keys.length; i++) {
+        keys[i].addEventListener("click", virtualKeyPressed);
     }
-    document.getElementById('arrow-right').style.height = arrows_size;
-    document.getElementById('arrow-left').style.height = arrows_size;
-    document.getElementById('arrow-top').style.width = arrows_size;
-    document.getElementById('arrow-bottom').style.width = arrows_size;
-}
 
-window.addEventListener('resize', function(event) {
-    if (!connected) {
-        prepareGame(event);
-    } else {
-        // TODO: prepare game later
-    }
+    // prepare game
+    prepareGame();
 });
-document.addEventListener("DOMContentLoaded", prepareGame);
