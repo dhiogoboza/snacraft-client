@@ -34,7 +34,7 @@ var FOCUS_OFFSET_PERCENTAGE = 0.2;
 
 var TILE_MOVE_SPEED = 5;
 
-var NAMES_HEIGHT = 12;
+var NAMES_HEIGHT = 15;
 
 var matrix_map = [];
 var current_matrix = [];
@@ -432,7 +432,7 @@ function onMessage(event) {
                 // Player left the game
                 snake = players_list[data[1]];
                 if (snake) {
-                    ctx_above.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], NAMES_HEIGHT);
+                    ctx_above.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], snake["name_h"]);
                     players_list[data[1]] = undefined;
                 }
 
@@ -1274,7 +1274,7 @@ function prepareGame(event) {
     ctx_above = c2.getContext("2d");
     ctx_above.textAlign = "left";
     ctx_above.textBaseline = "top";
-    ctx_above.font = "bold " + NAMES_HEIGHT + "px";
+    ctx_above.font = "bold " + NAMES_HEIGHT + "px sans-serif";
     ctx_above.fillStyle = "#FFFFFF";
     
     // crown
