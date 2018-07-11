@@ -5,10 +5,10 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-        <meta name="description" content=""/>
-        <meta name="author" content="Multiplayer Online Snake Game"/>
+        <meta name="description" content="Multiplayer Classic Snake Game"/>
+        <meta name="author" content="dhiogoboza@gmail.com,rubenochiavonne@gmail.com"/>
         <meta name="keywords" content="io,iogame,.io,game,snake,snacraft,multiplayer io game"/>
-        <meta property="og:image" content="http://snacraft.io/img/logo.png"/>
+        <meta property="og:image" content="/img/logo.png"/>
 
         <link rel="icon" href="favicon.ico"/>
         <title>Snacraft Beta</title>
@@ -19,9 +19,6 @@
         <link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet"/>
         <!-- Custom styles for this template -->
         <link href="css/style.css" rel="stylesheet"/>
-
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
 
     </head>
     <body>
@@ -57,6 +54,12 @@
             </div>
             <div>
                 <canvas id="canvas_above"></canvas>
+            </div>
+            <div id="arrows">
+                <img src="img/arrow_right.png" class="horiz" id="arrow-right"/>
+                <img src="img/arrow_left.png" class="horiz" id="arrow-left"/>
+                <img src="img/arrow_top.png" class="vert" id="arrow-top"/>
+                <img src="img/arrow_bottom.png" class="vert" id="arrow-bottom"/>
             </div>
             <div id="keyboard">
                 <table>
@@ -133,9 +136,13 @@
                         </div>
                     </div>
                     <div id="avatar-chooser">
-                        <i class="mn-button fa fa-arrow-left"></i>
+                        <div id="avatar-arrow-left" class="mn-button arrow-left">
+                            <img src="img/arrow.svg"/>
+                        </div>
                         <canvas id="avatar" height="40"> </canvas>
-                        <i class="mn-button fa fa-arrow-right"></i>
+                        <div id="avatar-arrow-right" class="mn-button arrow-right">
+                            <img src="img/arrow.svg"/>
+                        </div>
                     </div>
                 </div>
                 <div class="message" id="score">
@@ -173,6 +180,7 @@
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
         
         <!-- Game script -->
+        
         
         
         
