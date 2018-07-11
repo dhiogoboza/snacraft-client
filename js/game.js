@@ -680,7 +680,6 @@ function drawMobsAtMap() {
 
                     // crown
                     if (room_leader["id"] === snake["id"]) {
-                        console.log(crown[snake["direction"]])
                         ctx.drawImage(crown[snake["direction"]], current["x"], current["y"], item_size, item_size);
                     }
 
@@ -1277,30 +1276,12 @@ function prepareGame(event) {
     ctx_above.textBaseline = "top";
     ctx_above.font = "bold " + NAMES_HEIGHT + "px sans-serif";
     ctx_above.fillStyle = "#FFFFFF";
-    
+
     // crown
-    var crown_all = createCanvas(item_size, item_size);
-    var crown_ctx = crown_all.getContext("2d");
-    crown_ctx.fillStyle = "#DDC436";
-    var s18 = item_size_1 / 8;
-    var c_height = item_size_1 / 3;
-    crown_ctx.fillRect(0, 0, item_size_1, c_height);
-    var st = s18 / 2;
-    crown_ctx.fillStyle = "#CAB43A";
-    for (var cr = 0; cr < 4; cr++) {
-        crown_ctx.fillRect(st + cr * 2 * s18, c_height, s18, s18);
-    }
-    crown_ctx.fillStyle = "#DDC436";
-    crown_ctx.fillRect(st + 3 * s18, c_height, s18, 2 * s18);
-
-    crown[DIRECTION_DOWN] = createCanvas(item_size, item_size, crown_all);
-    crown[DIRECTION_RIGHT] = createCanvas(item_size, item_size, crown_all, -(Math.PI / 2));
-    crown[DIRECTION_UP] = createCanvas(item_size, item_size, crown_all, Math.PI);
-    crown[DIRECTION_LEFT] = createCanvas(item_size, item_size, crown_all, Math.PI / 2);
-
-    setTimeout(function() {
-        debug(crown[DIRECTION_UP], 200, 200, item_size);
-    }, 500);
+    crown[DIRECTION_DOWN] = createCrown(item_size, item_size, DIRECTION_DOWN);
+    crown[DIRECTION_UP] = createCrown(item_size, item_size, DIRECTION_UP);
+    crown[DIRECTION_RIGHT] = createCrown(item_size, item_size, DIRECTION_RIGHT);
+    crown[DIRECTION_LEFT] = createCrown(item_size, item_size, DIRECTION_LEFT);
 
     initTilesArray();
     drawGrid(false);
