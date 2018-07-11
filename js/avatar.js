@@ -133,7 +133,7 @@ function drawAvatar(a_index) {
 }
 
 function changeAvatar(event) {
-    if (event.currentTarget.className === "mn-button fa fa-arrow-right") {
+    if (event.currentTarget.className === "mn-button arrow-right") {
         current_avatar_index++;
 
         if (current_avatar_index === max_avatar_index) {
@@ -198,6 +198,6 @@ function initAvatarChooser() {
     createAvatars();
     drawAvatar(current_avatar_index);
 
-    document.querySelector(".fa-arrow-left").addEventListener("click", changeAvatar);
-    document.querySelector(".fa-arrow-right").addEventListener("click", changeAvatar);
+    document.getElementById("avatar-arrow-left").addEventListener("click", changeAvatar);
+    document.getElementById("avatar-arrow-right").addEventListener("click", changeAvatar);
 }

@@ -394,21 +394,24 @@ option {
     user-select: none;
 }
 
-#avatar-chooser i {
+#avatar-chooser div {
     vertical-align: top;
-    padding-top: 8px;
+    padding-top: 3px;
     margin-top: 0px;
     cursor: pointer;
     width: 40px;
-    height: 45px;
+    height: 46px;
+    display: inline-block;
 }
 
-#avatar-chooser i:active {
-    
+#avatar-chooser div img {
+    width: 34px;
+    height: 38px;
+    display: inline-block;
 }
 
-#avatar-chooser #avatar {
-    
+#avatar-chooser div.arrow-left img {
+    transform: rotate(-180deg);
 }
 
 .footer {
