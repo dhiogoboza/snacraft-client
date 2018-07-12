@@ -164,6 +164,18 @@ option {
   margin: 20px 0;
 }
 
+.about {
+    font-family: 'mcfont';
+    font-size: 18px;
+    color: white;
+    text-align: center;
+    padding-bottom: 50px;
+}
+
+.about .title {
+    font-size: 25px;
+}
+
 .mn-button {
     display: inline-block;
     outline: 2px solid black;
@@ -314,7 +326,7 @@ option {
 
 @media only screen and (min-height: 680px) {
     .heading {
-        top: 22%;
+        top: 23%;
     }
 }
 
@@ -437,7 +449,7 @@ option {
 #ads {
     position: absolute;
     z-index: 99999;
-    top: calc(22% + 260px);
+    top: calc(23% + 260px);
     left: 0;
     width: 100%;
     text-align: center;

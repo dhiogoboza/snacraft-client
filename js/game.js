@@ -1287,7 +1287,11 @@ function prepareGame(event) {
     drawGrid(false);
     initTiles();
 
-    initAvatarChooser();
+    avatar_canvas = document.getElementById("avatar");
+
+    if (avatar_canvas) {
+        initAvatarChooser();
+    }
 }
 
 window.addEventListener('resize', function(event) {
@@ -1330,68 +1334,76 @@ document.addEventListener("DOMContentLoaded", function(event) {
     } else {
         var heading = document.getElementById("connect-form")
         var heading_top = parseInt(window.getComputedStyle(heading).top.replace("px", ""));
-        document.getElementById("ads").style.top = (heading.offsetHeight + heading_top) + "px";
-        (adsbygoogle = window.adsbygoogle || []).push({});
+        var ads = document.getElementById("ads");
+        if (ads) {
+            ads.style.top = (heading.offsetHeight + heading_top) + "px";
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        }
     }
     
     // server
-    document.getElementById("nickname").value = getCookie("nickname");
-    var server = document.getElementById("server");
-
-    if (findGetParameter("debug") === "true") {
-        var debugOption = document.createElement("option");
-        debugOption.value = "localhost:8080";
-        debugOption.text = debugOption.value;
-        server.appendChild(debugOption);
-
-        debugOption = document.createElement("option");
-        debugOption.value = "secret-reaches-61045.herokuapp.com";
-        debugOption.text = "Secret Reaches";
-        server.appendChild(debugOption);
-
-        debugOption = document.createElement("option");
-        debugOption.value = "fast-island-17183.herokuapp.com";
-        debugOption.text = "Fast Island";
-        server.appendChild(debugOption);
+    var nick = document.getElementById("nickname");
+    if (nick) {
+        document.getElementById("nickname").value = getCookie("nickname");
     }
+    
+    var server = document.getElementById("server");
+    if (server) {
+        if (findGetParameter("debug") === "true") {
+            var debugOption = document.createElement("option");
+            debugOption.value = "localhost:8080";
+            debugOption.text = debugOption.value;
+            server.appendChild(debugOption);
 
-    getServerList(document.getElementById("server"));
+            debugOption = document.createElement("option");
+            debugOption.value = "secret-reaches-61045.herokuapp.com";
+            debugOption.text = "Secret Reaches";
+            server.appendChild(debugOption);
 
-    var cookie_server = getCookie("server");
-
-    if (cookie_server) {
-        var opts = server.options;
-        for (var opt, j = 0; opt = opts[j]; j++) {
-            if (opt.value == cookie_server) {
-                server.selectedIndex = j;
-                break;
+            debugOption = document.createElement("option");
+            debugOption.value = "fast-island-17183.herokuapp.com";
+            debugOption.text = "Fast Island";
+            server.appendChild(debugOption);
+        }
+    
+        getServerList(document.getElementById("server"));
+        var cookie_server = getCookie("server");
+        if (cookie_server) {
+            var opts = server.options;
+            for (var opt, j = 0; opt = opts[j]; j++) {
+                if (opt.value == cookie_server) {
+                    server.selectedIndex = j;
+                    break;
+                }
             }
         }
     }
 
     // user input listeners
-    window.addEventListener('keydown', keyPressed, false);
+    var connect_button = document.getElementById("connect");
+    if (connect_button) {
+        window.addEventListener('keydown', keyPressed, false);
+        connect_button.onclick = function(e) {
+            // disable button
+            e.target.disabled = true;
+            e.target.style.cursor = "wait";
+            if (!connected) {
+                resetCurrentMatrix();
 
-    document.getElementById("connect").onclick = function(e) {
-        // disable button
-        e.target.disabled = true;
-        e.target.style.cursor = "wait";
-        if (!connected) {
-            resetCurrentMatrix();
+                var server = document.getElementById("server").value;
+                var nickname = document.getElementById("nickname").value;
 
-            var server = document.getElementById("server").value;
-            var nickname = document.getElementById("nickname").value;
+                setCookie("nickname", nickname, 300);
+                setCookie("server", server, 300);
 
-            setCookie("nickname", nickname, 300);
-            setCookie("server", server, 300);
+                connect(server);
+            }
+        };
 
-            connect(server);
+        var keys = document.querySelectorAll("#keyboard .key");
+        for (var i = 0; i < keys.length; i++) {
+            keys[i].addEventListener("click", virtualKeyPressed);
         }
-    };
-
-    var keys = document.querySelectorAll("#keyboard .key");
-    for (var i = 0; i < keys.length; i++) {
-        keys[i].addEventListener("click", virtualKeyPressed);
     }
 
     // prepare game

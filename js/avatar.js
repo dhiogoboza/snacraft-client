@@ -153,7 +153,6 @@ function changeAvatar(event) {
 function initAvatarChooser() {
     var item_size = 33;
 
-    avatar_canvas = document.getElementById("avatar");
     avatar_ctx = avatar_canvas.getContext("2d");
 
     var s = 0.2 * item_size;

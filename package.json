@@ -7,7 +7,7 @@
     "clean": "rm -rf dist/*",
     "minify-js": "node-minify --compressor babel-minify --input 'js/*.js' --output 'dist/js/main.js'",
     "minify-css": "node-minify --compressor clean-css --input 'css/*.css' --output 'dist/css/style.css'",
-    "strip-html": "node strip-index-html.js",
+    "strip-html": "node strip-html.js",
     "cp-other-content": "npm run cp-other-favicon && npm run cp-other-content-fonts && npm run cp-other-content-img && npm run cp-other-content-js-vendor && npm run cp-other-content-snd",
     "cp-other-favicon": "cp favicon.ico dist/",
     "cp-other-content-fonts": "mkdir dist/fonts/ && cp -rfa fonts/* dist/fonts/",
