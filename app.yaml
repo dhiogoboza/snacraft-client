@@ -21,6 +21,10 @@ handlers:
   static_files: dist/index.html
   upload: dist/index.html
 
+- url: /about
+  static_files: dist/about.html
+  upload: dist/about.html
+
 - url: /favicon.ico
   static_files: dist/favicon.ico
   upload: dist/favicon.ico

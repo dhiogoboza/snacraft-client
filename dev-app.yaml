@@ -7,6 +7,10 @@ handlers:
   static_files: index.html
   upload: index.html
 
+- url: /about
+  static_files: about.html
+  upload: about.html
+
 - url: /index(.*)
   static_files: index.html
   upload: index.html
