@@ -144,6 +144,7 @@ function initTilesArray() {
         {i: "CHICKEN", off: false}, // 16
         {i: "PIG", off: false}, // 17
         {i: "COW", off: false}, // 18
+        {i: "SHEEP", off: false}, // 19
 
         // corpse
         {i: "XP1", off: false},
@@ -923,10 +924,7 @@ function initTiles() {
             TILES[i]["image"] = true;
 
             // cache canvas
-            canvas = document.createElement("canvas");
-            canvas.height = item_size;
-            canvas.width = item_size;
-
+            canvas = createCanvas(item_size, item_size);
             dctx = canvas.getContext("2d");
 
             var s18 = item_size_1 / 8;
@@ -1039,6 +1037,29 @@ function initTiles() {
                     dctx.fillStyle = "#a5a5a5";
                     dctx.fillRect(s310, s810, s410, s110);
 
+                    break;
+                case "SHEEP":
+                    // bg
+                    dctx.fillStyle = "#FFFFFF";
+                    dctx.fillRect(s110, top, s810, s710);
+
+                    // face
+                    dctx.fillStyle = "#977864";
+                    dctx.fillRect(s210, s210, s610, s410);
+                    dctx.fillRect(s310, s610 - 1, s410, s210 + 2);
+
+                    // eyes
+                    dctx.fillStyle = "#000000";
+                    dctx.fillRect(s210, s410, s210, s210);
+                    dctx.fillRect(s710, s410, s110, s210);
+
+                    dctx.fillStyle = "#FFFFFF";
+                    dctx.fillRect(s310, s410, s110, s210);
+                    dctx.fillRect(s610, s410, s110, s210);
+
+                    // mouth
+                    dctx.fillStyle = "#df9a9d";
+                    dctx.fillRect(s410, s710, s210, s110);
                     break;
                 case "MOVE_SPEED":
                     dctx.fillStyle = "#616161";

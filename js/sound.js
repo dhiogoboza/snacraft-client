@@ -37,6 +37,9 @@ function initSounds() {
     var cow = new Audio('snd/cow.ogg');
     cow.volume = 1;
 
+    var sheep1 = new Audio('snd/sheep1.mp3');
+    var sheep2 = new Audio('snd/sheep2.mp3');
+
     sounds = {
         //"CHICKEN"
         16: [chicken_hurt, chicken], 
@@ -45,11 +48,12 @@ function initSounds() {
         //"COW"
         18: [cowhurt, cow],
         //"XP"
-        19: xp, // https://minecraft.gamepedia.com/File:XP_Old.ogg
-        20: xp, // https://minecraft.gamepedia.com/File:XP_Old.ogg
-        21: xp, // https://minecraft.gamepedia.com/File:XP_Old.ogg
-        22: xp, // https://minecraft.gamepedia.com/File:XP_Old.ogg
-        23: [move_speed]
+        19: [sheep1, sheep2],
+        20: xp,
+        21: xp,
+        22: xp,
+        23: xp,
+        24: [move_speed]
     };
 
     walking_sound.volume = AMBIENCE_VOLUME;
@@ -74,6 +78,7 @@ function stopSound() {
 
 function playSound(sound_id) {
     if (sound_id) {
+        console.log(sound_id)
         sound = sounds[sound_id];
         if (sound) {
             sound.choice().play();
