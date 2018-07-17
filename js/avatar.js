@@ -17,7 +17,6 @@ function debug(c, x, y, s) {
 
 function createAvatars() {
     initial_av_index = TILES.length;
-    console.log(initial_av_index)
     current_avatar_index = initial_av_index;
 
     var s = item_size / 8;
@@ -101,8 +100,6 @@ function createAvatars() {
             ZOMBIE_INDEX = TILES.length - 1;
             ZOMBIE_SHIRT = ZOMBIE_INDEX + 1;
             ZOMBIE_PANT = ZOMBIE_SHIRT + 1;
-            
-            console.log(ZOMBIE_INDEX)
         } else if (colors[i][0] === "Skeleton") {
             SKELETON_INDEX = TILES.length - 1;
             SKELETON_BOW = SKELETON_INDEX + 1;
