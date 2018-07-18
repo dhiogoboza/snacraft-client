@@ -1313,6 +1313,23 @@ function prepareGame(event) {
     if (avatar_canvas) {
         initAvatarChooser();
     }
+
+    // ads
+    if (navigator.userAgent == "snacraft-app" || findGetParameter("n") === "1") {
+        document.getElementById("ads").remove();
+
+        if (navigator.userAgent == "snacraft-app") {
+            document.getElementById("social-buttons").remove();
+        }
+    } else {
+        var heading = document.getElementById("connect-form")
+        var heading_top = parseInt(window.getComputedStyle(heading).top.replace("px", ""));
+        var ads = document.getElementById("ads");
+        if (ads) {
+            ads.style.top = (heading.offsetHeight + heading_top) + "px";
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        }
+    }
 }
 
 window.addEventListener('resize', function(event) {
@@ -1345,23 +1362,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     // sounds
     initSounds();
 
-    // ads
-    if (navigator.userAgent == "snacraft-app" || findGetParameter("n") === "1") {
-        document.getElementById("ads").remove();
-
-        if (navigator.userAgent == "snacraft-app") {
-            document.getElementById("social-buttons").remove();
-        }
-    } else {
-        var heading = document.getElementById("connect-form")
-        var heading_top = parseInt(window.getComputedStyle(heading).top.replace("px", ""));
-        var ads = document.getElementById("ads");
-        if (ads) {
-            ads.style.top = (heading.offsetHeight + heading_top) + "px";
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        }
-    }
-    
     // server
     var nick = document.getElementById("nickname");
     if (nick) {
