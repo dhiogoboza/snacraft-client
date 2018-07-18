@@ -38,8 +38,6 @@ var NAMES_HEIGHT = 15;
 
 var matrix_map = [];
 var current_matrix = [];
-var current_matrix_map = [];
-var matrix_mobs = [];
 
 // aray with mobs
 var mobs_data;
@@ -70,7 +68,7 @@ var lines = 0, columns = 0;
 
 // Draw loop variables
 var tile, previous, snake;
-var current, current_map;
+var current, matrix_new;
 
 var center_i = 0, center_j = 0;
 var head_i = 0, head_j = 0;
@@ -227,55 +225,45 @@ function drawGrid(only_header) {
 function resetCurrentMatrix() {
     // clear canvas
     ctx.clearRect(0, 0, width, height);
-    
-    var lineMobs;
+
     var line;
     var y = -item_size, x;
     current_matrix = [];
-    current_matrix_map = [];
     for (i = 0; i < vertical_items; i++) {
         lineMobs = [];
         line = [];
         x = -item_size;
         for (j = 0; j < horizontal_items; j++) {
-            lineMobs.push({"i": 0, "x": x, "y": y, "off": true});
-            line.push({"i": -1, "x": x, "y": y, "off": true});
+            line.push(new ScreenPixel(x, y));
 
             x += item_size;
         }
 
         y += item_size;
 
-        current_matrix.push(lineMobs);
-        current_matrix_map.push(line);
+        current_matrix.push(line);
     }
 }
 
 function initMatrix(matrix_data) {
     var matrix_split = matrix_data.split(",");
-    var line_snakes;
 
     lines = parseInt(matrix_split[1]);
     columns = parseInt(matrix_split[2]);
 
-    matrix_mobs = [];
     matrix_map = [];
 
     var c = 3;
     var line;
-    var y = 0, x;
     for (i = 0; i < lines; i++) {
         line = [];
-        line_snakes = [];
 
         for (j = 0; j < columns; j++) {
-            line.push(parseInt(matrix_split[c]));
-            line_snakes.push(0);
+            line.push(new MapPixel(parseInt(matrix_split[c])));
 
             c++;
         }
 
-        matrix_mobs[i] = line_snakes;
         matrix_map[i] = line;
     }
 }
@@ -530,42 +518,43 @@ function putSnakeAtMap() {
     }
 
     // put snake head at mobs matrix
-    matrix_mobs[cur_snake["i"]][cur_snake["j"]] = -cur_id;
+    matrix_map[cur_snake["i"]][cur_snake["j"]].setSnake(-cur_id);
 
     // Zombie
     switch (color) {
         case ZOMBIE_INDEX:
             // shirt
-            matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_SHIRT;
-            matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_SHIRT;
+            matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_SHIRT);
+            matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_SHIRT);
 
             half = parseInt(cur_snake["size"] / 2) + 3
 
             // pant
             for (k = 3; k < half; k++) {
-                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_PANT;
+                matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_PANT);
             }
 
             // snake pixels
             for (l = half; l < cur_snake["size"]; l++) {
-                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = ZOMBIE_INDEX;
+                matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_INDEX);
             }
 
             break;
         case SKELETON_INDEX:
-            matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_INDEX;
+            matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(SKELETON_INDEX);
 
             // bow
-            matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_BOW;
+            matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(SKELETON_BOW);
 
             for (k = 3; k < cur_snake["size"]; k++) {
-                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = SKELETON_INDEX;
-        }
+                matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(SKELETON_INDEX);
+            }
+
             break;
         default:
             // snake pixels
             for (k = 1; k < cur_snake["size"]; k++) {
-                matrix_mobs[mobs_data[j++]][mobs_data[j++]] = cur_snake["color"];
+                matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(cur_snake["color"]);
             }
 
             break;
@@ -590,7 +579,7 @@ function drawMobs() {
 
     // get another mobs
     for (i = j; i < mobs_data.length; i++) {
-        matrix_mobs[mobs_data[i]][mobs_data[++i]] = mobs_data[++i];
+        matrix_map[mobs_data[i]][mobs_data[++i]][I_MOB].setMob(mobs_data[++i]);
     }
 
     // update current view flags
@@ -656,12 +645,14 @@ function drawMobsAtMap() {
 
     for (i = i_start, _i = 0; i < i_end; i++, _i++) {
         for (j = j_start, _j = 0; j < j_end; j++, _j++) {
+            // old item in screen
             current = current_matrix[_i][_j];
-            current_map = current_matrix_map[_i][_j];
+            // new map item
+            matrix_new = matrix_map[i][j];
 
             // Draw static map element
-            if (current_map["i"] != matrix_map[i][j]) {
-                tile = TILES[matrix_map[i][j]];
+            if (current.map != matrix_new.map) {
+                tile = TILES[matrix_map[i][j].map];
                 drawItemAtCanvas(tile, current_map, ctx_below);
                 current_map["i"] = matrix_map[i][j];
             }
