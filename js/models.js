@@ -1,5 +1,4 @@
 var ITEM_MAP_EMPTY = -1;
-var ITEM_MOB_EMPTY = 0;
 var ITEM_EMPTY = 0;
 
 /**
@@ -12,13 +11,12 @@ function MapPixel(map) {
 }
 
 MapPixel.prototype.setSnake = function(snake) {
-    //this.snake = snake;
-    //this.mob = ITEM_EMPTY;
-    this.mob = snake;
+    this.snake = snake;
+    this.mob = ITEM_EMPTY;
 };
 
 MapPixel.prototype.setMob = function(mob) {
-    //this.snake = ITEM_EMPTY;
+    this.snake = ITEM_EMPTY;
     this.mob = mob;
 };
 
@@ -30,5 +28,5 @@ function ScreenPixel(x, y) {
     this.y = y;
     this.map_off = true;
     this.map = ITEM_MAP_EMPTY;
-    this.mob = ITEM_MOB_EMPTY;
+    this.mob = ITEM_EMPTY;
 }

@@ -36,7 +36,7 @@ var TILE_MOVE_SPEED = 5;
 
 var NAMES_HEIGHT = 15;
 
-var matrix_map = [];
+var server_matrix = [];
 var current_screen_matrix = [];
 
 // aray with mobs
@@ -68,7 +68,7 @@ var lines = 0, columns = 0;
 
 // Draw loop variables
 var tile, previous, snake;
-var current_screen, matrix_new;
+var current_screen, current_server;
 
 var center_i = 0, center_j = 0;
 var head_i = 0, head_j = 0;
@@ -251,7 +251,7 @@ function initMatrix(matrix_data) {
     lines = parseInt(matrix_split[1]);
     columns = parseInt(matrix_split[2]);
 
-    matrix_map = [];
+    server_matrix = [];
 
     var c = 3;
     var line;
@@ -264,7 +264,7 @@ function initMatrix(matrix_data) {
             c++;
         }
 
-        matrix_map[i] = line;
+        server_matrix[i] = line;
     }
 }
 
@@ -488,6 +488,7 @@ function putSnakeAtMap() {
     size_most = mobs_data[j++];
     size_less = mobs_data[j++];
     cur_snake["size"] = size_most << 8 | size_less & 0xFF;
+    snake_size = cur_snake["size"];
 
     // snake head
     cur_i = mobs_data[j++];
@@ -518,43 +519,43 @@ function putSnakeAtMap() {
     }
 
     // put snake head at mobs matrix
-    matrix_map[cur_snake["i"]][cur_snake["j"]].setSnake(-cur_id);
+    server_matrix[cur_snake["i"]][cur_snake["j"]].setSnake(-cur_id);
 
     // Zombie
     switch (color) {
         case ZOMBIE_INDEX:
             // shirt
-            matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_SHIRT);
-            matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_SHIRT);
+            server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_SHIRT);
+            server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_SHIRT);
 
-            half = parseInt(cur_snake["size"] / 2) + 3
+            half = parseInt(snake_size / 2) + 3
 
             // pant
             for (k = 3; k < half; k++) {
-                matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_PANT);
+                server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_PANT);
             }
 
             // snake pixels
-            for (l = half; l < cur_snake["size"]; l++) {
-                matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_INDEX);
+            for (l = half; l < snake_size; l++) {
+                server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_INDEX);
             }
 
             break;
         case SKELETON_INDEX:
-            matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(SKELETON_INDEX);
+            server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(SKELETON_INDEX);
 
             // bow
-            matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(SKELETON_BOW);
+            server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(SKELETON_BOW);
 
-            for (k = 3; k < cur_snake["size"]; k++) {
-                matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(SKELETON_INDEX);
+            for (k = 3; k < snake_size; k++) {
+                server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(SKELETON_INDEX);
             }
 
             break;
         default:
             // snake pixels
-            for (k = 1; k < cur_snake["size"]; k++) {
-                matrix_map[mobs_data[j++]][mobs_data[j++]].setSnake(cur_snake["color"]);
+            for (k = 1; k < snake_size; k++) {
+                server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(color);
             }
 
             break;
@@ -579,7 +580,7 @@ function drawMobs() {
 
     // get another mobs
     for (i = j; i < mobs_data.length; i++) {
-        matrix_map[mobs_data[i]][mobs_data[++i]].setMob(mobs_data[++i]);
+        server_matrix[mobs_data[i]][mobs_data[++i]].setMob(mobs_data[++i]);
     }
 
     // update current view flags
@@ -599,26 +600,28 @@ function drawMobs() {
     }
 }
 
-function drawItemAtCanvas(tile, current, previous_tile, ctx) {
+function drawItemAtCanvas(tile, current, previous_tile, context) {
     if (tile["image"]) {
-        ctx.clearRect(current.x, current.y, item_size, item_size);
-        ctx.drawImage(tile["item"], current.x, current.y, item_size, item_size);
+        context.clearRect(current.x, current.y, item_size, item_size);
+        context.drawImage(tile["item"], current.x, current.y, item_size, item_size);
     } else {
         previous = TILES[previous_tile];
         if (!previous || (previous["image"] || previous["off"])) {
             // clear rect
-            ctx.fillStyle = grid_color;
-            ctx.fillRect(current["x"], current["y"], item_size, item_size);
+            context.fillStyle = grid_color;
+            context.fillRect(current["x"], current["y"], item_size, item_size);
         }
 
-        ctx.fillStyle = tile["item"];
+        context.fillStyle = tile["item"];
         if (tile["off"]) {
-            ctx.fillRect(current.x, current.y, item_size, item_size);
+            context.fillRect(current.x, current.y, item_size, item_size);
         } else {
-            ctx.fillRect(current.x, current.y, item_size_1, item_size_1);
+            context.fillRect(current.x, current.y, item_size_1, item_size_1);
         }
     }
 }
+
+var stop_game = 0;
 
 function drawMobsAtMap() {
     i_start = center_i - offset_i_left;
@@ -642,25 +645,32 @@ function drawMobsAtMap() {
         j_end = columns;
         j_start = columns - horizontal_items;
     }
+    
+    if (stop_game == 1) {
+        //socket.close()
+        //return;
+    }
 
+    stop_game++;
+    
     for (i = i_start, _i = 0; i < i_end; i++, _i++) {
         for (j = j_start, _j = 0; j < j_end; j++, _j++) {
             // old item in screen
             current_screen = current_matrix_screen[_i][_j];
             // new map item
-            matrix_new = matrix_map[i][j];
+            current_server = server_matrix[i][j];
 
             // Draw static map element
-            if (current_screen.map != matrix_new.map) {
-                tile = TILES[matrix_new.map];
+            if (current_screen.map != current_server.map) {
+                tile = TILES[current_server.map];
                 drawItemAtCanvas(tile, current_screen, current_screen.map, ctx_below);
-                current_screen.map = matrix_new.map;
+                current_screen.map = current_server.map;
             }
 
             // Draw mob element
-            if (matrix_new.mob < 0) {
+            if (current_server.snake < 0) {
                 // Snake head
-                snake = players_list[-matrix_new.mob];
+                snake = players_list[-current_server.snake];
                 if (snake) {
                     tile = TILES[snake["color"]];
 
@@ -687,24 +697,62 @@ function drawMobsAtMap() {
                 }
 
                 // set 0 to invalidate draw in the next step
-                current_screen.mob = -1;
+                current_screen.mob = current_server.snake;
+                //current_server.snake = 1000;
                 // TODO: not change matrix_mobs
-                matrix_new.setMob(0);
-            } else if (matrix_new.mob == 0) {
+            } else if (current_server.snake !== 0) {
+                if (current_server.snake !== current_screen.mob) {
+                    tile = TILES[current_server.snake];
+                    drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
+                    current_screen.mob = current_server.snake;
+                }
+            } else if (current_server.mob !== 0) {
+                if (current_server.mob !== current_screen.mob) {
+                    tile = TILES[current_server.mob];
+                    drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
+                    current_screen.mob = current_server.mob;
+                }
+            } else if (current_server.mob === 0 && current_server.snake === 0) {
+                if (current_screen.mob !== 0) {
+                    ctx.clearRect(current_screen.x, current_screen.y, item_size, item_size);
+                    current_screen.mob = 0;
+                }
+            }
+            
+            /*else if (current_server.snake !== current_screen.mob) {
+                //if (current_server.snake === 0) {
+                    console.log("desenhando: " + current_screen.mob + " [ " + current_screen.x + ", " + current_screen.y + "]");
+                    tile = TILES[current_server.snake];
+                    drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
+                    current_screen.mob = current_server.snake;
+                    //current_server.setSnake(0);
+                //}
+            } else if (current_server.mob !== current_screen.mob) {
+                //if (current_server.mob === 0) {
+                    //tile = TILES[current_server.mob];
+                    //drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
+                    //current_screen.mob = current_server.mob;
+                //}
+            }*/
+            
+            current_server.snake = 0;
+            current_server.mob = 0;
+
+            /*else if (current_server.mob == 0) {
                 if (current_screen.mob !== 0) {
                     ctx.clearRect(current_screen.x, current_screen.y, item_size, item_size);
                     current_screen.mob = 0;
                 }
             } else { // less than 0 must be cleared
                 // Clear mobs canvas
-                if (matrix_new.mob != current_screen.mob) {
-                    tile = TILES[matrix_new.mob];
+                if (current_server.mob != current_screen.mob) {
+                    tile = TILES[current_server.mob];
                     drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
-                    current_screen.mob = matrix_new.mob;
+                    current_screen.mob = current_server.mob;
                 }
                 // TODO: not change matrix_mobs
-                matrix_new.setMob(0);
-            }
+                current_server.setMob(0);
+            }*/
         }
     }
 }
