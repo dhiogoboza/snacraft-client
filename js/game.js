@@ -706,6 +706,7 @@ function drawMobsAtMap() {
                     drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
                     current_screen.mob = current_server.snake;
                 }
+                current_server.snake = 0;
             } else if (current_server.mob !== 0) {
                 if (current_server.mob !== current_screen.mob) {
                     tile = TILES[current_server.mob];
@@ -718,41 +719,6 @@ function drawMobsAtMap() {
                     current_screen.mob = 0;
                 }
             }
-            
-            /*else if (current_server.snake !== current_screen.mob) {
-                //if (current_server.snake === 0) {
-                    console.log("desenhando: " + current_screen.mob + " [ " + current_screen.x + ", " + current_screen.y + "]");
-                    tile = TILES[current_server.snake];
-                    drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
-                    current_screen.mob = current_server.snake;
-                    //current_server.setSnake(0);
-                //}
-            } else if (current_server.mob !== current_screen.mob) {
-                //if (current_server.mob === 0) {
-                    //tile = TILES[current_server.mob];
-                    //drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
-                    //current_screen.mob = current_server.mob;
-                //}
-            }*/
-            
-            current_server.snake = 0;
-            current_server.mob = 0;
-
-            /*else if (current_server.mob == 0) {
-                if (current_screen.mob !== 0) {
-                    ctx.clearRect(current_screen.x, current_screen.y, item_size, item_size);
-                    current_screen.mob = 0;
-                }
-            } else { // less than 0 must be cleared
-                // Clear mobs canvas
-                if (current_server.mob != current_screen.mob) {
-                    tile = TILES[current_server.mob];
-                    drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
-                    current_screen.mob = current_server.mob;
-                }
-                // TODO: not change matrix_mobs
-                current_server.setMob(0);
-            }*/
         }
     }
 }
@@ -1411,7 +1377,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     if (server) {
         if (findGetParameter("debug") === "true") {
             var debugOption = document.createElement("option");
-            debugOption.value = "192.168.0.175:8080";
+            debugOption.value = "localhost:8080";
             debugOption.text = debugOption.value;
             server.appendChild(debugOption);
 
