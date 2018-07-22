@@ -1382,6 +1382,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
             server.appendChild(debugOption);
 
             debugOption = document.createElement("option");
+            debugOption.value = "long-flower-eu.herokuapp.com";
+            debugOption.text = "[DEV] Long Flower EU";
+            server.appendChild(debugOption);
+
+            debugOption = document.createElement("option");
+            debugOption.value = "cool-leaf-us.herokuapp.com";
+            debugOption.text = "[DEV] Cool leaf US";
+            server.appendChild(debugOption);
+
+            debugOption = document.createElement("option");
             debugOption.value = "secret-reaches-61045.herokuapp.com";
             debugOption.text = "Secret Reaches";
             server.appendChild(debugOption);
