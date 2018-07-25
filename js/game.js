@@ -1375,44 +1375,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
     
     var server = document.getElementById("server");
     if (server) {
-        if (findGetParameter("debug") === "true") {
-            var debugOption = document.createElement("option");
-            debugOption.value = "localhost:8080";
-            debugOption.text = debugOption.value;
-            server.appendChild(debugOption);
-
-            debugOption = document.createElement("option");
-            debugOption.value = "long-flower-eu.herokuapp.com";
-            debugOption.text = "[DEV] Long Flower EU";
-            server.appendChild(debugOption);
-
-            debugOption = document.createElement("option");
-            debugOption.value = "cool-leaf-us.herokuapp.com";
-            debugOption.text = "[DEV] Cool leaf US";
-            server.appendChild(debugOption);
-
-            debugOption = document.createElement("option");
-            debugOption.value = "secret-reaches-61045.herokuapp.com";
-            debugOption.text = "Secret Reaches";
-            server.appendChild(debugOption);
-
-            debugOption = document.createElement("option");
-            debugOption.value = "fast-island-17183.herokuapp.com";
-            debugOption.text = "Fast Island";
-            server.appendChild(debugOption);
-        }
-    
-        getServerList(document.getElementById("server"));
-        var cookie_server = getCookie("server");
-        if (cookie_server) {
-            var opts = server.options;
-            for (var opt, j = 0; opt = opts[j]; j++) {
-                if (opt.value == cookie_server) {
-                    server.selectedIndex = j;
-                    break;
+        getServerList(document.getElementById("server"), function() {
+            var server = document.getElementById("server");
+            var cookie_server = getCookie("server");
+            if (cookie_server) {
+                var opts = server.options;
+                for (var opt, j = 0; opt = opts[j]; j++) {
+                    if (opt.value == cookie_server) {
+                        server.selectedIndex = j;
+                        break;
+                    }
                 }
-            }
-        }
+            } 
+        });
     }
 
     // user input listeners
@@ -1430,7 +1405,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 var nickname = document.getElementById("nickname").value;
 
                 setCookie("nickname", nickname, 300);
-                setCookie("server", server, 300);
+                setCookie("server", server, 1);
 
                 connect(server);
             }
