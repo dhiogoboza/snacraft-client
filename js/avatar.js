@@ -1,7 +1,7 @@
 var SNAKE_SIZE = 8;
 var ITEMS = 10;
 
-var items, snake_size;
+var items, avatar_snake_size;
 
 var current_avatar_index = 0;
 var max_avatar_index;
@@ -117,8 +117,8 @@ function drawAvatar(a_index) {
     head_canvas = colors[a_index - initial_av_index][1];
 
     x = s;
-    var start = parseInt((items - snake_size) / 2);
-    var end = snake_size + start;
+    var start = parseInt((items - avatar_snake_size) / 2);
+    var end = avatar_snake_size + start;
     for (i = 0; i < end; i++) {
         if (i >= start) {
             avatar_ctx.drawImage(avatar["item"], x, s * 2, item_size, item_size);
@@ -162,7 +162,7 @@ function initAvatarChooser() {
     } else {
         items = ITEMS;
     }
-    snake_size = items - 2;
+    avatar_snake_size = items - 2;
 
     var width = items * item_size + 2 * s;
 

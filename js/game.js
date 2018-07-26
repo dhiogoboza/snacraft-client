@@ -65,6 +65,7 @@ var leaderboard;
 var my_snake;
 var snakes_count;
 var lines = 0, columns = 0;
+var snake_size;
 
 // Draw loop variables
 var tile, previous, snake;
@@ -518,9 +519,6 @@ function putSnakeAtMap() {
         my_snake["position"] = i + 1;
     }
 
-    // put snake head at mobs matrix
-    server_matrix[cur_snake["i"]][cur_snake["j"]].setSnake(-cur_id);
-
     // Zombie
     switch (color) {
         case ZOMBIE_INDEX:
@@ -560,6 +558,9 @@ function putSnakeAtMap() {
 
             break;
     }
+
+    // put snake head at mobs matrix    
+    server_matrix[cur_snake["i"]][cur_snake["j"]].setSnake(-cur_id);
 
     return cur_snake;
 }
@@ -701,12 +702,12 @@ function drawMobsAtMap() {
                 //current_server.snake = 1000;
                 // TODO: not change matrix_mobs
             } else if (current_server.snake !== 0) {
-                if (current_server.snake !== current_screen.mob) {
-                    tile = TILES[current_server.snake];
-                    drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
-                    current_screen.mob = current_server.snake;
-                }
-                current_server.snake = 0;
+                    if (current_server.snake !== current_screen.mob) {
+                        tile = TILES[current_server.snake];
+                        drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
+                        current_screen.mob = current_server.snake;
+                    }
+                    current_server.snake = 0;
             } else if (current_server.mob !== 0) {
                 if (current_server.mob !== current_screen.mob) {
                     tile = TILES[current_server.mob];
@@ -1377,7 +1378,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     if (server) {
         if (findGetParameter("debug") === "true") {
             var debugOption = document.createElement("option");
-            debugOption.value = "localhost:8080";
+            debugOption.value = "192.168.0.175:8080";
             debugOption.text = debugOption.value;
             server.appendChild(debugOption);
 
