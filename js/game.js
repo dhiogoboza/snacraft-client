@@ -1378,7 +1378,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     if (server) {
         if (findGetParameter("debug") === "true") {
             var debugOption = document.createElement("option");
-            debugOption.value = "192.168.0.175:8080";
+            debugOption.value = "localhost:8080";
             debugOption.text = debugOption.value;
             server.appendChild(debugOption);
 
