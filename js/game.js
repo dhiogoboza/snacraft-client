@@ -457,11 +457,6 @@ function putSnakeAtMap() {
     // current snake id
     cur_id = mobs_data[j++];
 
-    // push ids at ranking array
-    if (i < rankingSize) {
-        leaderboard.push(cur_id);
-    }
-
     // get current snake by index
     cur_snake = players_list[cur_id];
 
@@ -480,6 +475,11 @@ function putSnakeAtMap() {
         cur_snake["j"] = 0;
 
         players_list[cur_id] = cur_snake;
+    }
+
+    // push ids at ranking array
+    if (i < rankingSize && cur_snake["name"].length > 0) {
+        leaderboard.push(cur_id);
     }
 
     // set snake color
