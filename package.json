@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "Snacraft is an IO game inspired on classic snake and Minecraft",
   "scripts": {
-    "build": "npm run clean && npm run strip-html && npm run minify-js && npm run minify-css && npm run cp-other-content",
+    "build": "npm run clean && npm run strip-html && npm run minify-js && npm run obfuscate-js && npm run minify-css && npm run cp-other-content",
     "clean": "rm -rf dist/*",
-    "minify-js": "node-minify --compressor babel-minify --input 'js/*.js' --output 'dist/js/main.js'",
+    "minify-js": "node-minify --compressor babel-minify --input 'js/*.js' --output 'dist/js/main.minified.js'",
+    "obfuscate-js": "javascript-obfuscator dist/js/main.minified.js --compact true --output dist/js/main.js && rm dist/js/main.minified.js",
     "minify-css": "node-minify --compressor clean-css --input 'css/*.css' --output 'dist/css/style.css'",
     "strip-html": "node strip-html.js",
     "cp-other-content": "npm run cp-other-favicon && npm run cp-other-content-fonts && npm run cp-other-content-img && npm run cp-other-content-js-vendor && npm run cp-other-content-snd",
@@ -18,6 +19,7 @@
   "author": "Dhiogo Boza <dhiogoboza@gmail.com>, Ruben O Chiavone <rubenochiavone@gmail.com>",
   "devDependencies": {
     "node-minify": "3.0.1",
-    "xmldom": "0.1.27"
+    "xmldom": "0.1.27",
+    "javascript-obfuscator": "0.17.3"
   }
 }
