@@ -519,6 +519,13 @@ function putSnakeAtMap() {
         my_snake["position"] = i + 1;
     }
 
+    console.log(snake_size)
+    
+    for (k = 1; k < snake_size; k++) {
+        server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(color);
+    }
+
+    /*
     // Zombie
     switch (color) {
         case ZOMBIE_INDEX:
@@ -558,6 +565,7 @@ function putSnakeAtMap() {
 
             break;
     }
+    */
 
     // put snake head at mobs matrix    
     server_matrix[cur_snake["i"]][cur_snake["j"]].setSnake(-cur_id);
