@@ -478,7 +478,7 @@ function putSnakeAtMap() {
     }
 
     // push ids at ranking array
-    if (i < rankingSize && cur_snake["name"].length > 0) {
+    if (leaderboard.length < rankingSize && cur_snake["name"].length > 0) {
         leaderboard.push(cur_id);
     }
 
