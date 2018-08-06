@@ -46,7 +46,7 @@ var mobs_data;
 var cur_i, cur_j, cur_id;
 var k, l;
 var size_most, size_less;
-var room_leader;
+var room_leader = null;
 
 // room leader arrows
 var arrow_top;
@@ -62,7 +62,7 @@ var socket;
 var nickname;
 var id;
 var leaderboard;
-var my_snake;
+var my_snake = null;
 var snakes_count;
 var lines = 0, columns = 0;
 var snake_size;
@@ -593,39 +593,41 @@ function drawMobs() {
     }
 
     // update current view flags
-    head_i = my_snake["i"];
-    head_j = my_snake["j"];
+    //if (my_snake) {
+        head_i = my_snake["i"];
+        head_j = my_snake["j"];
 
-    if (head_i - center_i < -focus_offset_i) {
-        center_i--;
-    } else if (head_i - center_i > focus_offset_i) {
-        center_i++;
-    }
+        if (head_i - center_i < -focus_offset_i) {
+            center_i--;
+        } else if (head_i - center_i > focus_offset_i) {
+            center_i++;
+        }
 
-    if (head_j - center_j < -focus_offset_j) {
-        center_j--;
-    } else if (head_j - center_j > focus_offset_j) {
-        center_j++;
-    }
+        if (head_j - center_j < -focus_offset_j) {
+            center_j--;
+        } else if (head_j - center_j > focus_offset_j) {
+            center_j++;
+        }
+    //}
 }
 
 function drawItemAtCanvas(tile, current, previous_tile, context) {
     if (tile["image"]) {
-        context.clearRect(current.x, current.y, item_size, item_size);
-        context.drawImage(tile["item"], current.x, current.y, item_size, item_size);
+        context.clearRect(current.position.x, current.position.y, item_size, item_size);
+        context.drawImage(tile["item"], current.position.x, current.position.y, item_size, item_size);
     } else {
         previous = TILES[previous_tile];
         if (!previous || (previous["image"] || previous["off"])) {
             // clear rect
             context.fillStyle = grid_color;
-            context.fillRect(current["x"], current["y"], item_size, item_size);
+            context.fillRect(current.position.x, current.position.y, item_size, item_size);
         }
 
         context.fillStyle = tile["item"];
         if (tile["off"]) {
-            context.fillRect(current.x, current.y, item_size, item_size);
+            context.fillRect(current.position.x, current.position.y, item_size, item_size);
         } else {
-            context.fillRect(current.x, current.y, item_size_1, item_size_1);
+            context.fillRect(current.position.x, current.position.y, item_size_1, item_size_1);
         }
     }
 }
@@ -684,22 +686,22 @@ function drawMobsAtMap() {
                     tile = TILES[snake["color"]];
 
                     //drawItemAtCanvas(tile, current, ctx);
-                    ctx.drawImage(tile["item"], current_screen.x, current_screen.y, item_size, item_size);
+                    ctx.drawImage(tile["item"], current_screen.position.x, current_screen.position.y, item_size, item_size);
 
                     // snake eyes
-                    ctx.drawImage(snake["head"], current_screen.x, current_screen.y, item_size, item_size);
+                    ctx.drawImage(snake["head"], current_screen.position.x, current_screen.position.y, item_size, item_size);
 
                     // crown
-                    if (room_leader["id"] === snake["id"]) {
-                        ctx.drawImage(crown[snake["direction"]], current_screen.x, current_screen.y, item_size, item_size);
+                    if (room_leader && room_leader["id"] === snake["id"]) {
+                        ctx.drawImage(crown[snake["direction"]], current_screen.position.x, current_screen.position.y, item_size, item_size);
                     }
 
                     // clear previous name
                     ctx_above.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], snake["name_h"]);
 
                     // save last snake name position
-                    snake["name_x"] = current_screen.x + item_size;
-                    snake["name_y"] = current_screen.y - item_size;
+                    snake["name_x"] = current_screen.position.x + item_size;
+                    snake["name_y"] = current_screen.position.y - item_size;
 
                     // draw snake name
                     ctx_above.fillText(snake["name"], snake["name_x"], snake["name_y"]);
@@ -724,7 +726,7 @@ function drawMobsAtMap() {
                 }
             } else if (current_server.mob === 0 && current_server.snake === 0) {
                 if (current_screen.mob !== 0) {
-                    ctx.clearRect(current_screen.x, current_screen.y, item_size, item_size);
+                    ctx.clearRect(current_screen.position.x, current_screen.position.y, item_size, item_size);
                     current_screen.mob = 0;
                 }
             }
@@ -733,7 +735,7 @@ function drawMobsAtMap() {
 }
 
 function drawRoomLeader() {
-    if (room_leader["id"] != my_snake["id"]) {
+    if (room_leader && my_snake && room_leader["id"] != my_snake["id"]) {
         if (Math.abs(room_leader["j"] - my_snake["j"]) >= horizontal_items_half) {
             if (room_leader["j"] > my_snake["j"]) {
                 arrow_right.style.display = "block";
@@ -814,6 +816,9 @@ function initPlayersList(data) {
 }
 
 function drawStats() {
+    //if (!my_snake) {
+    //    return;
+    //}
     // my score
     score = my_snake["size"];
     document.getElementById("snake-size").innerHTML = score;
