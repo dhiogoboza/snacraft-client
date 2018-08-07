@@ -397,7 +397,8 @@ function onMessage(event) {
                     "j": head_j,
                     "direction": DIRECTION_UP,
                     "color": color,
-                    "eyes": colors[color - initial_av_index][1]
+                    "eyes": colors[color - initial_av_index][1],
+                    "head": colors[color - initial_av_index][1]["up"]
                 };
 
                 initPlayer(my_snake);
@@ -405,10 +406,21 @@ function onMessage(event) {
                 players_list[id] = my_snake;
 
                 break;
-            case 2:
-                // Game data updated
+            case 12:
+                // all mobs
                 mobs_data = data;
-                drawMobs();
+                getServerMobs();
+                drawMobsAtMap();
+                drawRoomLeader();
+
+                drawStats();
+                break;
+            case 2: 
+                // mobs changes
+                mobs_data = data;
+                i = 1;
+                j = 1;
+                getServerMobsChanges();
                 drawMobsAtMap();
                 drawRoomLeader();
 
@@ -499,16 +511,18 @@ function putSnakeAtMap() {
     if (cur_snake["i"] < cur_i) {
         cur_snake["head"] = cur_snake["eyes"]["down"];
         cur_snake["direction"] = DIRECTION_DOWN;
-    } else if (cur_snake["i"] > cur_i) {
-        cur_snake["head"] = cur_snake["eyes"]["up"];
-        cur_snake["direction"] = DIRECTION_UP;
     } else if (cur_snake["j"] < cur_j) {
         cur_snake["head"] = cur_snake["eyes"]["right"];
         cur_snake["direction"] = DIRECTION_RIGHT;
     } else if (cur_snake["j"] > cur_j) {
         cur_snake["head"] = cur_snake["eyes"]["left"];
         cur_snake["direction"] = DIRECTION_LEFT;
+    } else { // up
+        cur_snake["head"] = cur_snake["eyes"]["up"];
+        cur_snake["direction"] = DIRECTION_UP;
     }
+    
+    console.log("init: " + cur_snake["head"])
 
     // set snake positions
     cur_snake["i"] = cur_i;
@@ -518,14 +532,12 @@ function putSnakeAtMap() {
         my_snake = cur_snake;
         my_snake["position"] = i + 1;
     }
-
-    console.log(snake_size)
     
-    for (k = 1; k < snake_size; k++) {
+    /*for (k = 1; k < snake_size; k++) {
         server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(color);
-    }
+    }*/
 
-    /*
+    
     // Zombie
     switch (color) {
         case ZOMBIE_INDEX:
@@ -565,7 +577,6 @@ function putSnakeAtMap() {
 
             break;
     }
-    */
 
     // put snake head at mobs matrix    
     server_matrix[cur_snake["i"]][cur_snake["j"]].setSnake(-cur_id);
@@ -573,7 +584,7 @@ function putSnakeAtMap() {
     return cur_snake;
 }
 
-function drawMobs() {
+function getServerMobs() {
     snakes_count = mobs_data[1];
     j = 2;
     leaderboard = [];
@@ -587,13 +598,17 @@ function drawMobs() {
         putSnakeAtMap();
     }
 
+    getServerMobsChanges();
+}
+
+function getServerMobsChanges() {
     // get another mobs
     for (i = j; i < mobs_data.length; i++) {
         server_matrix[mobs_data[i]][mobs_data[++i]].setMob(mobs_data[++i]);
     }
 
     // update current view flags
-    //if (my_snake) {
+    if (my_snake) {
         head_i = my_snake["i"];
         head_j = my_snake["j"];
 
@@ -608,7 +623,7 @@ function drawMobs() {
         } else if (head_j - center_j > focus_offset_j) {
             center_j++;
         }
-    //}
+    }
 }
 
 function drawItemAtCanvas(tile, current, previous_tile, context) {
@@ -689,6 +704,7 @@ function drawMobsAtMap() {
                     ctx.drawImage(tile["item"], current_screen.position.x, current_screen.position.y, item_size, item_size);
 
                     // snake eyes
+                    console.log(snake["head"])
                     ctx.drawImage(snake["head"], current_screen.position.x, current_screen.position.y, item_size, item_size);
 
                     // crown
@@ -721,6 +737,7 @@ function drawMobsAtMap() {
             } else if (current_server.mob !== 0) {
                 if (current_server.mob !== current_screen.mob) {
                     tile = TILES[current_server.mob];
+                    console.log(current_server.mob + " - " + tile)
                     drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
                     current_screen.mob = current_server.mob;
                 }
@@ -784,7 +801,7 @@ function initPlayersList(data) {
     //             0           1             2            3         4
     // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | COLOR | ... ]
 
-    for (i = 1; i < data.length;) {
+    for (var i = 1; i < data.length;) {
         cur_id = data[i];
         i++;
         name_size = data[i];
@@ -798,6 +815,15 @@ function initPlayersList(data) {
         i++;
         color = data[i];
 
+        console.log("color: " + color)
+        
+        if (!color) {
+            console.log("cur_id=" + cur_id)
+            console.log("name_size=" + name_size)
+            console.log("player_name=" + player_name)
+            console.log("i=" + i)
+            console.log(data)
+        }
         cur_player = {
             "id": cur_id,
             "name": player_name,
@@ -816,9 +842,9 @@ function initPlayersList(data) {
 }
 
 function drawStats() {
-    //if (!my_snake) {
-    //    return;
-    //}
+    if (!my_snake || !leaderboard) {
+        return;
+    }
     // my score
     score = my_snake["size"];
     document.getElementById("snake-size").innerHTML = score;
