@@ -20,8 +20,8 @@ function MapPixel(map) {
     this.map = map;
 }
 
-MapPixel.prototype.setSnake = function(snake) {
-    this.snake = snake;
+MapPixel.prototype.setSnake = function(snake_id) {
+    this.snake = snake_id;
     this.mob = ITEM_EMPTY;
 };
 
@@ -36,6 +36,7 @@ MapPixel.prototype.setMob = function(mob) {
 function ScreenPixel(x, y) {
     this.position = new Position(x, y);
     this.map_off = true;
+    this.direction = ITEM_MAP_EMPTY;
     this.map = ITEM_MAP_EMPTY;
     this.mob = ITEM_EMPTY;
 }

@@ -434,7 +434,7 @@ function onMessage(event) {
                 // Player left the game
                 snake = players_list[data[1]];
                 if (snake) {
-                    ctx_above.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], snake["name_h"]);
+                    ctx_above.clearRect(snake["name_x"] - 2, snake["name_y"] - 2, snake["name_w"], snake["name_h"]);
                     players_list[data[1]] = undefined;
                 }
 
@@ -465,11 +465,32 @@ function onMessage(event) {
     }
 }
 
+function updateSnakeDirection(cur_snake, cur_i, cur_j) {
+    // detect snake direction
+    if (cur_snake["i"] < cur_i) {
+        cur_snake["head"] = cur_snake["eyes"]["down"];
+        cur_snake["direction"] = DIRECTION_DOWN;
+    } else if (cur_snake["j"] < cur_j) {
+        cur_snake["head"] = cur_snake["eyes"]["right"];
+        cur_snake["direction"] = DIRECTION_RIGHT;
+    } else if (cur_snake["j"] > cur_j) {
+        cur_snake["head"] = cur_snake["eyes"]["left"];
+        cur_snake["direction"] = DIRECTION_LEFT;
+    } else { // up
+        cur_snake["head"] = cur_snake["eyes"]["up"];
+        cur_snake["direction"] = DIRECTION_UP;
+    }
+
+    // set snake positions
+    cur_snake["i"] = cur_i;
+    cur_snake["j"] = cur_j;
+}
+
 function putSnakeAtMap() {
     // current snake id
     cur_id = mobs_data[j++];
 
-    // get current snake by index
+    // get current snake by id
     cur_snake = players_list[cur_id];
 
     // snake color
@@ -489,7 +510,7 @@ function putSnakeAtMap() {
         players_list[cur_id] = cur_snake;
     }
 
-    // push ids at ranking array
+    // push snake id in ranking array
     if (leaderboard.length < rankingSize && cur_snake["name"].length > 0) {
         leaderboard.push(cur_id);
     }
@@ -501,43 +522,24 @@ function putSnakeAtMap() {
     size_most = mobs_data[j++];
     size_less = mobs_data[j++];
     cur_snake["size"] = size_most << 8 | size_less & 0xFF;
-    snake_size = cur_snake["size"];
 
     // snake head
     cur_i = mobs_data[j++];
     cur_j = mobs_data[j++];
 
-    // detect snake direction
-    if (cur_snake["i"] < cur_i) {
-        cur_snake["head"] = cur_snake["eyes"]["down"];
-        cur_snake["direction"] = DIRECTION_DOWN;
-    } else if (cur_snake["j"] < cur_j) {
-        cur_snake["head"] = cur_snake["eyes"]["right"];
-        cur_snake["direction"] = DIRECTION_RIGHT;
-    } else if (cur_snake["j"] > cur_j) {
-        cur_snake["head"] = cur_snake["eyes"]["left"];
-        cur_snake["direction"] = DIRECTION_LEFT;
-    } else { // up
-        cur_snake["head"] = cur_snake["eyes"]["up"];
-        cur_snake["direction"] = DIRECTION_UP;
-    }
-    
-    console.log("init: " + cur_snake["head"])
-
-    // set snake positions
-    cur_snake["i"] = cur_i;
-    cur_snake["j"] = cur_j;
+    updateSnakeDirection(cur_snake, cur_i, cur_j);
 
     if (cur_id == id) {
         my_snake = cur_snake;
         my_snake["position"] = i + 1;
     }
-    
-    /*for (k = 1; k < snake_size; k++) {
-        server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(color);
-    }*/
 
-    
+    snake_size = cur_snake["size"];
+    for (k = 1; k < snake_size; k++) {
+        server_matrix[mobs_data[j++]][mobs_data[j++]].setMob(color);
+    }
+
+    /*
     // Zombie
     switch (color) {
         case ZOMBIE_INDEX:
@@ -576,10 +578,10 @@ function putSnakeAtMap() {
             }
 
             break;
-    }
+    }*/
 
     // put snake head at mobs matrix    
-    server_matrix[cur_snake["i"]][cur_snake["j"]].setSnake(-cur_id);
+    server_matrix[cur_snake["i"]][cur_snake["j"]].setSnake(cur_id);
 
     return cur_snake;
 }
@@ -603,8 +605,43 @@ function getServerMobs() {
 
 function getServerMobsChanges() {
     // get another mobs
+    var _v, _i, _j;
     for (i = j; i < mobs_data.length; i++) {
-        server_matrix[mobs_data[i]][mobs_data[++i]].setMob(mobs_data[++i]);
+        _i = mobs_data[i];
+        _j = mobs_data[++i];
+        _v = mobs_data[++i];
+        if (_v === 255) {
+            cur_id = mobs_data[++i];
+            // get current snake by id
+            cur_snake = players_list[cur_id];
+            server_matrix[_i][_j].setSnake(cur_id);
+
+            if (!cur_snake) {
+                cur_snake = {};
+                var snake_skin = initial_av_index;
+                cur_snake["id"] = cur_id;
+                cur_snake["eyes"] = colors[0][1];
+
+                cur_snake["name"] = "";
+                cur_snake["i"] = 0;
+                cur_snake["j"] = 0;
+                cur_snake["color"] = initial_av_index;
+                cur_snake["direction"] = DIRECTION_UP;
+
+                players_list[cur_id] = cur_snake;
+            } else {
+                // set last head position to body
+                server_matrix[cur_snake["i"]][cur_snake["j"]].setMob(cur_snake["color"]);
+            }
+
+            updateSnakeDirection(cur_snake, _i, _j);
+
+            if (cur_id == id) {
+                my_snake = cur_snake;
+            }
+        } else {
+            server_matrix[_i][_j].setMob(_v);
+        }
     }
 
     // update current view flags
@@ -694,17 +731,17 @@ function drawMobsAtMap() {
             }
 
             // Draw mob element
-            if (current_server.snake < 0) {
-                // Snake head
-                snake = players_list[-current_server.snake];
-                if (snake) {
+            if (current_server.snake) {
+                snake = players_list[current_server.snake];
+                if (current_screen.mob != current_server.snake || current_screen.direction != snake["direction"]) {
+                    // Snake head
                     tile = TILES[snake["color"]];
 
                     //drawItemAtCanvas(tile, current, ctx);
                     ctx.drawImage(tile["item"], current_screen.position.x, current_screen.position.y, item_size, item_size);
 
                     // snake eyes
-                    console.log(snake["head"])
+                    //console.log(snake["head"])
                     ctx.drawImage(snake["head"], current_screen.position.x, current_screen.position.y, item_size, item_size);
 
                     // crown
@@ -713,7 +750,7 @@ function drawMobsAtMap() {
                     }
 
                     // clear previous name
-                    ctx_above.clearRect(snake["name_x"], snake["name_y"], snake["name_w"], snake["name_h"]);
+                    ctx_above.clearRect(snake["name_x"] - 2, snake["name_y"] - 2, snake["name_w"], snake["name_h"]);
 
                     // save last snake name position
                     snake["name_x"] = current_screen.position.x + item_size;
@@ -721,23 +758,23 @@ function drawMobsAtMap() {
 
                     // draw snake name
                     ctx_above.fillText(snake["name"], snake["name_x"], snake["name_y"]);
+                    
+                    current_screen.mob = current_server.snake;
+                    current_screen.direction = snake["direction"];
+                    // set 0 to invalidate draw in the next step
+                    //current_server.snake = 1000;
+                    // TODO: not change matrix_mobs
                 }
-
-                // set 0 to invalidate draw in the next step
-                current_screen.mob = current_server.snake;
-                //current_server.snake = 1000;
-                // TODO: not change matrix_mobs
             } else if (current_server.snake !== 0) {
-                    if (current_server.snake !== current_screen.mob) {
-                        tile = TILES[current_server.snake];
-                        drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
-                        current_screen.mob = current_server.snake;
-                    }
-                    current_server.snake = 0;
+                if (current_server.snake !== current_screen.mob) {
+                    tile = TILES[current_server.snake];
+                    drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
+                    current_screen.mob = current_server.snake;
+                }
             } else if (current_server.mob !== 0) {
                 if (current_server.mob !== current_screen.mob) {
                     tile = TILES[current_server.mob];
-                    console.log(current_server.mob + " - " + tile)
+                    //console.log(current_server.mob + " - " + tile)
                     drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
                     current_screen.mob = current_server.mob;
                 }
@@ -788,8 +825,8 @@ function drawRoomLeader() {
 
 function initPlayer(cur_player) {
     measure = ctx_above.measureText(cur_player["name"]);
-    cur_player["name_h"] = NAMES_HEIGHT + 2;
-    cur_player["name_w"] = measure.width + 2;
+    cur_player["name_h"] = NAMES_HEIGHT + 4;
+    cur_player["name_w"] = measure.width + 4;
     cur_player["name_x"] = 0;
     cur_player["name_y"] = 0;
     cur_player["size"] = 0;
@@ -815,7 +852,7 @@ function initPlayersList(data) {
         i++;
         color = data[i];
 
-        console.log("color: " + color)
+        /*console.log("color: " + color)
         
         if (!color) {
             console.log("cur_id=" + cur_id)
@@ -823,7 +860,7 @@ function initPlayersList(data) {
             console.log("player_name=" + player_name)
             console.log("i=" + i)
             console.log(data)
-        }
+        }*/
         cur_player = {
             "id": cur_id,
             "name": player_name,
@@ -936,9 +973,9 @@ function getCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
 
-    for(var i = 0; i < ca.length;i++) {
+    for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        while (c.charAt(0) == ' ') c = c.substring(1,c.length);
         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
 
@@ -1359,21 +1396,37 @@ function prepareGame(event) {
         initAvatarChooser();
     }
 
+    var heading = document.getElementById("connect-form")
+
     // ads
     if (navigator.userAgent == "snacraft-app" || findGetParameter("n") === "1") {
-        document.getElementById("ads").remove();
+        var _ads = document.getElementById("ads");
+        if (_ads) {
+            _ads.remove();
+        }
 
         if (navigator.userAgent == "snacraft-app") {
             document.getElementById("social-buttons").remove();
         }
     } else {
-        var heading = document.getElementById("connect-form")
         var heading_top = parseInt(window.getComputedStyle(heading).top.replace("px", ""));
         var ads = document.getElementById("ads");
         if (ads) {
             ads.style.top = (heading.offsetHeight + heading_top) + "px";
             (adsbygoogle = window.adsbygoogle || []).push({});
         }
+    }
+
+    var game_title = document.querySelector(".navbar-header");
+    if (game_title) {
+        var header_height = (smallScreen? 3 : 5) * item_size;
+        var margin_top;
+        if (heading.offsetTop < header_height) {
+            margin_top = ((heading.offsetTop - game_title.offsetHeight) / 2) + "px";
+        } else {
+            margin_top = ((header_height - game_title.offsetHeight) / 2) + "px";
+        }
+        game_title.style.marginTop = margin_top;
     }
 }
 
