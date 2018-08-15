@@ -415,7 +415,7 @@ function onMessage(event) {
 
                 drawStats();
                 break;
-            case 2: 
+            case 2:
                 // mobs changes
                 mobs_data = data;
                 i = 1;
@@ -529,10 +529,10 @@ function putSnakeAtMap() {
 
     updateSnakeDirection(cur_snake, cur_i, cur_j);
 
-    if (cur_id == id) {
+    /*if (cur_id == id) {
         my_snake = cur_snake;
         my_snake["position"] = i + 1;
-    }
+    }*/
 
     snake_size = cur_snake["size"];
     for (k = 1; k < snake_size; k++) {
