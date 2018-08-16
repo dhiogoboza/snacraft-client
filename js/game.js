@@ -733,7 +733,7 @@ function drawMobsAtMap() {
             // Draw mob element
             if (current_server.snake) {
                 snake = players_list[current_server.snake];
-                if (current_screen.mob != current_server.snake || current_screen.direction != snake["direction"]) {
+                if (snake && (current_screen.mob != current_server.snake || current_screen.direction != snake["direction"])) {
                     // Snake head
                     tile = TILES[snake["color"]];
 
