@@ -55,7 +55,7 @@ var arrow_bottom;
 var arrow_left;
 var crown = {};
 
-var players_list = {};
+var players_list = new Map();
 
 var connected = false;
 var socket;
@@ -77,9 +77,6 @@ var head_i = 0, head_j = 0;
 var heads;
 
 var data = null;
-
-var position, score, speed;
-
 var eyes_color = "#000000";
 
 var offset_i_left = 0, offset_j_left = 0, offset_i_right = 0, offset_j_right = 0;
@@ -227,6 +224,15 @@ function resetCurrentMatrix() {
     // clear canvas
     ctx.clearRect(0, 0, width, height);
 
+    // reset snakes array
+    players_list.clear();
+
+    // clear snakes name
+    ctx_above.clearRect(0, 0, width, height);
+
+    // reset my snake
+    my_snake = {};
+
     var line;
     var y = -item_size, x;
     current_matrix_screen = [];
@@ -277,9 +283,6 @@ function connect(server) {
     // Connection opened
     socket.addEventListener('open', function (event) {
         connected = true;
-
-        // clear snakes name
-        ctx_above.clearRect(0, 0, width, height);
 
         var button = document.getElementById("connect");
         button.disabled = false;
@@ -390,20 +393,21 @@ function onMessage(event) {
                 center_i = head_i;
                 center_j = head_j;
 
-                my_snake = {
-                    "id": id,
-                    "name": nickname,
-                    "i": head_i,
-                    "j": head_j,
-                    "direction": DIRECTION_UP,
-                    "color": color,
-                    "eyes": colors[color - initial_av_index][1],
-                    "head": colors[color - initial_av_index][1]["up"]
-                };
+                my_snake["id"] = id;
+                my_snake["name"] = nickname;
+                my_snake["i"] = head_i;
+                my_snake["j"] = head_j;
+                my_snake["direction"] = DIRECTION_UP;
+                my_snake["position"] = players_list.size;
+                my_snake["color"] = color;
+                my_snake["eyes"] = colors[color - initial_av_index][1];
+                my_snake["head"] = colors[color - initial_av_index][1]["up"];
+
+                console.log(players_list.size)
 
                 initPlayer(my_snake);
 
-                players_list[id] = my_snake;
+                players_list.set(id, my_snake);
 
                 break;
             case 12:
@@ -432,10 +436,10 @@ function onMessage(event) {
                 break;
             case 8:
                 // Player left the game
-                snake = players_list[data[1]];
+                snake = players_list.get(data[1]);
                 if (snake) {
                     ctx_above.clearRect(snake["name_x"] - 2, snake["name_y"] - 2, snake["name_w"], snake["name_h"]);
-                    players_list[data[1]] = undefined;
+                    players_list.delete(data[1]);
                 }
 
                 break;
@@ -446,7 +450,7 @@ function onMessage(event) {
                 playSound(data[1]);
                 break;
             case 11:
-                speed = data[1];
+                my_snake["speed"] = data[1];
                 break;
         }
     } else if (typeof event.data === "string") {
@@ -491,7 +495,7 @@ function putSnakeAtMap() {
     cur_id = mobs_data[j++];
 
     // get current snake by id
-    cur_snake = players_list[cur_id];
+    cur_snake = players_list.get(cur_id);
 
     // snake color
     color = mobs_data[j++];
@@ -507,7 +511,7 @@ function putSnakeAtMap() {
         cur_snake["i"] = 0;
         cur_snake["j"] = 0;
 
-        players_list[cur_id] = cur_snake;
+        players_list.set(cur_id, cur_snake);
     }
 
     // push snake id in ranking array
@@ -529,56 +533,14 @@ function putSnakeAtMap() {
 
     updateSnakeDirection(cur_snake, cur_i, cur_j);
 
-    /*if (cur_id == id) {
-        my_snake = cur_snake;
-        my_snake["position"] = i + 1;
-    }*/
-
     snake_size = cur_snake["size"];
     for (k = 1; k < snake_size; k++) {
         server_matrix[mobs_data[j++]][mobs_data[j++]].setMob(color);
     }
 
-    /*
-    // Zombie
-    switch (color) {
-        case ZOMBIE_INDEX:
-            // shirt
-            server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_SHIRT);
-            server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_SHIRT);
-
-            half = parseInt(snake_size / 2) + 3
-
-            // pant
-            for (k = 3; k < half; k++) {
-                server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_PANT);
-            }
-
-            // snake pixels
-            for (l = half; l < snake_size; l++) {
-                server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(ZOMBIE_INDEX);
-            }
-
-            break;
-        case SKELETON_INDEX:
-            server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(SKELETON_INDEX);
-
-            // bow
-            server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(SKELETON_BOW);
-
-            for (k = 3; k < snake_size; k++) {
-                server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(SKELETON_INDEX);
-            }
-
-            break;
-        default:
-            // snake pixels
-            for (k = 1; k < snake_size; k++) {
-                server_matrix[mobs_data[j++]][mobs_data[j++]].setSnake(color);
-            }
-
-            break;
-    }*/
+    if (cur_id == id) {
+        my_snake = cur_snake;
+    }
 
     // put snake head at mobs matrix    
     server_matrix[cur_snake["i"]][cur_snake["j"]].setSnake(cur_id);
@@ -613,7 +575,7 @@ function getServerMobsChanges() {
         if (_v === 255) {
             cur_id = mobs_data[++i];
             // get current snake by id
-            cur_snake = players_list[cur_id];
+            cur_snake = players_list.get(cur_id);
             server_matrix[_i][_j].setSnake(cur_id);
 
             if (!cur_snake) {
@@ -628,7 +590,7 @@ function getServerMobsChanges() {
                 cur_snake["color"] = initial_av_index;
                 cur_snake["direction"] = DIRECTION_UP;
 
-                players_list[cur_id] = cur_snake;
+                players_list.set(cur_id, cur_snak);
             } else {
                 // set last head position to body
                 server_matrix[cur_snake["i"]][cur_snake["j"]].setMob(cur_snake["color"]);
@@ -637,7 +599,12 @@ function getServerMobsChanges() {
             updateSnakeDirection(cur_snake, _i, _j);
 
             if (cur_id == id) {
-                my_snake = cur_snake;
+                if (!my_snake["position"]) {
+                    my_snake["position"] = players_list.size;
+                }
+                my_snake["name"] = cur_snake["name"];
+                my_snake["i"] = cur_snake["i"];
+                my_snake["j"] = cur_snake["j"];
             }
         } else {
             server_matrix[_i][_j].setMob(_v);
@@ -732,7 +699,7 @@ function drawMobsAtMap() {
 
             // Draw mob element
             if (current_server.snake) {
-                snake = players_list[current_server.snake];
+                snake = players_list.get(current_server.snake);
                 if (snake && (current_screen.mob != current_server.snake || current_screen.direction != snake["direction"])) {
                     // Snake head
                     tile = TILES[snake["color"]];
@@ -741,7 +708,6 @@ function drawMobsAtMap() {
                     ctx.drawImage(tile["item"], current_screen.position.x, current_screen.position.y, item_size, item_size);
 
                     // snake eyes
-                    //console.log(snake["head"])
                     ctx.drawImage(snake["head"], current_screen.position.x, current_screen.position.y, item_size, item_size);
 
                     // crown
@@ -852,15 +818,6 @@ function initPlayersList(data) {
         i++;
         color = data[i];
 
-        /*console.log("color: " + color)
-        
-        if (!color) {
-            console.log("cur_id=" + cur_id)
-            console.log("name_size=" + name_size)
-            console.log("player_name=" + player_name)
-            console.log("i=" + i)
-            console.log(data)
-        }*/
         cur_player = {
             "id": cur_id,
             "name": player_name,
@@ -872,7 +829,7 @@ function initPlayersList(data) {
 
         initPlayer(cur_player);
 
-        players_list[cur_id] = cur_player;
+        players_list.set(cur_id, cur_player);
 
         i++;
     }
@@ -883,21 +840,20 @@ function drawStats() {
         return;
     }
     // my score
-    score = my_snake["size"];
-    document.getElementById("snake-size").innerHTML = score;
+    my_snake["score"] = my_snake["size"];
+    document.getElementById("snake-size").innerHTML = my_snake["score"];
 
     // my speed
-    document.getElementById("snake-speed").innerHTML = speed;
+    document.getElementById("snake-speed").innerHTML = my_snake["speed"];
 
     // my snake position
-    position = my_snake["position"]
-    snakeRanking.innerHTML = position + "/" + snakes_count;
+    snakeRanking.innerHTML = my_snake["position"] + "/" + snakes_count;
 
     tBodyElem.innerHTML = "";
 
     var cur_snake;
     for (i = 0; i < leaderboard.length; i++) {
-        cur_snake = players_list[leaderboard[i]];
+        cur_snake = players_list.get(leaderboard[i]);
 
         if (cur_snake) {
             var tableRow = document.createElement("tr");
@@ -913,7 +869,7 @@ function drawStats() {
 function drawGameover() {
     var score_dom = document.getElementById("score");
     score_dom.style.visibility = "visible";
-    score_dom.innerHTML = "Score: " + score + " (" + position + "/" + snakes_count + ")";
+    score_dom.innerHTML = "Score: " + my_snake["score"] + " (" + my_snake["position"] + "/" + snakes_count + ")";
 
     document.getElementById("connect-form-gameover").style.visibility = "visible";
 
