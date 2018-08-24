@@ -61,7 +61,8 @@ var connected = false;
 var socket;
 var nickname;
 var id;
-var leaderboard;
+var leaderboard = [];
+var first = true;
 var my_snake = null;
 var snakes_count;
 var lines = 0, columns = 0;
@@ -403,8 +404,6 @@ function onMessage(event) {
                 my_snake["eyes"] = colors[color - initial_av_index][1];
                 my_snake["head"] = colors[color - initial_av_index][1]["up"];
 
-                console.log(players_list.size)
-
                 initPlayer(my_snake);
 
                 players_list.set(id, my_snake);
@@ -417,7 +416,8 @@ function onMessage(event) {
                 drawMobsAtMap();
                 drawRoomLeader();
 
-                drawStats();
+                first = false;
+                drawLeaderboard();
                 break;
             case 2:
                 // mobs changes
@@ -427,8 +427,6 @@ function onMessage(event) {
                 getServerMobsChanges();
                 drawMobsAtMap();
                 drawRoomLeader();
-
-                drawStats();
                 break;
             case 7:
                 // Players list
@@ -451,6 +449,16 @@ function onMessage(event) {
                 break;
             case 11:
                 my_snake["speed"] = data[1];
+                drawSpeed();
+                break;
+            case 13:
+                leaderboard = [];
+                for (var i = 1; i < data.length; i++) {
+                    leaderboard.push(data[i]);
+                }
+                // room leader: first snake
+                room_leader = players_list.get(leaderboard[0]);
+                drawLeaderboard();
                 break;
         }
     } else if (typeof event.data === "string") {
@@ -505,7 +513,7 @@ function putSnakeAtMap() {
         cur_snake = {};
         var snake_skin = color - initial_av_index;
         cur_snake["id"] = cur_id;
-        cur_snake["eyes"] = colors[snake_skin][1];
+        cur_snake["eyes"] = colors[snake_skin] ? colors[snake_skin][1] : colors[0][1];
 
         cur_snake["name"] = "";
         cur_snake["i"] = 0;
@@ -515,8 +523,10 @@ function putSnakeAtMap() {
     }
 
     // push snake id in ranking array
-    if (leaderboard.length < rankingSize && cur_snake["name"].length > 0) {
-        leaderboard.push(cur_id);
+    if (first) {
+        if (leaderboard.length < rankingSize && cur_snake["name"].length > 0) {
+            leaderboard.push(cur_id);
+        }
     }
 
     // set snake color
@@ -551,14 +561,10 @@ function putSnakeAtMap() {
 function getServerMobs() {
     snakes_count = mobs_data[1];
     j = 2;
-    leaderboard = [];
-
-    // room leader: first snake
     i = 0;
-    room_leader = putSnakeAtMap();
 
     // get snakes
-    for (i = 1; i < snakes_count; i++) {
+    for (i = 0; i < snakes_count; i++) {
         putSnakeAtMap();
     }
 
@@ -740,7 +746,6 @@ function drawMobsAtMap() {
             } else if (current_server.mob !== 0) {
                 if (current_server.mob !== current_screen.mob) {
                     tile = TILES[current_server.mob];
-                    //console.log(current_server.mob + " - " + tile)
                     drawItemAtCanvas(tile, current_screen, current_screen.mob, ctx);
                     current_screen.mob = current_server.mob;
                 }
@@ -803,7 +808,6 @@ function initPlayersList(data) {
 
     //             0           1             2            3         4
     // Message [MSG_TYPE | PLAYER_ID | NICKNAME_SIZE | NICKNAME | COLOR | ... ]
-
     for (var i = 1; i < data.length;) {
         cur_id = data[i];
         i++;
@@ -835,16 +839,10 @@ function initPlayersList(data) {
     }
 }
 
-function drawStats() {
-    if (!my_snake || !leaderboard) {
-        return;
-    }
+function drawLeaderboard() {
     // my score
     my_snake["score"] = my_snake["size"];
     document.getElementById("snake-size").innerHTML = my_snake["score"];
-
-    // my speed
-    document.getElementById("snake-speed").innerHTML = my_snake["speed"];
 
     // my snake position
     snakeRanking.innerHTML = my_snake["position"] + "/" + snakes_count;
@@ -864,6 +862,11 @@ function drawStats() {
             tBodyElem.appendChild(tableRow);
         }
     }
+}
+
+function drawSpeed() {
+    // my speed
+    document.getElementById("snake-speed").innerHTML = my_snake["speed"];
 }
 
 function drawGameover() {
