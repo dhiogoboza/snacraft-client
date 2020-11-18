@@ -9,7 +9,7 @@ This project is the client side source from Snacraft game. This game is a classi
 
 - npm
 - python
-- google-cloud-sdk
+- google-cloud-sdk [optional]
 
 ### Install NPM dependencies
 
@@ -19,9 +19,25 @@ After installing `npm`, install dependencies:
 
 ## Running locally
 
-`dev_appserver.py dev-app.yaml --admin_port 9090`
+### Using google-cloud-sdk
+
+```
+dev_appserver.py dev-app.yaml --admin_port 9090
+```
 
 This command starts development server at [localhost:8080](localhost:8080).
+
+### Using python 
+
+It is also possible to use any other http server.
+
+`python3 -m http.server`
+
+Open the localhost URL with parameter `server`, for example:
+
+```
+http://localhost:8000?server=secret-reaches-61045.herokuapp.com
+```
 
 ## Deployment
 
@@ -31,7 +47,7 @@ This command starts development server at [localhost:8080](localhost:8080).
 
 This command generates distribution files at `dist` folder.
 
-### Deploy
+### Deploy to App Engine
 
 `gcloud app deploy app.yaml --project <PROJECT_ID>`
 

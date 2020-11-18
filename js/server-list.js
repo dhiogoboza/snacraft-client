@@ -1,7 +1,31 @@
+function findGetParameter(parameterName) {
+    var result = null,
+        tmp = [];
+    location.search
+        .substr(1)
+        .split("&")
+        .forEach(function (item) {
+            tmp = item.split("=");
+            if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+        });
+    return result;
+}
+
 // servers select
 function getServerList(serversSelect) {
+    let server = findGetParameter("server");
+    if (server !== undefined) {
+        var option = document.createElement("option");
+        option.innerHTML = server;
+        option.setAttribute("value", server);
+        option.setAttribute("id", server);
+
+        serversSelect.appendChild(option);
+        return;
+    }
+
     var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
+    xhttp.onreadystatechange = function () {
         var serverList = [];
         if (this.readyState == 4 && this.status == 200) {
             var servers = JSON.parse(this.responseText);

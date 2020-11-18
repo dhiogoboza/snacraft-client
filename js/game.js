@@ -1428,6 +1428,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 resetCurrentMatrix();
 
                 var server = document.getElementById("server").value;
+                console.log(server);
                 var nickname = document.getElementById("nickname").value;
 
                 setCookie("nickname", nickname, 300);
