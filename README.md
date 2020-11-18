@@ -5,21 +5,19 @@
 
 This project is the client side source from Snacraft game. This game is a classical snake multiplayer game. It is available in the [web](http://classic-snakeio.appspot.com/) and [Google Play](https://play.google.com/store/apps/details?id=io.snacraft.game).
 
-## Development
-
-### Dependencies
+## Dependencies
 
 - npm
 - python
 - google-cloud-sdk
 
-#### Install NPM dependencies
+### Install NPM dependencies
 
 After installing `npm`, install dependencies:
 
 `npm install`
 
-### Running locally
+## Running locally
 
 `dev_appserver.py dev-app.yaml --admin_port 9090`
 
@@ -36,3 +34,9 @@ This command generates distribution files at `dist` folder.
 ### Deploy
 
 `gcloud app deploy app.yaml --project <PROJECT_ID>`
+
+## Pictures
+
+<img src="/pictures/screenshot01.png?raw=true">
+<img src="/pictures/screenshot02.png?raw=true">
+<img src="/pictures/screenshot03.png?raw=true">
