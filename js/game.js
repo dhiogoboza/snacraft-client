@@ -1444,22 +1444,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
             server.appendChild(debugOption);
 
             debugOption = document.createElement("option");
-            debugOption.value = "secret-reaches-61045.herokuapp.com";
-            debugOption.text = "Secret Reaches";
-            server.appendChild(debugOption);
-
-            debugOption = document.createElement("option");
             debugOption.value = "fast-island-17183.herokuapp.com";
             debugOption.text = "Fast Island";
             server.appendChild(debugOption);
         }
-    
-        getServerList(document.getElementById("server"));
-        var cookie_server = getCookie("server");
-        if (cookie_server) {
+
+        var cookieServer = getCookie("server");
+        if (cookieServer) {
             var opts = server.options;
             for (var opt, j = 0; opt = opts[j]; j++) {
-                if (opt.value == cookie_server) {
+                if (opt.value == cookieServer) {
                     server.selectedIndex = j;
                     break;
                 }
