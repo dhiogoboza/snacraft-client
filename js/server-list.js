@@ -14,6 +14,7 @@ function findGetParameter(parameterName) {
 // servers select
 function getServerList(serversSelect) {
     let server = findGetParameter("server");
+
     if (server !== undefined) {
         var option = document.createElement("option");
         option.innerHTML = server;
@@ -24,6 +25,10 @@ function getServerList(serversSelect) {
         return;
     }
 
+    // requestDynamicServerList();
+}
+
+function requestDynamicServerList(serversSelect)  {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         var serverList = [];
@@ -84,3 +89,6 @@ function getPlayersCount(serverList) {
         };
     }
 }
+
+console.log("aqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq")
+getServerList(document.querySelector("#server"));
