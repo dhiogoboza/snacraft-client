@@ -90,5 +90,4 @@ function getPlayersCount(serverList) {
     }
 }
 
-console.log("aqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq")
 getServerList(document.querySelector("#server"));

@@ -118,6 +118,12 @@ var leaderBoardTable;
 var tBodyElem;
 var snakeRanking;
 
+const decoder = new TextDecoder();
+
+function sendToSocket(data) {
+    socket.send(data);
+}
+
 function randomInt(min, max) {
     return Math.floor(Math.random()*(max-min+1)+min);
 }
@@ -270,12 +276,13 @@ function initMatrix(matrix_data) {
 }
 
 function connect(server) {
-
-    socket = new WebSocket("ws://" + server);
+    socket = new WebSocket("ws://" + server + "/ws");
     socket.binaryType = "arraybuffer";
 
     // Connection opened
     socket.addEventListener('open', function (event) {
+        console.log("Game connected", event);
+
         connected = true;
 
         // clear snakes name
@@ -294,17 +301,19 @@ function connect(server) {
         } else if (nickname.length > 10) {
             nickname = nickname.substr(0, 10)
         }
-        socket.send(nickname + "," + current_avatar_index);
+        sendToSocket(nickname + "," + current_avatar_index);
         document.getElementById("snake-nickname").innerHTML = nickname;
     });
 
     // Connection closed
     socket.addEventListener('close', function (event) {
+        console.log("Close game receveid", event);
         closeGame();
     });
 
     // Connection failed
     socket.addEventListener('error', function (event) {
+        console.log("Error receveid", event);
         closeGame();
     });
 
@@ -380,6 +389,15 @@ function onMessage(event) {
     if (event.data instanceof ArrayBuffer) {
         data = new Uint8Array(event.data);
         switch (data[0]) {
+            case 0:
+                // Init loop
+                initMatrix(decoder.decode(data));
+                break;
+            case 4:
+                // Game over
+                socket.close();
+                drawGameover();
+                break;
             case 1:
                 id = data[1];
                 color = data[2];
@@ -584,6 +602,11 @@ function drawMobs() {
         server_matrix[mobs_data[i]][mobs_data[++i]].setMob(mobs_data[++i]);
     }
 
+    if (!my_snake) {
+        console.warn("Undefined player snake")
+        return;
+    }
+
     // update current view flags
     head_i = my_snake["i"];
     head_j = my_snake["j"];
@@ -725,7 +748,7 @@ function drawMobsAtMap() {
 }
 
 function drawRoomLeader() {
-    if (room_leader["id"] != my_snake["id"]) {
+    if (room_leader && my_snake && room_leader["id"] != my_snake["id"]) {
         if (Math.abs(room_leader["j"] - my_snake["j"]) >= horizontal_items_half) {
             if (room_leader["j"] > my_snake["j"]) {
                 arrow_right.style.display = "block";
@@ -806,6 +829,11 @@ function initPlayersList(data) {
 }
 
 function drawStats() {
+    if (!my_snake) {
+        console.warn("Undefined player snake")
+        return;
+    }
+
     // my score
     score = my_snake["size"];
     document.getElementById("snake-size").innerHTML = score;
@@ -859,26 +887,26 @@ function keyPressed(e) {
         switch (e.keyCode) {
             case KEY_UP:
             case KEY_UP_1:
-                socket.send('1,0');
+                sendToSocket('1,0');
                 break;
             case KEY_DOWN:
             case KEY_DOWN_1:
-                socket.send('1,1');
+                sendToSocket('1,1');
                 break;
             case KEY_LEFT:
             case KEY_LEFT_1:
-                socket.send('1,2');
+                sendToSocket('1,2');
                 break;
             case KEY_RIGHT:
             case KEY_RIGHT_1:
-                socket.send('1,3');
+                sendToSocket('1,3');
                 break;
         }
     }
 }
 
 function virtualKeyPressed() {
-    socket.send('1,' + this.getAttribute("key"));
+    sendToSocket('1,' + this.getAttribute("key"));
 }
 
 function setCookie(name, value, days) {

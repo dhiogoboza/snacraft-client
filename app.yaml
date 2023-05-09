@@ -15,6 +15,7 @@ skip_files:
 - package.json
 - package-lock.json
 - README.md
+- __init__.py
 
 handlers:
 - url: /
